@@ -1,0 +1,2294 @@
+<!DOCTYPE html>
+<!--
+=====================================================================
+  CONFIGURACIÓN RÁPIDA
+  ---------------------------------------------------------------
+  1) DATOS DEL NEGOCIO: edita el objeto CONFIG (en el head, más abajo).
+     Nombre, WhatsApp, teléfono, dirección, horarios, tratamientos y
+     precios, equipo, isapres... todo se rellena solo en la página.
+  2) COLORES Y FUENTES: variables CSS en :root (bloque style).
+  3) MODO DE RESERVA:
+       CONFIG.modoReserva = "whatsapp"   -> los botones abren el formulario
+                                           y envían el mensaje por wa.me
+       CONFIG.modoReserva = "agendapro"  -> los botones abren CONFIG.agendaProUrl
+                                           en una pestaña nueva
+     También se puede forzar por URL:  index.html?reserva=agendapro
+     Para ocultar el selector de demo: CONFIG.mostrarSelectorDemo = false
+  4) ASISTENTE IA: busca "CONECTAR UNA IA REAL" en el script final.
+  5) IMÁGENES: URLs de Unsplash; reemplázalas por fotos reales de la clínica.
+=====================================================================
+-->
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Nácar Clínica Dental | Dentistas en Peñaflor y Talagante</title>
+<meta name="description" content="Clínica dental en Peñaflor, a minutos de Talagante. Evaluación sin costo, Fonasa MLE e isapres, hasta 12 cuotas sin interés. Limpieza, resinas, ortodoncia, implantes y urgencias.">
+<meta name="theme-color" content="#0B3D46">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nácar Clínica Dental · Tu sonrisa en buenas manos">
+<meta property="og:description" content="Odontología integral en Peñaflor y Talagante. Evaluación sin costo y cuotas sin interés.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=1200&q=80&auto=format&fit=crop">
+<meta property="og:locale" content="es_CL">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%230E7C7B'/%3E%3Cpath transform='translate(4 6.5) scale(1.333)' d='M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z' fill='none' stroke='white' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..600;1,9..144,300..600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script>
+/* =====================================================================
+   CONFIGURACIÓN RÁPIDA — edita estos datos para cada clínica
+   ===================================================================== */
+const CONFIG = {
+  nombre: "Nácar Clínica Dental",
+  nombreCorto: "Nácar",
+  whatsapp: "56987654321",                 // solo dígitos, con 56 al inicio
+  telefono: "+56 9 8765 4321",             // se muestra tal cual y se usa para "Llamar"
+  email: "contacto@nacarclinicadental.cl",
+  direccion: "Av. Vicuña Mackenna 1480, local 3",
+  comuna: "Peñaflor",
+  region: "Región Metropolitana",
+  referencia: "A 2 cuadras de la Plaza de Peñaflor · 10 min desde Talagante",
+  mapaEmbedUrl: "https://www.google.com/maps?q=Pe%C3%B1aflor,+Chile&output=embed",
+  comunasAtendidas: ["Peñaflor", "Talagante", "Padre Hurtado", "El Monte", "Isla de Maipo", "Calera de Tango"],
+  directorTecnico: "Dra. Catalina Fuentes Rojas",
+  instagram: "https://instagram.com/",
+  facebook: "https://facebook.com/",
+  mensajeWhatsApp: "Hola, vi su página web y quiero hacer una consulta.",
+
+  /* Reserva: "whatsapp" (formulario -> wa.me) | "agendapro" (link externo) */
+  modoReserva: "whatsapp",
+  agendaProUrl: "https://agendapro.com/cl/sucursales/tu-clinica",
+  mostrarSelectorDemo: true,                // selector flotante "Demo: modo de reserva"
+
+  /* Horarios (24 h). Varios tramos por día: [["09:00","13:30"],["15:00","20:00"]]. [] = cerrado */
+  zonaHoraria: "America/Santiago",
+  horarios: {
+    lunes:     [["09:00", "20:00"]],
+    martes:    [["09:00", "20:00"]],
+    miercoles: [["09:00", "20:00"]],
+    jueves:    [["09:00", "20:00"]],
+    viernes:   [["09:00", "20:00"]],
+    sabado:    [["09:30", "14:00"]],
+    domingo:   []
+  },
+
+  /* Prueba social */
+  rating: 4.9,
+  totalResenas: 214,
+  pacientes: "+2.000",
+
+  /* Tratamientos: precio "desde" en CLP (número sin puntos) */
+  tratamientos: [
+    { id: "limpieza", nombre: "Limpieza dental", desde: 25000, icono: "limpieza", detalle: "1 sesión · 45 min",
+      descripcion: "Destartraje y pulido para retirar sarro y manchas superficiales. Encías sanas y aliento fresco.",
+      chat: "Incluye destartraje (retiro de sarro) y profilaxis (pulido). Dura unos 45 minutos y lo ideal es repetirla cada 6 meses." },
+    { id: "resina", nombre: "Tapadura de resina", desde: 35000, icono: "resina", detalle: "1 sesión · por pieza",
+      descripcion: "Restauraciones del mismo color de tu diente para tratar caries o reparar piezas desgastadas. Sin metal.",
+      chat: "Usamos resina compuesta del mismo tono de tu diente. El valor final depende del tamaño de la caries y de cuántas caras del diente hay que restaurar." },
+    { id: "ortodoncia", nombre: "Ortodoncia", desde: 590000, icono: "ortodoncia", detalle: "12 a 24 meses", badge: "Hasta 12 cuotas",
+      descripcion: "Brackets metálicos, estéticos o alineadores invisibles para ordenar tus dientes a cualquier edad.",
+      chat: "Trabajamos con brackets metálicos, brackets estéticos (transparentes) y alineadores invisibles. El valor 'desde' corresponde a brackets metálicos; los controles mensuales se cotizan en la evaluación." },
+    { id: "implantes", nombre: "Implantes dentales", desde: 690000, icono: "implante", detalle: "Implante + corona", badge: "Más consultado",
+      descripcion: "Reemplaza dientes perdidos con implantes de titanio y coronas que se ven y se sienten naturales.",
+      chat: "El valor 'desde' incluye implante de titanio y corona. Antes hacemos una evaluación con radiografía para ver cuánto hueso tienes disponible." },
+    { id: "blanqueamiento", nombre: "Blanqueamiento", desde: 120000, icono: "blanqueamiento", detalle: "Clínico + kit para casa",
+      descripcion: "Aclara varios tonos tu sonrisa con un blanqueamiento supervisado y seguro para tu esmalte.",
+      chat: "Combinamos una sesión en la clínica con cubetas para usar en casa. Antes revisamos que no tengas caries ni sensibilidad, para que el resultado sea seguro." },
+    { id: "endodoncia", nombre: "Endodoncia", desde: 150000, icono: "endodoncia", detalle: "1 a 2 sesiones",
+      descripcion: "Tratamiento de conducto para salvar un diente con dolor o infección, con anestesia y sin sufrimiento.",
+      chat: "La endodoncia (tratamiento de conducto) permite salvar el diente en vez de extraerlo. El valor varía si es un diente anterior, premolar o molar." }
+  ],
+
+  /* Equipo. tratamiento = id que se preselecciona al agendar con ese profesional */
+  equipo: [
+    { nombre: "Dra. Catalina Fuentes Rojas", rol: "Directora clínica · Rehabilitación oral", especialidad: "Rehabilitación oral",
+      universidad: "Universidad de Chile", tratamiento: "rehabilitacion",
+      foto: "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=600&h=700&q=80&auto=format&fit=crop&crop=faces",
+      bio: "Coronas, prótesis y estética dental. Más de 15 años devolviendo la función y la confianza al sonreír." },
+    { nombre: "Dr. Matías Sepúlveda Araya", rol: "Implantólogo", especialidad: "Implantología",
+      universidad: "Universidad de los Andes", tratamiento: "implantes",
+      foto: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=600&h=700&q=80&auto=format&fit=crop&crop=faces",
+      bio: "Cirugía de implantes con planificación digital para resultados predecibles y posoperatorios tranquilos." },
+    { nombre: "Dr. Ignacio Valdés Pizarro", rol: "Ortodoncista", especialidad: "Ortodoncia",
+      universidad: "Universidad Finis Terrae", tratamiento: "ortodoncia",
+      foto: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=600&h=700&q=80&auto=format&fit=crop&crop=faces",
+      bio: "Brackets y alineadores invisibles para adolescentes y adultos. Controles puntuales y seguimiento por WhatsApp." },
+    { nombre: "Dra. Javiera Contreras Muñoz", rol: "Odontopediatra", especialidad: "Odontopediatría",
+      universidad: "Universidad de Valparaíso", tratamiento: "ninos",
+      foto: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=600&h=700&q=80&auto=format&fit=crop&crop=faces",
+      bio: "Atiende a niños desde el primer diente, con paciencia, juegos y cero retos. Prevención para toda la familia." }
+  ],
+
+  isapres: ["Banmédica", "Colmena", "Consalud", "Cruz Blanca", "Nueva Masvida", "Vida Tres"],
+
+  creditoWeb: { texto: "Diseño web para negocios de Talagante", url: "#" }
+};
+document.documentElement.classList.add('js');
+</script>
+
+<style>
+/* =====================================================================
+   PALETA Y TIPOGRAFÍA — cambia aquí la identidad visual
+   ===================================================================== */
+:root{
+  --teal-950:#072A31;
+  --teal-900:#0B3D46;
+  --teal-800:#0D4F57;
+  --teal-700:#0E6468;
+  --teal-600:#0E7C7B;   /* color principal */
+  --teal-500:#15A095;
+  --mint-400:#5FD3C0;
+  --mint-300:#93E4D5;
+  --mint-200:#C3EFE5;
+  --mint-100:#E2F6F1;
+  --mint-50:#F1FAF8;
+  --pearl:#F7FAF9;      /* fondo general */
+  --sand:#F5EEE4;
+  --lilac:#EEEAF7;
+  --coral:#EF7B5B;
+  --star:#F5B301;
+  --ink:#0A2730;        /* texto principal */
+  --ink-2:#34525A;      /* texto secundario */
+  --muted:#557178;
+  --line:#DCE8E5;
+  --ok:#1E9E69;
+  --closed:#D0453F;
+  --danger:#B3261E;
+  --nacar:linear-gradient(125deg,#F5EEE4 0%,#E2F6F1 38%,#EEEAF7 72%,#F7FAF9 100%);
+  --grad-teal:linear-gradient(135deg,#15A095 0%,#0E7C7B 45%,#0B3D46 100%);
+  --r-sm:12px; --r:20px; --r-lg:28px; --r-xl:40px;
+  --sh-sm:0 2px 10px -3px rgba(11,61,70,.12);
+  --sh:0 16px 36px -18px rgba(11,61,70,.30);
+  --sh-lg:0 34px 70px -30px rgba(11,61,70,.42);
+  --sans:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --container:1200px;
+  --nav-h:76px;
+}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--nav-h) + 12px);overflow-x:clip}
+body{margin:0;font-family:var(--sans);font-size:17px;line-height:1.62;color:var(--ink);background:var(--pearl);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;overflow-x:clip}
+html.modal-open{overflow:hidden}
+img{max-width:100%;display:block}
+a{color:inherit}
+button{font:inherit;color:inherit}
+h1,h2,h3,h4{margin:0;color:var(--ink)}
+p{margin:0 0 1em}
+.container{width:min(100% - 32px, var(--container));margin-inline:auto}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.skip{position:absolute;left:12px;top:-60px;z-index:200;background:var(--teal-900);color:#fff;padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none;transition:top .2s}
+.skip:focus{top:12px}
+:focus-visible{outline:3px solid var(--mint-400);outline-offset:3px;border-radius:6px}
+.i{width:1.15em;height:1.15em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;vertical-align:middle}
+section{position:relative}
+.section{padding-block:clamp(72px,10vw,128px)}
+.bg-white{background:#fff}
+
+/* ---------- Tipografía de secciones ---------- */
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--teal-600);margin-bottom:16px}
+.eyebrow::before{content:"";width:22px;height:2px;border-radius:2px;background:currentColor}
+h1,h2{font-family:var(--serif);font-weight:350;letter-spacing:-.022em;font-optical-sizing:auto}
+h1 em,h2 em{font-style:italic;font-weight:400;color:var(--teal-600)}
+h2{font-size:clamp(2rem,4.2vw,3.2rem);line-height:1.08}
+.sec-head{max-width:760px;margin:0 auto clamp(40px,5vw,60px);text-align:center}
+.sec-head p{color:var(--ink-2);font-size:clamp(16px,1.6vw,18.5px);margin:18px auto 0;max-width:620px}
+.sec-head.left{text-align:left;margin-left:0}
+.sec-head.left p{margin-left:0}
+
+/* ---------- Botones ---------- */
+.btn{--bg:var(--teal-600);--fg:#fff;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;padding:12px 22px;border-radius:999px;border:1.5px solid transparent;background:var(--bg);color:var(--fg);font-weight:700;font-size:15.5px;line-height:1.2;text-decoration:none;cursor:pointer;transition:transform .25s var(--ease),box-shadow .25s var(--ease),background-color .2s,border-color .2s,color .2s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:linear-gradient(135deg,var(--teal-500),var(--teal-600) 55%,var(--teal-700));box-shadow:0 12px 26px -12px rgba(14,124,123,.75),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-primary:hover{box-shadow:0 18px 34px -14px rgba(14,124,123,.85),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-ghost{--bg:rgba(255,255,255,.7);--fg:var(--ink);border-color:rgba(10,39,48,.14);backdrop-filter:blur(6px)}
+.btn-ghost:hover{border-color:var(--teal-600);color:var(--teal-700);background:#fff}
+.btn-soft{--bg:var(--mint-100);--fg:var(--teal-800)}
+.btn-soft:hover{--bg:var(--teal-600);--fg:#fff}
+.btn-light{--bg:#fff;--fg:var(--teal-900);box-shadow:0 14px 30px -14px rgba(0,0,0,.45)}
+.btn-light:hover{--bg:var(--mint-100)}
+.btn-outline-light{--bg:transparent;--fg:#fff;border-color:rgba(255,255,255,.35)}
+.btn-outline-light:hover{border-color:#fff;--bg:rgba(255,255,255,.08)}
+.btn-lg{min-height:56px;padding:15px 28px;font-size:16.5px}
+.btn-sm{min-height:40px;padding:9px 16px;font-size:14.5px}
+.btn-block{width:100%}
+/* Icono "abre en pestaña nueva" cuando el modo AgendaPro está activo */
+body.modo-agendapro [data-reserva]::after{content:"";width:.85em;height:.85em;flex:none;background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17L17 7M9 7h8v8'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 17L17 7M9 7h8v8'/%3E%3C/svg%3E") center/contain no-repeat}
+
+/* ---------- Reveal on scroll ---------- */
+.js .reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease) var(--d,0s),transform .9s var(--ease) var(--d,0s)}
+.js .reveal.in{opacity:1;transform:none}
+
+/* ---------- Topbar ---------- */
+.topbar{background:var(--teal-950);color:#D6EEEA;font-size:13.5px}
+.topbar .container{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:40px}
+.topbar a{color:#fff;text-decoration:none;font-weight:700}
+.topbar a:hover{text-decoration:underline}
+.tb-left,.tb-right{display:flex;align-items:center;gap:18px}
+.tb-item{display:inline-flex;align-items:center;gap:8px}
+.tb-item .i{color:var(--mint-400)}
+
+/* ---------- Estado abierto/cerrado ---------- */
+.dot{width:9px;height:9px;border-radius:50%;background:#9AA9AC;flex:none;position:relative}
+.is-open .dot{background:var(--ok);box-shadow:0 0 0 0 rgba(30,158,105,.55);animation:pulse 2.2s infinite}
+.is-closed .dot{background:var(--closed)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(30,158,105,.55)}70%{box-shadow:0 0 0 9px rgba(30,158,105,0)}100%{box-shadow:0 0 0 0 rgba(30,158,105,0)}}
+
+/* ---------- Navbar ---------- */
+.nav{position:sticky;top:0;z-index:50;background:rgba(247,250,249,.78);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);border-bottom:1px solid transparent;transition:background-color .3s,box-shadow .3s,border-color .3s}
+.nav.scrolled{background:rgba(255,255,255,.93);border-color:var(--line);box-shadow:0 12px 30px -22px rgba(11,61,70,.45)}
+.nav-inner{display:flex;align-items:center;gap:20px;height:var(--nav-h)}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);flex:none}
+.brand svg{width:42px;height:42px;flex:none;filter:drop-shadow(0 6px 12px rgba(14,124,123,.3))}
+.brand-name{font-family:var(--serif);font-size:27px;font-weight:450;letter-spacing:-.02em;line-height:1;display:block}
+.brand-sub{display:block;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-top:4px}
+.nav-links{display:flex;gap:2px;list-style:none;margin:0 0 0 auto;padding:0}
+.nav-links a{display:block;padding:9px 13px;border-radius:999px;text-decoration:none;font-weight:600;font-size:15px;color:var(--ink-2);transition:background-color .2s,color .2s}
+.nav-links a:hover,.nav-links a.active{background:var(--mint-100);color:var(--teal-800)}
+.nav-phone{display:inline-flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:15px;color:var(--ink);padding:8px 4px;white-space:nowrap}
+.nav-phone .i{color:var(--teal-600)}
+.nav-cta{flex:none}
+.lbl-short{display:none}
+.menu-btn{display:none;width:48px;height:48px;border-radius:14px;border:1.5px solid var(--line);background:#fff;align-items:center;justify-content:center;cursor:pointer;flex:none}
+.menu-btn .i{width:22px;height:22px}
+.mobile-menu{position:absolute;left:0;right:0;top:100%;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 30px 50px -30px rgba(11,61,70,.45);padding:12px 16px 22px;max-height:calc(100vh - var(--nav-h));overflow:auto}
+.mobile-menu[hidden]{display:none}
+.mobile-menu.open{animation:drop .35s var(--ease)}
+@keyframes drop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+.mobile-menu ul{list-style:none;margin:0;padding:0}
+.mobile-menu li a{display:flex;justify-content:space-between;align-items:center;padding:14px 6px;border-bottom:1px solid var(--line);text-decoration:none;font-weight:700;font-size:17px}
+.mobile-menu .mm-actions{display:grid;gap:10px;margin-top:16px}
+@media (max-width:1320px){.nav-phone{display:none}}
+@media (max-width:1060px){
+  .nav-links{display:none}
+  .menu-btn{display:inline-flex}
+  .nav-cta{margin-left:auto}
+}
+@media (max-width:520px){
+  .lbl-long{display:none}.lbl-short{display:inline}
+  .nav-cta{padding:10px 16px;min-height:44px;font-size:14.5px}
+  .nav-cta .i{display:none}
+  .menu-btn{width:44px;height:44px}
+  .status-pill .sep,.status-pill .sp-loc{display:none}
+  .brand-name{font-size:23px}
+  .brand svg{width:38px;height:38px}
+  .nav-inner{gap:10px}
+}
+@media (max-width:360px){.brand-sub{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{overflow:hidden;padding:clamp(36px,6vw,84px) 0 clamp(64px,8vw,112px);background:radial-gradient(1100px 620px at 88% -8%,#DDF4EE 0%,rgba(221,244,238,0) 62%),radial-gradient(760px 520px at -8% 105%,#F5EEE4 0%,rgba(245,238,228,0) 62%),var(--pearl)}
+.hero-bg{position:absolute;inset:0;pointer-events:none}
+.hero-bg::after{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(14,124,123,.16) 1px,transparent 1.3px);background-size:24px 24px;-webkit-mask-image:radial-gradient(ellipse 60% 55% at 70% 40%,#000 0%,transparent 70%);mask-image:radial-gradient(ellipse 60% 55% at 70% 40%,#000 0%,transparent 70%)}
+.hero-grid{position:relative;display:grid;grid-template-columns:1.06fr .94fr;gap:clamp(36px,5vw,72px);align-items:center}
+.status-pill{display:inline-flex;align-items:center;gap:9px;flex-wrap:wrap;padding:8px 16px 8px 12px;border-radius:999px;background:#fff;border:1px solid var(--line);font-size:14px;font-weight:600;color:var(--ink-2);box-shadow:var(--sh-sm);margin:0 0 26px}
+.status-pill .status-text{color:var(--ink);font-weight:700}
+.status-pill .sep{color:var(--line)}
+.hero h1{font-size:clamp(2.75rem,6.4vw,5.35rem);line-height:1.0;font-weight:330;letter-spacing:-.026em;margin-bottom:26px}
+.smile-word{position:relative;display:inline-block;white-space:nowrap;padding-bottom:.08em}
+.smile-arc{position:absolute;left:2%;right:0;bottom:-.14em;width:98%;height:.3em;overflow:visible}
+.smile-arc path{fill:none;stroke:var(--mint-400);stroke-width:6;stroke-linecap:round;stroke-dasharray:340;stroke-dashoffset:340;animation:draw 1.3s .6s var(--ease) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.lead{font-size:clamp(17px,1.7vw,19.5px);color:var(--ink-2);max-width:560px;margin-bottom:32px}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px 16px;align-items:flex-start;margin-bottom:40px}
+.cta-stack{display:flex;flex-direction:column;gap:8px}
+.cta-hint{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);font-weight:600;padding-left:6px}
+.cta-hint::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--mint-400)}
+body.modo-agendapro .cta-hint{color:var(--teal-700)}
+body.modo-agendapro .cta-hint::before{background:var(--coral)}
+.hero-proof{list-style:none;margin:0;padding:22px 0 0;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:18px 34px}
+.hero-proof li{display:flex;align-items:center;gap:12px}
+.hero-proof strong{display:block;font-family:var(--serif);font-size:26px;font-weight:450;line-height:1.05;letter-spacing:-.02em;color:var(--teal-800)}
+.hero-proof span.lbl{display:block;font-size:13.5px;color:var(--muted);font-weight:600}
+.avatars{display:flex}
+.avatars img{width:38px;height:38px;border-radius:50%;border:2.5px solid #fff;object-fit:cover;background:var(--mint-100);margin-left:-10px;box-shadow:var(--sh-sm)}
+.avatars img:first-child{margin-left:0}
+.stars-inline{display:inline-flex;vertical-align:middle;color:var(--star);margin-left:4px}
+.stars-inline svg{width:72px;height:14px}
+
+.hero-media{position:relative;width:100%;max-width:520px;margin-inline:auto;padding:22px 30px 40px}
+.hero-media::before{content:"";position:absolute;inset:6% -4% 8% 8%;border-radius:50%;background:var(--nacar);filter:blur(40px);opacity:.95;z-index:0}
+.arch-wrap{position:relative;z-index:1;isolation:isolate}
+.arch-wrap::before{content:"";position:absolute;inset:0;border:1.5px solid rgba(21,160,149,.45);border-radius:999px 999px 34px 34px;transform:translate(18px,18px);z-index:-1}
+.arch{position:relative;border-radius:999px 999px 34px 34px;overflow:hidden;aspect-ratio:4/5;background:linear-gradient(160deg,var(--mint-100),var(--sand));box-shadow:var(--sh-lg)}
+.arch img{width:100%;height:100%;object-fit:cover;object-position:50% 30%}
+.arch::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,61,70,0) 60%,rgba(11,61,70,.28) 100%)}
+.float-card{position:absolute;z-index:2;display:flex;align-items:center;gap:12px;padding:12px 16px 12px 12px;border-radius:18px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.8);box-shadow:var(--sh);font-size:13.5px;line-height:1.3;animation:bob 6s ease-in-out infinite}
+.float-card strong{display:block;font-size:14.5px;color:var(--ink)}
+.float-card small{display:block;color:var(--muted);font-weight:600;font-size:12.5px}
+.fc-ico{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--mint-100);color:var(--teal-700);flex:none}
+.fc-ico .i{width:22px;height:22px}
+.fc-top{left:-6px;top:30%}
+.fc-bottom{right:-4px;bottom:9%;animation-delay:-3s}
+.fc-bottom .g-ico{width:34px;height:34px;flex:none}
+.fc-bottom .score{font-family:var(--serif);font-size:22px;font-weight:500;color:var(--ink);margin-right:4px}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.spin-badge{position:absolute;z-index:3;top:6px;right:4px;width:118px;height:118px;border-radius:50%;background:#fff;box-shadow:var(--sh);display:grid;place-items:center}
+.spin-badge svg.ring{position:absolute;inset:0;width:100%;height:100%;animation:spin 22s linear infinite}
+.spin-badge text{font:800 9.4px var(--sans);letter-spacing:.14em;fill:var(--teal-800);text-transform:uppercase}
+.spin-core{width:52px;height:52px;border-radius:50%;background:var(--grad-teal);display:grid;place-items:center;color:#fff}
+.spin-core .i{width:26px;height:26px}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-media{max-width:440px}
+}
+@media (max-width:520px){
+  .hero-media{padding:14px 16px 30px}
+  .spin-badge{width:92px;height:92px;top:0;right:0}
+  .spin-badge text{font-size:8.6px}
+  .spin-core{width:40px;height:40px}
+  .spin-core .i{width:21px;height:21px}
+  .fc-top{left:0;top:32%}
+  .fc-bottom{right:0;bottom:6%}
+  .float-card{padding:10px 12px 10px 10px;gap:10px}
+  .fc-ico{width:34px;height:34px}
+  .hero-proof{gap:16px 22px}
+  .hero-proof strong{font-size:22px}
+  .hero-ctas .btn-lg{width:100%}
+  .cta-stack{width:100%}
+}
+
+/* ---------- Marquee de confianza ---------- */
+.trust{background:#fff;border-block:1px solid var(--line);overflow:hidden;padding:18px 0}
+.marquee{display:flex;width:max-content;animation:marquee 38s linear infinite}
+.trust:hover .marquee{animation-play-state:paused}
+.marquee ul{display:flex;gap:44px;list-style:none;margin:0;padding:0 22px}
+.marquee li{display:inline-flex;align-items:center;gap:10px;font-weight:700;font-size:15px;color:var(--ink-2);white-space:nowrap}
+.marquee li .i{color:var(--teal-600);width:20px;height:20px}
+.marquee li::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--mint-300);margin-left:34px}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ---------- Tratamientos ---------- */
+.t-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.t-card{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:26px;padding:30px 28px 26px;transition:transform .45s var(--ease),box-shadow .45s var(--ease),border-color .3s;overflow:hidden}
+.t-card::before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:var(--grad-teal);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ease)}
+.t-card:hover{transform:translateY(-6px);box-shadow:var(--sh-lg);border-color:var(--mint-200)}
+.t-card:hover::before{transform:scaleX(1)}
+.t-icon{width:62px;height:62px;border-radius:19px;display:grid;place-items:center;background:linear-gradient(140deg,var(--mint-100),#fff 80%);border:1px solid var(--mint-200);color:var(--teal-600);transition:transform .45s var(--ease),background .3s,color .3s}
+.t-icon .i{width:32px;height:32px;stroke-width:1.5}
+.t-card:hover .t-icon{transform:rotate(-6deg) scale(1.05);background:var(--teal-600);color:#fff;border-color:var(--teal-600)}
+.t-card h3{font-family:var(--serif);font-weight:450;font-size:25px;letter-spacing:-.015em;margin:22px 0 8px;line-height:1.15}
+.t-card p{color:var(--ink-2);font-size:15.5px;margin:0 0 14px}
+.t-meta{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:20px}
+.t-meta .i{width:16px;height:16px;color:var(--teal-500)}
+.t-foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-top:18px;border-top:1px dashed var(--line)}
+.t-price small{display:block;font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.t-price strong{display:block;font-family:var(--serif);font-size:31px;font-weight:450;letter-spacing:-.02em;line-height:1.05;color:var(--teal-800)}
+.t-badge{position:absolute;top:22px;right:22px;font-size:12px;font-weight:800;padding:6px 11px;border-radius:999px;background:var(--sand);color:#7A4B1E}
+.t-note{margin-top:34px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px;padding:22px 26px;border-radius:24px;background:var(--nacar);border:1px solid var(--line)}
+.t-note p{margin:0;font-weight:600;color:var(--ink-2);display:flex;gap:12px;align-items:center}
+.t-note p .i{color:var(--teal-600);width:24px;height:24px}
+@media (max-width:980px){.t-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.t-grid{grid-template-columns:1fr}.t-card{padding:26px 22px 22px}}
+
+/* ---------- Primera visita ---------- */
+.visit-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,88px);align-items:center}
+.collage{position:relative;padding:0 8% 12% 0}
+.collage .main{border-radius:32px;overflow:hidden;aspect-ratio:5/6;box-shadow:var(--sh-lg);background:var(--mint-100)}
+.collage .main img,.collage .sub img{width:100%;height:100%;object-fit:cover}
+.collage .sub{position:absolute;right:0;bottom:0;width:46%;aspect-ratio:1;border-radius:28px;overflow:hidden;border:7px solid #fff;box-shadow:var(--sh);background:var(--mint-100)}
+.collage .chip{position:absolute;left:-10px;top:10%;display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:16px;background:#fff;box-shadow:var(--sh);font-weight:700;font-size:14px;max-width:240px;line-height:1.3}
+.collage .chip .i{color:var(--teal-600);width:24px;height:24px}
+.steps{list-style:none;margin:34px 0 36px;padding:0;position:relative}
+.steps::before{content:"";position:absolute;left:27px;top:12px;bottom:12px;border-left:2px dashed var(--mint-300)}
+.step{position:relative;display:grid;grid-template-columns:56px 1fr;gap:20px;padding-bottom:28px}
+.step:last-child{padding-bottom:0}
+.step-n{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1.5px solid var(--mint-300);font-family:var(--serif);font-style:italic;font-size:22px;color:var(--teal-700);position:relative;z-index:1;box-shadow:0 0 0 6px #fff}
+.step h3{font-family:var(--sans);font-size:18.5px;font-weight:800;margin:4px 0 6px;letter-spacing:-.01em}
+.step p{margin:0;color:var(--ink-2);font-size:15.5px}
+@media (max-width:900px){.visit-grid{grid-template-columns:1fr}.collage{max-width:520px}}
+@media (max-width:520px){.collage .chip{left:0;top:6%;max-width:210px;font-size:13px}}
+
+/* ---------- Por qué (oscuro) ---------- */
+.why{background:radial-gradient(700px 380px at 12% 0%,rgba(95,211,192,.20),transparent 60%),radial-gradient(600px 400px at 100% 100%,rgba(238,234,247,.10),transparent 60%),var(--teal-900);color:#D4ECE8;overflow:hidden}
+.why h2{color:#fff}
+.why h2 em{color:var(--mint-300)}
+.why .eyebrow{color:var(--mint-400)}
+.why .sec-head p{color:#BFD9D5}
+.why-deco{position:absolute;right:-60px;top:-40px;width:420px;height:420px;color:rgba(255,255,255,.05);pointer-events:none}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid rgba(255,255,255,.12);border-radius:28px;overflow:hidden;background:rgba(255,255,255,.03)}
+.stat{padding:32px 26px;border-right:1px solid rgba(255,255,255,.12)}
+.stat:last-child{border-right:0}
+.stat .num{display:block;font-family:var(--serif);font-weight:350;font-size:clamp(2.6rem,5vw,3.8rem);line-height:1;color:#fff;letter-spacing:-.03em}
+.stat .num .unit{color:var(--mint-400)}
+.stat p{margin:12px 0 0;font-size:15px;color:#BFD9D5}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;margin-top:40px}
+.feat{display:flex;gap:14px;align-items:flex-start}
+.feat .ico{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:rgba(95,211,192,.14);color:var(--mint-300);flex:none}
+.feat .ico .i{width:23px;height:23px}
+.feat h3{color:#fff;font-size:16px;font-weight:800;margin:2px 0 4px}
+.feat p{margin:0;font-size:14.5px;color:#BFD9D5;line-height:1.5}
+@media (max-width:980px){.stats{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid rgba(255,255,255,.12)}.features{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.features{grid-template-columns:1fr}.stat{padding:24px 18px}}
+
+/* ---------- Equipo ---------- */
+.team-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px}
+.doc-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:26px;overflow:hidden;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.doc-card:hover{transform:translateY(-6px);box-shadow:var(--sh-lg)}
+.doc-photo{position:relative;aspect-ratio:6/7;overflow:hidden;background:linear-gradient(160deg,var(--mint-100),var(--sand))}
+.doc-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 20%;transition:transform .9s var(--ease)}
+.doc-card:hover .doc-photo img{transform:scale(1.05)}
+.doc-tag{position:absolute;left:14px;bottom:14px;padding:6px 12px;border-radius:999px;background:rgba(255,255,255,.93);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);font-size:12.5px;font-weight:800;color:var(--teal-800);box-shadow:var(--sh-sm)}
+.doc-body{display:flex;flex-direction:column;gap:6px;padding:20px 22px 24px;flex:1}
+.doc-body h3{font-family:var(--serif);font-size:21px;font-weight:450;line-height:1.2;letter-spacing:-.01em}
+.doc-role{margin:0;color:var(--teal-600);font-weight:800;font-size:13.5px}
+.doc-uni{margin:0;display:flex;gap:8px;align-items:center;font-size:13.5px;color:var(--muted);font-weight:600}
+.doc-uni .i{color:var(--teal-500);width:18px;height:18px}
+.doc-bio{margin:8px 0 16px;font-size:14.5px;color:var(--ink-2);line-height:1.55}
+.link-arrow{margin-top:auto;display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:14.5px;color:var(--teal-700);text-decoration:none}
+.link-arrow .i{transition:transform .3s var(--ease)}
+.link-arrow:hover .i{transform:translateX(4px)}
+.link-arrow:hover{color:var(--teal-900)}
+@media (max-width:1060px){.team-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.team-grid{grid-template-columns:1fr}.doc-photo{aspect-ratio:5/4}}
+
+/* ---------- Convenios y pagos ---------- */
+.pay-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:28px;align-items:start}
+.cov-card{background:#fff;border:1px solid var(--line);border-radius:26px;padding:26px 28px}
+.cov-card + .cov-card{margin-top:18px}
+.cov-head{display:flex;align-items:center;gap:14px;margin-bottom:10px}
+.cov-ico{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;background:var(--mint-100);color:var(--teal-700);flex:none}
+.cov-ico .i{width:25px;height:25px}
+.cov-head h3{font-family:var(--serif);font-weight:450;font-size:23px;letter-spacing:-.01em}
+.cov-head small{display:block;font-size:13px;color:var(--muted);font-weight:700}
+.cov-card p{color:var(--ink-2);font-size:15.5px;margin:0}
+.pills{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:16px 0 12px;padding:0}
+.pill{padding:8px 15px;border-radius:999px;background:var(--pearl);border:1px solid var(--line);font-weight:700;font-size:14px;color:var(--ink)}
+.pill.fonasa{background:var(--mint-100);border-color:var(--mint-200);color:var(--teal-800)}
+.fine{font-size:13px!important;color:var(--muted)!important}
+.pay-list{display:grid;grid-template-columns:1fr 1fr;gap:14px 20px;list-style:none;margin:16px 0 0;padding:0}
+.pay-list li{display:flex;gap:11px;align-items:flex-start;font-size:15px;line-height:1.4}
+.pay-list li .i{color:var(--teal-600);width:22px;height:22px;margin-top:1px}
+.pay-list strong{display:block}
+.pay-list span{font-size:13.5px;color:var(--muted)}
+@media (max-width:560px){.pay-list{grid-template-columns:1fr}.cov-card{padding:22px 20px}}
+
+.sim-card{position:sticky;top:calc(var(--nav-h) + 20px);border-radius:30px;padding:30px;color:#E4F4F1;background:radial-gradient(420px 260px at 100% 0%,rgba(95,211,192,.28),transparent 60%),linear-gradient(160deg,var(--teal-800),var(--teal-950));box-shadow:var(--sh-lg);overflow:hidden}
+.sim-card h3{color:#fff;font-family:var(--serif);font-weight:400;font-size:27px;letter-spacing:-.015em;margin-bottom:4px}
+.sim-card > p{color:#BFD9D5;font-size:15px;margin-bottom:22px}
+.sim-label{display:block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#BFD9D5;margin-bottom:8px}
+.money{display:flex;align-items:center;background:#fff;border-radius:16px;padding:0 16px;border:2px solid transparent;transition:border-color .2s}
+.money:focus-within{border-color:var(--mint-400)}
+.money span{font-family:var(--serif);font-size:24px;color:var(--teal-700);margin-right:6px}
+.money input{flex:1;min-width:0;border:0;outline:none;background:transparent;font:500 26px var(--serif);color:var(--ink);padding:12px 0;letter-spacing:-.01em}
+.range{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:6px;margin:18px 0 6px;background:linear-gradient(90deg,var(--mint-400) 0 var(--p,30%),rgba(255,255,255,.18) var(--p,30%) 100%);cursor:pointer}
+.range::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:5px solid var(--mint-400);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:#fff;border:5px solid var(--mint-400);box-shadow:0 4px 12px rgba(0,0,0,.3)}
+.range-scale{display:flex;justify-content:space-between;font-size:12px;color:#9FC2BD;font-weight:600;margin-bottom:14px}
+.quick{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px}
+.quick button{border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.06);color:#E4F4F1;border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer;transition:background .2s,border-color .2s}
+.quick button:hover,.quick button[aria-pressed="true"]{background:rgba(95,211,192,.2);border-color:var(--mint-400);color:#fff}
+.seg-cuotas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 22px;padding:0;border:0}
+.seg-cuotas label{position:relative;display:block;text-align:center;padding:12px 6px;border-radius:14px;border:1.5px solid rgba(255,255,255,.2);font-weight:800;cursor:pointer;transition:all .2s;font-size:15px}
+.seg-cuotas label small{display:block;font-weight:600;font-size:11.5px;color:#9FC2BD}
+.seg-cuotas input{position:absolute;opacity:0;pointer-events:none}
+.seg-cuotas label:has(input:checked){background:var(--mint-300);border-color:var(--mint-300);color:var(--teal-950)}
+.seg-cuotas label:has(input:checked) small{color:var(--teal-800)}
+.seg-cuotas label:has(input:focus-visible){outline:3px solid #fff;outline-offset:2px}
+.seg-cuotas label.checked{background:var(--mint-300);border-color:var(--mint-300);color:var(--teal-950)}
+.seg-cuotas label.checked small{color:var(--teal-800)}
+.sim-result{border-radius:22px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:20px 22px;margin-bottom:18px}
+.sim-result .top{display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:700;color:#BFD9D5;font-size:14.5px}
+.tag-mint{padding:5px 10px;border-radius:999px;background:var(--mint-400);color:var(--teal-950);font-size:12px;font-weight:800}
+.sim-big{display:block;font-family:var(--serif);font-weight:400;font-size:clamp(2.6rem,5vw,3.4rem);line-height:1.05;color:#fff;letter-spacing:-.03em;margin:6px 0 8px}
+.sim-rows{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:14px;color:#BFD9D5}
+.sim-rows strong{color:#fff}
+.sim-note{font-size:12.5px;color:#9FC2BD;margin:14px 0 0;line-height:1.5}
+@media (max-width:980px){.pay-grid{grid-template-columns:1fr}.sim-card{position:relative;top:auto}}
+@media (max-width:520px){.sim-card{padding:24px 20px;border-radius:26px}}
+
+/* ---------- Reseñas ---------- */
+.g-summary{display:grid;grid-template-columns:auto auto 1fr auto;gap:28px 40px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:28px;padding:26px 32px;margin-bottom:26px;box-shadow:var(--sh-sm)}
+.g-brand{display:flex;align-items:center;gap:12px}
+.g-brand svg{width:44px;height:44px}
+.g-brand strong{display:block;font-size:17px}
+.g-brand small{color:var(--muted);font-weight:600;font-size:13px}
+.g-score{display:flex;align-items:center;gap:14px}
+.g-score .big{font-family:var(--serif);font-size:58px;font-weight:400;line-height:1;letter-spacing:-.03em}
+.g-score .stars svg{width:110px;height:21px;color:var(--star)}
+.g-score small{display:block;color:var(--muted);font-weight:600;font-size:13.5px}
+.g-bars{display:grid;gap:5px;max-width:320px;width:100%}
+.g-bar{display:grid;grid-template-columns:12px 1fr;gap:10px;align-items:center;font-size:12.5px;font-weight:700;color:var(--muted)}
+.g-bar span.track{height:8px;border-radius:8px;background:var(--mint-50);border:1px solid var(--line);overflow:hidden}
+.g-bar span.fill{display:block;height:100%;border-radius:8px;background:var(--star);width:var(--w)}
+.reviews{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.review{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:24px;padding:22px 22px 24px;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+.review:hover{transform:translateY(-4px);box-shadow:var(--sh)}
+.review header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.review header strong{display:block;font-size:15.5px;line-height:1.25}
+.review header small{display:block;font-size:12.5px;color:var(--muted);font-weight:600}
+.review .g-ico{width:20px;height:20px;margin-left:auto;flex:none}
+.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--c,#0E7C7B);color:#fff;font-weight:800;font-size:15px;flex:none}
+.review-meta{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-size:13px;color:var(--muted);font-weight:600}
+.review-meta svg{width:86px;height:16px;color:var(--star)}
+.review p{margin:0;font-size:15.5px;color:var(--ink-2);line-height:1.6}
+.review .reply{margin-top:14px;padding:12px 14px;border-radius:14px;background:var(--mint-50);font-size:13.5px;color:var(--ink-2);border-left:3px solid var(--mint-300)}
+.review .reply strong{color:var(--teal-800)}
+@media (max-width:1060px){.g-summary{grid-template-columns:1fr 1fr}.g-bars{max-width:none}}
+@media (max-width:980px){.reviews{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:640px){.reviews{grid-template-columns:1fr}.g-summary{grid-template-columns:1fr;padding:22px}}
+
+/* ---------- Ubicación ---------- */
+.loc-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:26px;align-items:stretch}
+.map-wrap{position:relative;min-height:460px;border-radius:28px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(160deg,var(--mint-100),var(--sand));box-shadow:var(--sh-sm)}
+.map-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0;filter:saturate(.85) contrast(1.02)}
+.map-pin{position:absolute;left:16px;top:16px;z-index:2;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff;box-shadow:var(--sh);font-size:14px;font-weight:700;max-width:calc(100% - 32px)}
+.map-pin .i{color:var(--coral);width:22px;height:22px}
+.loc-card{background:#fff;border:1px solid var(--line);border-radius:28px;padding:28px}
+.loc-status{display:flex;align-items:center;gap:10px;padding:12px 16px;border-radius:16px;background:var(--pearl);border:1px solid var(--line);font-weight:800;font-size:15px;margin-bottom:20px}
+.is-open.loc-status{background:#E8F7EF;border-color:#BFE8D2;color:#135E3F}
+.is-closed.loc-status{background:#FCEDEC;border-color:#F3C9C6;color:#8E2A25}
+.loc-line{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;font-size:15.5px}
+.loc-line .i{color:var(--teal-600);width:22px;height:22px;margin-top:2px}
+.loc-line a{font-weight:700;text-decoration:none}
+.loc-line a:hover{text-decoration:underline}
+.loc-line small{display:block;color:var(--muted);font-size:13.5px}
+.hours{width:100%;border-collapse:collapse;font-size:15px;margin:16px 0 20px}
+.hours caption{text-align:left;font-weight:800;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding-bottom:6px}
+.hours th,.hours td{padding:9px 4px;border-bottom:1px dashed var(--line);text-align:left;font-weight:600}
+.hours td{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.hours tr.hoy th,.hours tr.hoy td{color:var(--teal-800);font-weight:800}
+.hours tr.hoy th::after{content:"Hoy";margin-left:8px;font-size:11px;padding:3px 8px;border-radius:999px;background:var(--mint-100);color:var(--teal-800);letter-spacing:.04em}
+.hours .cerrado{color:var(--closed)}
+.loc-actions{display:flex;flex-wrap:wrap;gap:10px}
+.comunas{display:flex;flex-wrap:wrap;gap:6px;list-style:none;padding:0;margin:18px 0 0}
+.comunas li{font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--mint-50);border:1px solid var(--line);color:var(--ink-2)}
+@media (max-width:900px){.loc-grid{grid-template-columns:1fr}.map-wrap{min-height:340px}}
+@media (max-width:520px){.loc-card{padding:22px 20px}.loc-actions .btn{flex:1 1 100%}}
+
+/* ---------- FAQ ---------- */
+.faq-grid{display:grid;grid-template-columns:.82fr 1.18fr;gap:clamp(32px,5vw,64px);align-items:start}
+.faq-aside{position:sticky;top:calc(var(--nav-h) + 24px)}
+.faq-img{margin-top:28px;border-radius:28px;overflow:hidden;aspect-ratio:4/3;background:var(--mint-100);position:relative;box-shadow:var(--sh)}
+.faq-img img{width:100%;height:100%;object-fit:cover}
+.ask-card{position:relative;margin:-56px 18px 0;z-index:2;background:#fff;border-radius:22px;padding:18px 20px;box-shadow:var(--sh);display:flex;gap:14px;align-items:center}
+.ask-card .ico{width:46px;height:46px;border-radius:50%;background:var(--grad-teal);color:#fff;display:grid;place-items:center;flex:none}
+.ask-card strong{display:block;font-size:15.5px}
+.ask-card button{background:none;border:0;padding:0;color:var(--teal-700);font-weight:800;font-size:14.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+details.faq{background:#fff;border:1px solid var(--line);border-radius:20px;padding:0 22px;margin-bottom:12px;transition:border-color .3s,box-shadow .3s}
+details.faq[open]{border-color:var(--mint-300);box-shadow:var(--sh-sm)}
+details.faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;font-weight:800;font-size:16.5px;line-height:1.35}
+details.faq summary::-webkit-details-marker{display:none}
+details.faq summary:focus-visible{outline-offset:6px}
+.faq-ico{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--mint-100);color:var(--teal-700);flex:none;transition:transform .35s var(--ease),background .3s,color .3s}
+details.faq[open] .faq-ico{transform:rotate(45deg);background:var(--teal-600);color:#fff}
+.faq-body{padding:0 0 20px;color:var(--ink-2);font-size:15.5px}
+.faq-body p{margin:0}
+details.faq[open] .faq-body{animation:fadeUp .4s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media (max-width:900px){.faq-grid{grid-template-columns:1fr}.faq-aside{position:relative;top:auto}.faq-img{display:none}.ask-card{margin:20px 0 0}}
+
+/* ---------- CTA final ---------- */
+.cta-box{position:relative;overflow:hidden;display:grid;grid-template-columns:1.25fr .75fr;gap:40px;align-items:center;border-radius:40px;padding:clamp(34px,6vw,72px);color:#D4ECE8;background:radial-gradient(640px 320px at 95% 0%,rgba(95,211,192,.35),transparent 60%),radial-gradient(500px 300px at 0% 100%,rgba(238,234,247,.12),transparent 60%),linear-gradient(135deg,var(--teal-700) 0%,var(--teal-900) 55%,var(--teal-950) 100%);box-shadow:var(--sh-lg)}
+.cta-box h2{color:#fff;font-size:clamp(2rem,4.4vw,3.4rem)}
+.cta-box h2 em{color:var(--mint-300)}
+.cta-box p{font-size:18px;color:#BFD9D5;max-width:560px;margin:18px 0 30px}
+.cta-actions{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.cta-box .cta-hint{color:#BFD9D5}
+.cta-img{position:relative;justify-self:center;width:100%;max-width:320px;aspect-ratio:1}
+.cta-img img{width:100%;height:100%;object-fit:cover;border-radius:50%;border:8px solid rgba(255,255,255,.12)}
+.cta-img::before{content:"";position:absolute;inset:-16px;border-radius:50%;border:1.5px dashed rgba(147,228,213,.45);animation:spin 40s linear infinite}
+.cta-img .fc{position:absolute;left:-14px;bottom:14%;background:#fff;color:var(--ink);border-radius:16px;padding:10px 14px;font-size:13.5px;font-weight:800;box-shadow:var(--sh);display:flex;gap:8px;align-items:center}
+.cta-img .fc .i{color:var(--teal-600)}
+@media (max-width:900px){.cta-box{grid-template-columns:1fr;border-radius:30px}.cta-img{max-width:240px;order:-1}}
+@media (max-width:520px){.cta-actions .btn,.cta-actions .cta-stack{width:100%}}
+
+/* ---------- Footer ---------- */
+.footer{background:var(--teal-950);color:#CFE3E0;padding:76px 0 30px;font-size:15px;margin-top:clamp(72px,10vw,120px)}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr .9fr;gap:40px}
+.footer .brand{color:#fff}
+.footer .brand-sub{color:#9FBDB9}
+.footer h4{color:#fff;font-family:var(--serif);font-weight:450;font-size:20px;margin-bottom:16px}
+.footer a{color:#CFE3E0;text-decoration:none}
+.footer a:hover{color:#fff;text-decoration:underline}
+.footer ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.foot-about{margin:18px 0 20px;color:#AFCBC7;max-width:340px}
+.foot-contact li{display:flex;gap:10px;align-items:flex-start}
+.foot-contact .i{color:var(--mint-400);margin-top:3px}
+.foot-hours li{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed rgba(255,255,255,.12);padding-bottom:8px}
+.foot-hours span:last-child{color:#fff;font-weight:700;font-variant-numeric:tabular-nums}
+.social{display:flex;gap:10px}
+.social a{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.16);transition:background .2s,border-color .2s}
+.social a:hover{background:rgba(255,255,255,.08);border-color:var(--mint-400)}
+.foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px 24px;margin-top:52px;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);font-size:13px;color:#9FBDB9}
+.foot-bottom p{margin:0}
+@media (max-width:980px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.foot-grid{grid-template-columns:1fr;gap:34px}.footer{padding-bottom:110px}}
+
+/* ---------- Modal agenda ---------- */
+dialog.modal{padding:0;border:0;background:transparent;color:var(--ink);width:min(660px,calc(100vw - 24px));max-width:none;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:visible}
+dialog.modal::backdrop{background:rgba(7,42,49,.58);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.modal-card{position:relative;background:#fff;border-radius:30px;max-height:calc(100vh - 24px);max-height:calc(100dvh - 24px);overflow:auto;box-shadow:0 40px 90px -30px rgba(0,0,0,.5);overscroll-behavior:contain}
+dialog[open] .modal-card{animation:pop .45s var(--ease)}
+@keyframes pop{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+.modal-top{position:relative;padding:30px 32px 22px;background:var(--nacar);border-bottom:1px solid var(--line)}
+.modal-top h2{font-size:clamp(1.8rem,4vw,2.3rem);margin-bottom:6px}
+.modal-top p{margin:0;color:var(--ink-2);font-size:15px;max-width:480px}
+.modal-close{position:absolute;right:16px;top:16px;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;cursor:pointer;transition:transform .2s}
+.modal-close:hover{transform:rotate(90deg)}
+.modal-body{padding:24px 32px 30px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 16px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field.full{grid-column:1/-1}
+.field label{font-size:14px;font-weight:800;color:var(--ink)}
+.field label .opt{font-weight:600;color:var(--muted)}
+.field input,.field select,.field textarea{width:100%;font:inherit;font-size:16px;color:var(--ink);background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;min-height:50px;transition:border-color .2s,box-shadow .2s}
+.field textarea{min-height:76px;resize:vertical}
+.field select{-webkit-appearance:none;appearance:none;padding-right:40px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230E7C7B' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:18px}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--teal-600);box-shadow:0 0 0 4px rgba(21,160,149,.18)}
+.field [aria-invalid="true"]{border-color:var(--danger);box-shadow:0 0 0 4px rgba(179,38,30,.10)}
+.field .err{font-size:13px;color:var(--danger);font-weight:600;min-height:0}
+.field .err:empty{display:none}
+.field .hint{font-size:12.5px;color:var(--muted)}
+.form-foot{margin-top:22px;display:grid;gap:12px}
+.form-note{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--muted);margin:0}
+.form-note .i{width:16px;height:16px;margin-top:2px;color:var(--teal-600)}
+.success{text-align:center;padding:12px 4px 6px}
+.success .big-ico{width:76px;height:76px;margin:0 auto 18px;border-radius:50%;display:grid;place-items:center;background:var(--mint-100);color:var(--teal-700);animation:pop .5s var(--ease)}
+.success .big-ico .i{width:38px;height:38px;stroke-width:2.2}
+.success h3{font-family:var(--serif);font-weight:450;font-size:28px;margin-bottom:8px}
+.success p{color:var(--ink-2);max-width:420px;margin:0 auto 22px}
+.success .btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@media (max-width:560px){
+  .form-grid{grid-template-columns:1fr}
+  .modal-top{padding:26px 20px 18px}
+  .modal-top h2{padding-right:44px}
+  .modal-body{padding:20px 20px 24px}
+  dialog.modal{width:calc(100vw - 16px)}
+  .modal-card{border-radius:24px}
+}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;bottom:104px;z-index:90;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--teal-950);color:#fff;padding:12px 18px;border-radius:14px;font-size:14px;font-weight:600;box-shadow:var(--sh-lg);transition:opacity .3s,transform .3s var(--ease);max-width:calc(100vw - 32px);text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- Selector demo (modo de reserva) ---------- */
+.demo-switch{position:fixed;left:16px;bottom:18px;z-index:55;display:flex;flex-direction:column;gap:6px;padding:9px 9px 9px 12px;border-radius:18px;background:rgba(7,42,49,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;box-shadow:0 18px 40px -16px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1)}
+.demo-switch[hidden]{display:none}
+.demo-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.demo-top span{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#A9CDC7}
+.demo-x{width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.1);color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+.demo-x .i{width:13px;height:13px}
+.seg{display:flex;background:rgba(255,255,255,.1);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:#DDEFEC;font:700 12.5px var(--sans);padding:8px 12px;border-radius:999px;cursor:pointer;transition:background .2s,color .2s;white-space:nowrap}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--teal-900)}
+
+/* ---------- Chat asistente ---------- */
+.chat-fab{position:fixed;right:18px;bottom:18px;z-index:60;width:64px;height:64px;border-radius:50%;border:0;cursor:pointer;display:grid;place-items:center;color:#fff;background:var(--grad-teal);box-shadow:0 18px 36px -12px rgba(11,61,70,.65);transition:transform .3s var(--ease)}
+.chat-fab:hover{transform:scale(1.06)}
+.chat-fab .i{width:28px;height:28px}
+.chat-fab .ping{position:absolute;inset:0;border-radius:50%;border:2px solid var(--mint-400);animation:ring 2.6s ease-out infinite}
+.chat-fab[aria-expanded="true"] .ping,.chat-fab[aria-expanded="true"] .badge{display:none}
+.chat-fab .badge{position:absolute;top:2px;right:2px;min-width:20px;height:20px;border-radius:999px;background:var(--coral);color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;border:2px solid #fff}
+.chat-fab .ic-close{display:none}
+.chat-fab[aria-expanded="true"] .ic-open{display:none}
+.chat-fab[aria-expanded="true"] .ic-close{display:block}
+@keyframes ring{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.55);opacity:0}}
+.chat-teaser{position:fixed;right:18px;bottom:94px;z-index:59;max-width:270px;padding:14px 38px 14px 16px;border-radius:18px 18px 6px 18px;background:#fff;box-shadow:var(--sh-lg);font-size:14.5px;line-height:1.45;border:1px solid var(--line);cursor:pointer;animation:pop .5s var(--ease)}
+.chat-teaser[hidden]{display:none}
+.chat-teaser strong{display:block;color:var(--teal-800)}
+.chat-teaser .x{position:absolute;right:8px;top:8px;width:26px;height:26px;border-radius:50%;border:0;background:var(--pearl);display:grid;place-items:center;cursor:pointer;padding:0}
+.chat-teaser .x .i{width:13px;height:13px}
+.chat-panel{position:fixed;right:18px;bottom:96px;z-index:61;width:min(392px,calc(100vw - 24px));height:min(620px,calc(100vh - 120px));display:flex;flex-direction:column;background:#fff;border-radius:26px;overflow:hidden;box-shadow:0 40px 90px -30px rgba(7,42,49,.55);border:1px solid var(--line);transform-origin:bottom right}
+.chat-panel[hidden]{display:none}
+.chat-panel.open{animation:chatIn .4s var(--ease)}
+@keyframes chatIn{from{opacity:0;transform:translateY(16px) scale(.96)}to{opacity:1;transform:none}}
+.chat-head{display:flex;align-items:center;gap:12px;padding:16px 16px 16px 18px;color:#fff;background:radial-gradient(300px 160px at 100% 0%,rgba(95,211,192,.35),transparent 60%),linear-gradient(135deg,var(--teal-700),var(--teal-900))}
+.chat-av{position:relative;width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.14);display:grid;place-items:center;flex:none}
+.chat-av .i{width:24px;height:24px}
+.chat-av::after{content:"";position:absolute;right:-3px;bottom:-3px;width:12px;height:12px;border-radius:50%;background:#3DDC97;border:2px solid var(--teal-800)}
+.chat-head strong{display:block;font-size:16px}
+.chat-head small{display:block;font-size:12.5px;color:#BFE5DE}
+.chat-head .ai-tag{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;letter-spacing:.08em;padding:2px 7px;border-radius:999px;background:rgba(255,255,255,.18);vertical-align:middle}
+.chat-x{margin-left:auto;width:38px;height:38px;border-radius:50%;border:0;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer}
+.chat-body{flex:1;overflow-y:auto;padding:18px 14px 8px;background:linear-gradient(180deg,var(--mint-50),var(--pearl));overscroll-behavior:contain}
+.msg{max-width:86%;padding:11px 14px;border-radius:18px;font-size:14.8px;line-height:1.5;margin-bottom:10px;word-wrap:break-word;animation:fadeUp .3s var(--ease)}
+.msg.bot{background:#fff;border:1px solid var(--line);border-bottom-left-radius:6px;box-shadow:var(--sh-sm)}
+.msg.user{margin-left:auto;background:var(--teal-600);color:#fff;border-bottom-right-radius:6px}
+.msg strong{color:inherit}
+.msg.bot strong{color:var(--teal-800)}
+.msg-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.msg-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:13px;font-weight:800;text-decoration:none;border:1.5px solid var(--mint-200);background:var(--mint-50);color:var(--teal-800);cursor:pointer;line-height:1.2}
+.msg-btn:hover{border-color:var(--teal-600)}
+.msg-btn.primary{background:var(--teal-600);border-color:var(--teal-600);color:#fff}
+.msg-btn.primary:hover{background:var(--teal-700)}
+.msg-btn .i{width:15px;height:15px}
+.typing{display:inline-flex;gap:4px;align-items:center;padding:14px 16px}
+.typing span{width:7px;height:7px;border-radius:50%;background:var(--teal-500);opacity:.4;animation:blink 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+.typing em{font-style:normal;font-size:12.5px;color:var(--muted);margin-left:6px}
+@keyframes blink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-3px)}}
+.chat-chips{display:flex;gap:7px;overflow-x:auto;padding:10px 12px;border-top:1px solid var(--line);background:#fff;scrollbar-width:none}
+.chat-chips::-webkit-scrollbar{display:none}
+.chat-chips button{flex:none;white-space:nowrap;border:1.5px solid var(--mint-200);background:var(--mint-50);color:var(--teal-800);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:700;cursor:pointer}
+.chat-chips button:hover{background:var(--teal-600);border-color:var(--teal-600);color:#fff}
+.chat-form{display:flex;gap:8px;padding:10px 12px 12px;background:#fff}
+.chat-form input{flex:1;min-width:0;font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:999px;padding:11px 16px;background:var(--pearl);color:var(--ink)}
+.chat-form input:focus{outline:none;border-color:var(--teal-600);box-shadow:0 0 0 4px rgba(21,160,149,.15)}
+.chat-form button{width:46px;height:46px;border-radius:50%;border:0;background:var(--teal-600);color:#fff;display:grid;place-items:center;cursor:pointer;flex:none}
+.chat-form button:hover{background:var(--teal-700)}
+.chat-legal{font-size:11px;color:var(--muted);text-align:center;padding:0 12px 10px;background:#fff;margin:0}
+@media (max-width:520px){
+  .chat-panel{left:8px;right:8px;width:auto;bottom:90px;height:calc(100vh - 110px);height:calc(100dvh - 110px);border-radius:22px}
+  .chat-fab{width:58px;height:58px;right:14px;bottom:14px}
+  .chat-teaser{right:14px;bottom:84px;max-width:230px}
+  .demo-switch{left:10px;bottom:14px;padding:8px 8px 8px 10px}
+  .seg button{padding:7px 10px;font-size:12px}
+}
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .js .reveal{opacity:1;transform:none}
+  .smile-arc path{stroke-dashoffset:0}
+  .marquee{animation:none}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+
+<!-- ===================== ÍCONOS SVG (sprite) ===================== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="lgBrand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#15A095"/><stop offset=".55" stop-color="#0E7C7B"/><stop offset="1" stop-color="#0B3D46"/></linearGradient>
+  </defs>
+  <symbol id="i-tooth" viewBox="0 0 24 24"><path d="M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z" transform="translate(0 2)"/></symbol>
+  <symbol id="t-limpieza" viewBox="0 0 24 24"><path d="M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z" transform="translate(-1.5 3)"/><path d="M19.2 2.2l.7 1.7 1.7.7-1.7.7-.7 1.7-.7-1.7-1.7-.7 1.7-.7z"/><path d="M19.5 10.5l.4 1 1 .4-1 .4-.4 1-.4-1-1-.4 1-.4z"/><path d="M8.6 9.6c.2-1 .8-1.6 1.6-1.8"/></symbol>
+  <symbol id="t-resina" viewBox="0 0 24 24"><path d="M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z" transform="translate(0 2.5)"/><circle cx="13.8" cy="9.6" r="1.9" fill="currentColor" stroke="none"/><path d="M16.8 3.2l2.8-1.6M18.3 5.4l3-.4"/></symbol>
+  <symbol id="t-ortodoncia" viewBox="0 0 24 24"><rect x="2.6" y="6" width="4.4" height="11.5" rx="2.1"/><rect x="7.4" y="4.8" width="4.4" height="13.6" rx="2.1"/><rect x="12.2" y="4.8" width="4.4" height="13.6" rx="2.1"/><rect x="17" y="6" width="4.4" height="11.5" rx="2.1"/><path d="M1.8 11.7h20.4"/><rect x="3.8" y="10.4" width="2" height="2.6" rx=".4" fill="currentColor" stroke="none"/><rect x="8.6" y="10.4" width="2" height="2.6" rx=".4" fill="currentColor" stroke="none"/><rect x="13.4" y="10.4" width="2" height="2.6" rx=".4" fill="currentColor" stroke="none"/><rect x="18.2" y="10.4" width="2" height="2.6" rx=".4" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="t-implante" viewBox="0 0 24 24"><path d="M8 3.6c1.4-.8 2.7-.6 4 .2 1.3-.8 2.6-1 4-.2 1.7 1 1.8 3.4 1 5.2H7c-.8-1.8-.7-4.2 1-5.2z"/><path d="M9.6 8.8v1.8h4.8V8.8"/><path d="M9.8 10.6h4.4l-.5 8.4L12 21.2l-1.7-2.2z"/><path d="M9.2 13.2h5.6M9.4 15.8h5.2M9.8 18.4h4.4"/></symbol>
+  <symbol id="t-blanqueamiento" viewBox="0 0 24 24"><path d="M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z" transform="translate(0 2.5)"/><path d="M2 7.5l2.2.7M2.4 12.6l2.1-.5M22 7.5l-2.2.7M21.6 12.6l-2.1-.5M12 .8v1.6"/><path d="M9.3 9.4c.3-1 1-1.6 1.9-1.8"/></symbol>
+  <symbol id="t-endodoncia" viewBox="0 0 24 24"><path d="M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z" transform="translate(0 2.5)"/><path d="M10.3 9.2c1-.8 2.4-.8 3.4 0"/><path d="M10.9 10l-.8 6.2M13.1 10l.8 6.2" stroke-dasharray="1.6 1.4"/></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15.5" rx="3"/><path d="M8 3v4M16 3v4M3.5 10h17M8 14h2M14 14h2M8 17.5h2"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7"/></symbol>
+  <symbol id="i-check-c" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.7 2.7 5.5-5.5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h3.5l1.8 4.5-2.3 1.4a11 11 0 005.1 5.1l1.4-2.3 4.5 1.8V18a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4.4 19.6l1.2-3.9A8.3 8.3 0 1112 20.3a8.3 8.3 0 01-4-1l-3.6.3z"/><path fill="currentColor" stroke="none" d="M9.3 7.9c.2-.4.5-.5.8-.5h.5c.2 0 .4.1.5.4l.8 1.8c.1.3 0 .5-.1.7l-.6.7c.5 1 1.3 1.8 2.3 2.3l.7-.6c.2-.2.4-.2.7-.1l1.8.8c.3.1.4.3.4.5v.5c0 .3-.2.6-.5.8-.7.4-1.8.5-3.4-.3a8 8 0 01-3.6-3.6c-.8-1.6-.7-2.7-.3-3.4z"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0112 2.5a7 7 0 017 7C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.6"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></symbol>
+  <symbol id="i-stars" viewBox="0 0 120 24"><g fill="currentColor"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/><path transform="translate(24 0)" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/><path transform="translate(48 0)" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/><path transform="translate(72 0)" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/><path transform="translate(96 0)" d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></g></symbol>
+  <symbol id="i-google" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12l16-8-6 17-2.6-6.6z"/><path d="M11.4 14.4L20 4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 12a7.8 7.8 0 01-11.3 7L4 20l1.2-4.3A7.8 7.8 0 1120 12z"/><path d="M8.6 12h.01M12 12h.01M15.4 12h.01" stroke-width="2.8"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M8.8 12l2.3 2.3 4.2-4.3"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3 10h18M7 15h3"/></symbol>
+  <symbol id="i-bank" viewBox="0 0 24 24"><path d="M3 9.5L12 4l9 5.5M5 10v8M9.5 10v8M14.5 10v8M19 10v8M3 20.5h18"/></symbol>
+  <symbol id="i-cash" viewBox="0 0 24 24"><rect x="2.5" y="6.5" width="19" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 9.5v.01M18 14.5v.01"/></symbol>
+  <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+  <symbol id="i-cap" viewBox="0 0 24 24"><path d="M2.5 9L12 4.5 21.5 9 12 13.5z"/><path d="M6.5 11v4.5c0 1.4 2.5 3 5.5 3s5.5-1.6 5.5-3V11M21.5 9v5"/></symbol>
+  <symbol id="i-xray" viewBox="0 0 24 24"><rect x="3" y="3.5" width="18" height="13" rx="2"/><path d="M8 20.5h8M12 16.5v4"/><path d="M10 6.8c.8-.4 1.4-.3 2 .1.6-.4 1.2-.5 2-.1 1 .5 1 2 .5 3-.3.7-.5 1.4-.6 2.3-.1.6-.8.7-1 .1l-.4-1.2c-.2-.5-.8-.5-1 0l-.4 1.2c-.2.6-.9.5-1-.1-.1-.9-.3-1.6-.6-2.3-.5-1-.5-2.5.5-3z"/></symbol>
+  <symbol id="i-kid" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M8.8 15c1.8 1.8 4.6 1.8 6.4 0M9.3 11.3h.01M14.7 11.3h.01" stroke-width="2"/><path d="M12 5c-.6-1.4.2-2.6 1.6-2.6"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.5-7.5-10.2A4.3 4.3 0 0112 7.3a4.3 4.3 0 017.5 2.5C19.5 15.5 12 20 12 20z"/></symbol>
+  <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2.5L5 13.5h6l-1 8 8-11h-6z"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 018 0v2.5"/></symbol>
+  <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 12l1.8-4.6A2 2 0 018.7 6h6.6a2 2 0 011.9 1.4L19 12"/><rect x="3.5" y="12" width="17" height="5" rx="1.5"/><path d="M6.5 17v2.5M17.5 17v2.5M7 14.5h.01M17 14.5h.01" stroke-width="2"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5"/><path d="M3.5 7l8.5 6 8.5-6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-sparkle" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.6 1.6.7-1.6.7L19 20.6l-.7-1.6-1.6-.7 1.6-.7z"/></symbol>
+  <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M2.5 20c.6-3.4 3.2-5.5 6.5-5.5s5.9 2.1 6.5 5.5"/><path d="M16 5.2a3.5 3.5 0 010 6.6M18 14.8c2 .7 3.2 2.4 3.5 5.2"/></symbol>
+  <symbol id="i-insta" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01" stroke-width="2.4"/></symbol>
+  <symbol id="i-fb" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><path d="M13.6 20.5v-7.2h2.4l.4-2.6h-2.8V9.1c0-.8.3-1.3 1.4-1.3h1.5V5.6"/></symbol>
+  <symbol id="i-route" viewBox="0 0 24 24"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H15a3 3 0 000-6H9a3 3 0 010-6h6.5"/></symbol>
+  <symbol id="i-steril" viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/><circle cx="12" cy="12" r="3.2"/></symbol>
+</svg>
+
+<!-- ===================== TOPBAR ===================== -->
+<div class="topbar">
+  <div class="container">
+    <div class="tb-left">
+      <span class="tb-item" data-status="short"><span class="dot"></span><span class="status-text">Horario de atención</span></span>
+      <span class="tb-item tb-hide-sm"><svg class="i"><use href="#i-bolt"/></svg>Urgencias el mismo día: <a data-link="tel" href="tel:+56987654321" data-cfg="telefono">+56 9 8765 4321</a></span>
+    </div>
+    <div class="tb-right tb-hide-md">
+      <span class="tb-item"><svg class="i"><use href="#i-shield"/></svg>Fonasa MLE e isapres</span>
+      <span class="tb-item"><svg class="i"><use href="#i-card"/></svg>Hasta 12 cuotas sin interés</span>
+    </div>
+  </div>
+</div>
+<style>
+  @media (max-width:980px){.tb-hide-md{display:none!important}}
+  @media (max-width:640px){.tb-hide-sm{display:none!important}.topbar .container{justify-content:center}}
+</style>
+
+<!-- ===================== NAV ===================== -->
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a href="#inicio" class="brand" aria-label="Nácar Clínica Dental, ir al inicio">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="url(#lgBrand)"/><path transform="translate(4 6.5) scale(1.333)" d="M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M30.5 6.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z" fill="#93E4D5"/></svg>
+      <span><span class="brand-name" data-cfg="nombreCorto">Nácar</span><span class="brand-sub">Clínica dental</span></span>
+    </a>
+    <nav aria-label="Principal">
+      <ul class="nav-links">
+        <li><a href="#tratamientos">Tratamientos</a></li>
+        <li><a href="#equipo">Equipo</a></li>
+        <li><a href="#convenios">Convenios</a></li>
+        <li><a href="#resenas">Opiniones</a></li>
+        <li><a href="#ubicacion">Ubicación</a></li>
+        <li><a href="#faq">Preguntas</a></li>
+      </ul>
+    </nav>
+    <a class="nav-phone" data-link="tel" href="tel:+56987654321"><svg class="i"><use href="#i-phone"/></svg><span data-cfg="telefono">+56 9 8765 4321</span></a>
+    <a href="#agendar" class="btn btn-primary nav-cta" data-reserva><svg class="i"><use href="#i-cal"/></svg><span class="lbl-long">Agenda tu evaluación</span><span class="lbl-short">Agendar</span></a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Abrir menú"><svg class="i"><use href="#i-menu"/></svg></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu" hidden>
+    <ul>
+      <li><a href="#tratamientos">Tratamientos y precios <svg class="i"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#primera-visita">Tu primera visita <svg class="i"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#equipo">Equipo <svg class="i"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#convenios">Convenios y cuotas <svg class="i"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#resenas">Opiniones <svg class="i"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#ubicacion">Ubicación y horarios <svg class="i"><use href="#i-arrow"/></svg></a></li>
+      <li><a href="#faq">Preguntas frecuentes <svg class="i"><use href="#i-arrow"/></svg></a></li>
+    </ul>
+    <div class="mm-actions">
+      <a href="#agendar" class="btn btn-primary btn-lg" data-reserva><svg class="i"><use href="#i-cal"/></svg>Agenda tu evaluación</a>
+      <a class="btn btn-ghost btn-lg" data-link="wa" href="https://wa.me/56987654321"><svg class="i"><use href="#i-wa"/></svg>Escríbenos por WhatsApp</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ===================== HERO ===================== -->
+<section class="hero" id="inicio" aria-labelledby="heroTitle">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="status-pill reveal" data-status="long"><span class="dot"></span><span class="status-text">Horario de atención</span><span class="sep" aria-hidden="true">|</span><span class="sp-loc">Peñaflor · Talagante</span></p>
+      <h1 id="heroTitle" class="reveal" style="--d:.05s">Tu sonrisa en <em class="smile-word">buenas manos<svg class="smile-arc" viewBox="0 0 300 30" preserveAspectRatio="none" aria-hidden="true"><path d="M6 8 Q150 42 294 6"/></svg></em></h1>
+      <p class="lead reveal" style="--d:.1s">Odontología integral para toda la familia en Peñaflor, a minutos de Talagante. Especialistas que te explican todo, tecnología digital y precios claros desde la primera visita.</p>
+      <div class="hero-ctas reveal" style="--d:.15s">
+        <div class="cta-stack">
+          <a href="#agendar" class="btn btn-primary btn-lg" data-reserva><svg class="i"><use href="#i-cal"/></svg>Agenda tu evaluación</a>
+          <small class="cta-hint" data-reserva-hint>Te confirmamos por WhatsApp en minutos</small>
+        </div>
+        <a href="#tratamientos" class="btn btn-ghost btn-lg">Ver tratamientos y precios</a>
+      </div>
+      <ul class="hero-proof reveal" style="--d:.2s" aria-label="Por qué confiar en nosotros">
+        <li>
+          <span class="avatars" aria-hidden="true">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&q=70&auto=format&fit=crop&crop=faces" alt="" width="38" height="38" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=96&h=96&q=70&auto=format&fit=crop&crop=faces" alt="" width="38" height="38" loading="lazy">
+            <img src="https://images.unsplash.com/photo-1548142813-c348350df52b?w=96&h=96&q=70&auto=format&fit=crop&crop=faces" alt="" width="38" height="38" loading="lazy">
+          </span>
+          <div><strong data-cfg="pacientes">+2.000</strong><span class="lbl">pacientes atendidos</span></div>
+        </li>
+        <li><div><strong>$0</strong><span class="lbl">Evaluación sin costo</span></div></li>
+        <li><div><strong><span data-cfg="rating">4,9</span><span class="stars-inline" role="img" aria-label="5 estrellas"><svg><use href="#i-stars"/></svg></span></strong><span class="lbl"><span data-cfg="totalResenas">214</span> reseñas en Google</span></div></li>
+      </ul>
+    </div>
+
+    <div class="hero-media reveal" style="--d:.1s">
+      <div class="arch-wrap">
+        <div class="arch">
+          <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=900&h=1120&q=80&auto=format&fit=crop&crop=faces" alt="Paciente sonriendo con dientes sanos y luminosos" width="900" height="1120" fetchpriority="high">
+        </div>
+      </div>
+      <div class="spin-badge" aria-hidden="true">
+        <svg class="ring" viewBox="0 0 120 120"><defs><path id="circlePath" d="M60,60 m-47,0 a47,47 0 1,1 94,0 a47,47 0 1,1 -94,0"/></defs><text><textPath href="#circlePath" textLength="292">Evaluación sin costo • Agenda hoy •</textPath></text></svg>
+        <span class="spin-core"><svg class="i"><use href="#i-tooth"/></svg></span>
+      </div>
+      <div class="float-card fc-top">
+        <span class="fc-ico"><svg class="i"><use href="#i-check-c"/></svg></span>
+        <div><strong>Evaluación sin costo</strong><small>Diagnóstico + plan por escrito</small></div>
+      </div>
+      <div class="float-card fc-bottom">
+        <svg class="g-ico" aria-hidden="true"><use href="#i-google"/></svg>
+        <div><span class="score" data-cfg="rating">4,9</span><span class="stars-inline" role="img" aria-label="5 estrellas"><svg><use href="#i-stars"/></svg></span><small><span data-cfg="totalResenas">214</span> reseñas en Google</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CINTA DE CONFIANZA ===================== -->
+<div class="trust" aria-label="Beneficios">
+  <div class="marquee">
+    <ul>
+      <li><svg class="i"><use href="#i-shield"/></svg>Fonasa Modalidad Libre Elección</li>
+      <li><svg class="i"><use href="#i-heart"/></svg>Isapres con reembolso</li>
+      <li><svg class="i"><use href="#i-card"/></svg>Hasta 12 cuotas sin interés</li>
+      <li><svg class="i"><use href="#i-bolt"/></svg>Urgencias el mismo día</li>
+      <li><svg class="i"><use href="#i-kid"/></svg>Atención de niños</li>
+      <li><svg class="i"><use href="#i-xray"/></svg>Radiografía digital</li>
+      <li><svg class="i"><use href="#i-car"/></svg>Estacionamiento para pacientes</li>
+    </ul>
+    <ul aria-hidden="true">
+      <li><svg class="i"><use href="#i-shield"/></svg>Fonasa Modalidad Libre Elección</li>
+      <li><svg class="i"><use href="#i-heart"/></svg>Isapres con reembolso</li>
+      <li><svg class="i"><use href="#i-card"/></svg>Hasta 12 cuotas sin interés</li>
+      <li><svg class="i"><use href="#i-bolt"/></svg>Urgencias el mismo día</li>
+      <li><svg class="i"><use href="#i-kid"/></svg>Atención de niños</li>
+      <li><svg class="i"><use href="#i-xray"/></svg>Radiografía digital</li>
+      <li><svg class="i"><use href="#i-car"/></svg>Estacionamiento para pacientes</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===================== TRATAMIENTOS ===================== -->
+<section class="section" id="tratamientos" aria-labelledby="tTitle">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Tratamientos y valores</span>
+      <h2 id="tTitle">Todo lo que tu sonrisa necesita, <em>con precios claros</em></h2>
+      <p>Valores referenciales “desde”. En tu evaluación sin costo te entregamos un presupuesto por escrito, con la cobertura de tu previsión y opciones de pago. Sin letra chica.</p>
+    </div>
+    <div class="t-grid" id="tGrid"><!-- Se genera desde CONFIG.tratamientos --></div>
+    <div class="t-note reveal">
+      <p><svg class="i"><use href="#i-sparkle"/></svg>¿No sabes qué necesitas? Te orientamos en una evaluación sin costo y sin compromiso.</p>
+      <a href="#agendar" class="btn btn-primary" data-reserva data-tratamiento="evaluacion"><svg class="i"><use href="#i-cal"/></svg>Agenda tu evaluación</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== PRIMERA VISITA EN 3 PASOS ===================== -->
+<section class="section bg-white" id="primera-visita" aria-labelledby="vTitle">
+  <div class="container visit-grid">
+    <div class="collage reveal">
+      <div class="main"><img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?w=1000&h=1200&q=80&auto=format&fit=crop" alt="Dentista mostrando a una paciente su diagnóstico en la pantalla" width="1000" height="1200" loading="lazy"></div>
+      <div class="sub"><img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?w=600&h=600&q=80&auto=format&fit=crop" alt="Box dental moderno, luminoso y equipado" width="600" height="600" loading="lazy"></div>
+      <div class="chip"><svg class="i"><use href="#i-xray"/></svg>Te mostramos tu diagnóstico en pantalla</div>
+    </div>
+    <div>
+      <div class="sec-head left reveal">
+        <span class="eyebrow">Tu primera visita</span>
+        <h2 id="vTitle">Empezar es más fácil <em>de lo que crees</em></h2>
+        <p>Sabemos que ir al dentista cuesta. Por eso diseñamos una primera visita tranquila, sin apuro y sin sorpresas en el precio.</p>
+      </div>
+      <ol class="steps">
+        <li class="step reveal"><span class="step-n">01</span><div><h3>Agenda en un minuto</h3><p>Por WhatsApp o reserva online. Eliges el día y el horario que te acomode, incluso sábados en la mañana.</p></div></li>
+        <li class="step reveal" style="--d:.08s"><span class="step-n">02</span><div><h3>Evaluación sin costo</h3><p>Revisamos tu boca con cámara intraoral, escuchamos lo que te preocupa y te mostramos todo en pantalla.</p></div></li>
+        <li class="step reveal" style="--d:.16s"><span class="step-n">03</span><div><h3>Plan y presupuesto claros</h3><p>Te entregamos un presupuesto por escrito con alternativas, cobertura de Fonasa o isapre y cuotas. Tú decides cuándo empezar.</p></div></li>
+      </ol>
+      <div class="reveal" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <a href="#agendar" class="btn btn-primary btn-lg" data-reserva data-tratamiento="evaluacion"><svg class="i"><use href="#i-cal"/></svg>Agenda tu evaluación</a>
+        <a class="btn btn-ghost btn-lg" data-link="wa" href="https://wa.me/56987654321"><svg class="i"><use href="#i-wa"/></svg>Tengo una duda</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== POR QUÉ NOSOTROS (oscuro) ===================== -->
+<section class="section why" aria-labelledby="wTitle">
+  <svg class="why-deco" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5"><use href="#i-tooth"/></svg>
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Por qué elegirnos</span>
+      <h2 id="wTitle">Tecnología de clínica grande, <em>trato de barrio</em></h2>
+      <p>Atendemos a familias de toda la provincia de Talagante. Nos tomamos el tiempo de explicarte cada paso, porque un paciente informado es un paciente tranquilo.</p>
+    </div>
+    <div class="stats reveal">
+      <div class="stat"><span class="num" data-count="12">12</span><p>años cuidando sonrisas en Peñaflor y Talagante</p></div>
+      <div class="stat"><span class="num"><span class="unit">+</span><span data-count="2000">2.000</span></span><p>pacientes atendidos y contando</p></div>
+      <div class="stat"><span class="num"><span data-count="4.9" data-decimals="1">4,9</span><span class="unit">★</span></span><p>de promedio en reseñas de Google</p></div>
+      <div class="stat"><span class="num" data-count="6">6</span><p>comunas atendidas en la provincia</p></div>
+    </div>
+    <div class="features">
+      <div class="feat reveal"><span class="ico"><svg class="i"><use href="#i-xray"/></svg></span><div><h3>Radiografía digital</h3><p>Diagnóstico preciso con menos radiación que la radiografía tradicional.</p></div></div>
+      <div class="feat reveal" style="--d:.06s"><span class="ico"><svg class="i"><use href="#i-steril"/></svg></span><div><h3>Esterilización certificada</h3><p>Instrumental sellado y esterilizado en autoclave para cada paciente.</p></div></div>
+      <div class="feat reveal" style="--d:.12s"><span class="ico"><svg class="i"><use href="#i-heart"/></svg></span><div><h3>Atención sin dolor</h3><p>Anestesia con técnica indolora y pausas cuando las necesites.</p></div></div>
+      <div class="feat reveal" style="--d:.18s"><span class="ico"><svg class="i"><use href="#i-kid"/></svg></span><div><h3>Espacio para niños</h3><p>Odontopediatría con juegos y paciencia para que vuelvan felices.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== EQUIPO ===================== -->
+<section class="section" id="equipo" aria-labelledby="eqTitle">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Nuestro equipo</span>
+      <h2 id="eqTitle">Especialistas que <em>te conocen por tu nombre</em></h2>
+      <p>Cada tratamiento lo realiza un profesional con la especialidad correspondiente, titulado en universidades chilenas y registrado en la Superintendencia de Salud.</p>
+    </div>
+    <div class="team-grid" id="teamGrid"><!-- Se genera desde CONFIG.equipo --></div>
+  </div>
+</section>
+
+<!-- ===================== CONVENIOS Y PAGOS ===================== -->
+<section class="section bg-white" id="convenios" aria-labelledby="cvTitle">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Convenios y formas de pago</span>
+      <h2 id="cvTitle">Tu previsión y tu bolsillo, <em>bien cuidados</em></h2>
+      <p>Trabajamos con Fonasa e isapres y te damos facilidades para que el precio no sea la razón para postergar tu tratamiento.</p>
+    </div>
+    <div class="pay-grid">
+      <div>
+        <article class="cov-card reveal">
+          <div class="cov-head"><span class="cov-ico"><svg class="i"><use href="#i-shield"/></svg></span><div><h3>Fonasa</h3><small>Modalidad Libre Elección (MLE)</small></div></div>
+          <p>Atendemos con bono Fonasa en las prestaciones odontológicas que tienen código arancelario. Puedes comprar tu bono aquí mismo con tu huella o en línea antes de venir.</p>
+          <ul class="pills"><li class="pill fonasa">Bono MLE</li><li class="pill fonasa">Tramos B, C y D</li><li class="pill fonasa">Venta de bonos en clínica</li></ul>
+        </article>
+        <article class="cov-card reveal" style="--d:.06s">
+          <div class="cov-head"><span class="cov-ico"><svg class="i"><use href="#i-heart"/></svg></span><div><h3>Isapres</h3><small>Reembolso según tu plan</small></div></div>
+          <p>Recibimos pacientes de todas las isapres. Te entregamos boleta y detalle de prestaciones para que solicites tu reembolso.</p>
+          <ul class="pills" id="isapresPills"><li class="pill">Banmédica</li><li class="pill">Colmena</li><li class="pill">Consalud</li><li class="pill">Cruz Blanca</li><li class="pill">Nueva Masvida</li><li class="pill">Vida Tres</li></ul>
+          <p class="fine">Cobertura sujeta al plan de salud de cada paciente. Consulta convenios dentales vigentes.</p>
+        </article>
+        <article class="cov-card reveal" style="--d:.12s">
+          <div class="cov-head"><span class="cov-ico"><svg class="i"><use href="#i-card"/></svg></span><div><h3>Formas de pago</h3><small>Particular y copagos</small></div></div>
+          <ul class="pay-list">
+            <li><svg class="i"><use href="#i-card"/></svg><div><strong>Hasta 12 cuotas sin interés</strong><span>Tarjetas de crédito bancarias</span></div></li>
+            <li><svg class="i"><use href="#i-check-c"/></svg><div><strong>Débito y crédito</strong><span>Todas las tarjetas</span></div></li>
+            <li><svg class="i"><use href="#i-bank"/></svg><div><strong>Transferencia</strong><span>Te enviamos los datos por WhatsApp</span></div></li>
+            <li><svg class="i"><use href="#i-layers"/></svg><div><strong>Pago por etapas</strong><span>En ortodoncia e implantes</span></div></li>
+          </ul>
+        </article>
+      </div>
+
+      <aside class="sim-card reveal" id="simulador" aria-labelledby="simTitle">
+        <h3 id="simTitle">Simula tus cuotas</h3>
+        <p>Calcula cuánto pagarías al mes por tu tratamiento, sin interés.</p>
+        <label class="sim-label" for="simMonto">Monto del tratamiento</label>
+        <div class="money"><span aria-hidden="true">$</span><input id="simMonto" type="text" inputmode="numeric" autocomplete="off" value="690.000" aria-describedby="simNote"></div>
+        <input class="range" id="simRange" type="range" min="20000" max="2500000" step="5000" value="690000" aria-label="Ajustar monto del tratamiento">
+        <div class="range-scale" aria-hidden="true"><span>$20.000</span><span>$2.500.000</span></div>
+        <div class="quick" id="simQuick" aria-label="Montos de referencia por tratamiento"></div>
+        <fieldset class="seg-cuotas">
+          <legend class="sim-label">Número de cuotas</legend>
+          <label><input type="radio" name="cuotas" value="3">3 <small>cuotas</small></label>
+          <label><input type="radio" name="cuotas" value="6">6 <small>cuotas</small></label>
+          <label><input type="radio" name="cuotas" value="12" checked>12 <small>cuotas</small></label>
+        </fieldset>
+        <div class="sim-result" aria-live="polite">
+          <div class="top"><span><span id="simN">12</span> cuotas de</span><span class="tag-mint">Sin interés</span></div>
+          <strong class="sim-big" id="simCuota">$57.500</strong>
+          <div class="sim-rows"><span>Total: <strong id="simTotal">$690.000</strong></span><span>Interés: <strong>$0</strong></span></div>
+        </div>
+        <a href="#agendar" class="btn btn-light btn-lg btn-block" id="simBtn" data-reserva data-tratamiento="implantes"><svg class="i"><use href="#i-cal"/></svg>Consultar este plan</a>
+        <p class="sim-note" id="simNote">Simulación referencial. Cuotas sin interés con tarjetas de crédito bancarias participantes, sujeto a condiciones del emisor. El valor final se define en tu evaluación.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== RESEÑAS ===================== -->
+<section class="section" id="resenas" aria-labelledby="rTitle">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Opiniones de pacientes</span>
+      <h2 id="rTitle">Lo que dicen <em>nuestros pacientes</em></h2>
+    </div>
+
+    <div class="g-summary reveal">
+      <div class="g-brand"><svg aria-hidden="true"><use href="#i-google"/></svg><div><strong>Reseñas de Google</strong><small data-cfg="nombre">Nácar Clínica Dental</small></div></div>
+      <div class="g-score">
+        <span class="big" data-cfg="rating">4,9</span>
+        <div><span class="stars" role="img" aria-label="Calificación 4,9 de 5"><svg><use href="#i-stars"/></svg></span><small>Basado en <span data-cfg="totalResenas">214</span> reseñas</small></div>
+      </div>
+      <div class="g-bars" aria-hidden="true">
+        <div class="g-bar"><span>5</span><span class="track"><span class="fill" style="--w:93%"></span></span></div>
+        <div class="g-bar"><span>4</span><span class="track"><span class="fill" style="--w:5%"></span></span></div>
+        <div class="g-bar"><span>3</span><span class="track"><span class="fill" style="--w:1%"></span></span></div>
+        <div class="g-bar"><span>2</span><span class="track"><span class="fill" style="--w:0%"></span></span></div>
+        <div class="g-bar"><span>1</span><span class="track"><span class="fill" style="--w:1%"></span></span></div>
+      </div>
+      <a class="btn btn-ghost" data-link="maps" href="https://www.google.com/maps"><svg class="i"><use href="#i-google"/></svg>Ver en Google</a>
+    </div>
+
+    <div class="reviews">
+      <article class="review reveal">
+        <header><span class="avatar" style="--c:#0E7C7B" aria-hidden="true">FM</span><div><strong>Francisca Morales</strong><small>Local Guide · 38 reseñas</small></div><svg class="g-ico" aria-hidden="true"><use href="#i-google"/></svg></header>
+        <div class="review-meta"><svg role="img" aria-label="5 de 5 estrellas"><use href="#i-stars"/></svg><span>hace 2 semanas</span></div>
+        <p>Llevé a mis dos hijos con la Dra. Javiera y fue otra cosa. Les explicó todo con paciencia y el más chico salió feliz con su diploma de “paciente valiente”. Por fin un dentista en Peñaflor al que no le tienen miedo.</p>
+      </article>
+      <article class="review reveal" style="--d:.06s">
+        <header><span class="avatar" style="--c:#7A4B9B" aria-hidden="true">RT</span><div><strong>Rodrigo Tapia</strong><small>12 reseñas</small></div><svg class="g-ico" aria-hidden="true"><use href="#i-google"/></svg></header>
+        <div class="review-meta"><svg role="img" aria-label="5 de 5 estrellas"><use href="#i-stars"/></svg><span>hace 1 mes</span></div>
+        <p>Me puse un implante con el Dr. Sepúlveda y no sentí nada durante la cirugía. Me dieron el presupuesto por escrito desde el primer día, sin sorpresas, y lo pagué en 12 cuotas. Cien por ciento recomendado.</p>
+        <div class="reply"><strong>Respuesta del propietario:</strong> ¡Gracias, Rodrigo! Nos alegra que el proceso haya sido tranquilo. Te esperamos en tu control.</div>
+      </article>
+      <article class="review reveal" style="--d:.12s">
+        <header><span class="avatar" style="--c:#C0582F" aria-hidden="true">CH</span><div><strong>Constanza Herrera</strong><small>Local Guide · 64 reseñas</small></div><svg class="g-ico" aria-hidden="true"><use href="#i-google"/></svg></header>
+        <div class="review-meta"><svg role="img" aria-label="5 de 5 estrellas"><use href="#i-stars"/></svg><span>hace 3 semanas</span></div>
+        <p>Súper puntuales, cosa que se agradece. La limpieza fue rápida y me mostraron en la pantalla cómo estaban mis dientes. Las instalaciones impecables y la recepcionista un siete.</p>
+      </article>
+      <article class="review reveal">
+        <header><span class="avatar" style="--c:#2F6DB5" aria-hidden="true">FS</span><div><strong>Felipe Soto</strong><small>7 reseñas</small></div><svg class="g-ico" aria-hidden="true"><use href="#i-google"/></svg></header>
+        <div class="review-meta"><svg role="img" aria-label="5 de 5 estrellas"><use href="#i-stars"/></svg><span>hace 2 meses</span></div>
+        <p>Un sábado en la mañana se me quebró una muela y me atendieron altiro. Me sacaron del dolor ese mismo día. Vivo en Talagante y llego en diez minutos, así que me quedo con ellos.</p>
+      </article>
+      <article class="review reveal" style="--d:.06s">
+        <header><span class="avatar" style="--c:#0D4F57" aria-hidden="true">MV</span><div><strong>María José Venegas</strong><small>21 reseñas</small></div><svg class="g-ico" aria-hidden="true"><use href="#i-google"/></svg></header>
+        <div class="review-meta"><svg role="img" aria-label="5 de 5 estrellas"><use href="#i-stars"/></svg><span>hace 1 semana</span></div>
+        <p>Estoy con ortodoncia con el Dr. Ignacio y el trato es increíble. Los controles son rápidos y cuando tengo dudas me responden por WhatsApp el mismo día. Ya se nota el cambio.</p>
+      </article>
+      <article class="review reveal" style="--d:.12s">
+        <header><span class="avatar" style="--c:#9B6A12" aria-hidden="true">CO</span><div><strong>Cristián Olivares</strong><small>Local Guide · 29 reseñas</small></div><svg class="g-ico" aria-hidden="true"><use href="#i-google"/></svg></header>
+        <div class="review-meta"><svg role="img" aria-label="5 de 5 estrellas"><use href="#i-stars"/></svg><span>hace 4 meses</span></div>
+        <p>Fui por un blanqueamiento antes del matrimonio de mi hermana y quedé feliz con el resultado. Buena atención desde la recepción, y con la boleta la isapre me reembolsó sin problema.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== UBICACIÓN Y HORARIOS ===================== -->
+<section class="section bg-white" id="ubicacion" aria-labelledby="uTitle">
+  <div class="container">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Ubicación y horarios</span>
+      <h2 id="uTitle">A minutos de Talagante, <em>en el centro de Peñaflor</em></h2>
+    </div>
+    <div class="loc-grid">
+      <div class="map-wrap reveal">
+        <div class="map-pin"><svg class="i"><use href="#i-pin"/></svg><span><span data-cfg="nombre">Nácar Clínica Dental</span></span></div>
+        <iframe id="mapFrame" title="Mapa de ubicación de la clínica en Google Maps" src="https://www.google.com/maps?q=Pe%C3%B1aflor,+Chile&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+      <div class="loc-card reveal" style="--d:.08s">
+        <div class="loc-status" data-status="long" role="status"><span class="dot"></span><span class="status-text">Horario de atención</span></div>
+        <div class="loc-line"><svg class="i"><use href="#i-pin"/></svg><div><strong data-cfg="direccionCompleta">Av. Vicuña Mackenna 1480, local 3, Peñaflor</strong><small data-cfg="referencia">A 2 cuadras de la Plaza de Peñaflor · 10 min desde Talagante</small></div></div>
+        <div class="loc-line"><svg class="i"><use href="#i-phone"/></svg><div><a data-link="tel" href="tel:+56987654321" data-cfg="telefono">+56 9 8765 4321</a><small>Llamadas y WhatsApp</small></div></div>
+        <div class="loc-line"><svg class="i"><use href="#i-car"/></svg><div>Estacionamiento para pacientes<small>Y locomoción colectiva por Av. Vicuña Mackenna</small></div></div>
+        <table class="hours" id="hoursTable"><caption>Horario de atención</caption><tbody></tbody></table>
+        <div class="loc-actions">
+          <a class="btn btn-primary" data-link="maps" href="https://www.google.com/maps"><svg class="i"><use href="#i-route"/></svg>Cómo llegar</a>
+          <a class="btn btn-ghost" data-link="wa" href="https://wa.me/56987654321"><svg class="i"><use href="#i-wa"/></svg>WhatsApp</a>
+        </div>
+        <ul class="comunas" id="comunas" aria-label="Comunas que atendemos"></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="section" id="faq" aria-labelledby="fTitle">
+  <div class="container faq-grid">
+    <div class="faq-aside">
+      <div class="sec-head left reveal" style="margin-bottom:0">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2 id="fTitle">Resolvemos tus dudas <em>antes de venir</em></h2>
+        <p>Si no encuentras tu respuesta, escríbenos o pregúntale a nuestro asistente virtual. Respondemos rápido.</p>
+      </div>
+      <div class="faq-img reveal"><img src="https://images.unsplash.com/photo-1609840114035-3c981b782dfe?w=900&h=700&q=80&auto=format&fit=crop" alt="Persona colocándose un alineador dental transparente" width="900" height="700" loading="lazy"></div>
+      <div class="ask-card reveal"><span class="ico"><svg class="i"><use href="#i-chat"/></svg></span><div><strong>¿Tienes otra pregunta?</strong><button type="button" data-open-chat>Pregúntale al asistente</button></div></div>
+    </div>
+    <div class="faq-list">
+      <details class="faq reveal" open><summary>¿La evaluación realmente no tiene costo? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>Sí. En la primera visita revisamos tu boca, conversamos sobre lo que te preocupa y te entregamos un plan de tratamiento con presupuesto por escrito. No tienes obligación de empezar ese día. Si se necesitan radiografías, te informamos su valor antes de tomarlas.</p></div></details>
+      <details class="faq reveal"><summary>¿Atienden con Fonasa? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>Sí, en Modalidad Libre Elección (MLE) para las prestaciones odontológicas que tienen código Fonasa. Puedes comprar tu bono en la clínica o en línea. Para los tratamientos sin cobertura Fonasa te ofrecemos precio particular y cuotas sin interés.</p></div></details>
+      <details class="faq reveal"><summary>Tengo isapre, ¿cómo funciona el reembolso? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>Pagas tu atención y te entregamos boleta con el detalle de cada prestación. Con eso solicitas el reembolso en tu isapre (Banmédica, Colmena, Consalud, Cruz Blanca, Nueva Masvida o Vida Tres), según la cobertura dental de tu plan.</p></div></details>
+      <details class="faq reveal"><summary>¿Puedo pagar en cuotas? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>Sí. Hasta 12 cuotas sin interés con tarjetas de crédito bancarias participantes, además de débito, transferencia y efectivo. En tratamientos largos, como ortodoncia o implantes, también puedes pagar por etapas. Prueba nuestro <a href="#simulador">simulador de cuotas</a>.</p></div></details>
+      <details class="faq reveal"><summary>¿Duele ponerse un implante? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>La cirugía se hace con anestesia local, así que durante el procedimiento no sientes dolor, solo algo de presión. Los días siguientes puede haber una molestia leve que se controla con analgésicos comunes. La mayoría de los pacientes retoma su rutina al día siguiente.</p></div></details>
+      <details class="faq reveal"><summary>¿Atienden urgencias dentales? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>Sí. Dentro de nuestro horario reservamos cupos diarios para urgencias: dolor intenso, dientes quebrados, inflamación o prótesis rotas. Llámanos o escríbenos por WhatsApp y te damos la primera hora disponible.</p></div></details>
+      <details class="faq reveal"><summary>¿Desde qué edad atienden a los niños? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>Desde el primer diente. Recomendamos la primera visita antes del primer año de vida. Nuestra odontopediatra usa técnicas amigables para que los niños se sientan seguros y vuelvan contentos.</p></div></details>
+      <details class="faq reveal"><summary>¿Tienen estacionamiento? <span class="faq-ico" aria-hidden="true"><svg class="i"><use href="#i-plus"/></svg></span></summary><div class="faq-body"><p>Sí, contamos con estacionamiento para pacientes y estamos a pasos de la locomoción colectiva de Av. Vicuña Mackenna. Desde Talagante llegas en unos 10 minutos en auto.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== CTA FINAL ===================== -->
+<section aria-labelledby="ctaTitle">
+  <div class="container">
+    <div class="cta-box reveal">
+      <div>
+        <span class="eyebrow" style="color:var(--mint-400)">Evaluación sin costo</span>
+        <h2 id="ctaTitle">Tu próxima sonrisa empieza <em>con una conversación</em></h2>
+        <p>Agenda tu evaluación. Te escuchamos, revisamos y te proponemos un plan a tu medida, con precios claros y sin presión.</p>
+        <div class="cta-actions">
+          <div class="cta-stack">
+            <a href="#agendar" class="btn btn-light btn-lg" data-reserva><svg class="i"><use href="#i-cal"/></svg>Agenda tu evaluación</a>
+            <small class="cta-hint" data-reserva-hint>Te confirmamos por WhatsApp en minutos</small>
+          </div>
+          <a class="btn btn-outline-light btn-lg" data-link="tel" href="tel:+56987654321"><svg class="i"><use href="#i-phone"/></svg>Llamar ahora</a>
+        </div>
+      </div>
+      <div class="cta-img">
+        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=700&h=700&q=80&auto=format&fit=crop&crop=faces" alt="Mujer sonriendo ampliamente" width="700" height="700" loading="lazy">
+        <div class="fc"><svg class="i"><use href="#i-sparkle"/></svg>Sonrisas que se notan</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <a href="#inicio" class="brand" aria-label="Nácar Clínica Dental, volver al inicio">
+          <svg viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="12" fill="url(#lgBrand)"/><path transform="translate(4 6.5) scale(1.333)" d="M8 4.2C9.6 3.4 10.8 3.6 12 4.4 13.2 3.6 14.4 3.4 16 4.2 18 5.2 18.1 8.2 17.2 10.3 16.6 11.7 16.3 13.3 16 15.2 15.8 16.8 14.2 17 13.8 15.4L13 12.8C12.7 11.9 11.3 11.9 11 12.8L10.2 15.4C9.8 17 8.2 16.8 8 15.2 7.7 13.3 7.4 11.7 6.8 10.3 5.9 8.2 6 5.2 8 4.2Z" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/><path d="M30.5 6.5l.8 1.9 1.9.8-1.9.8-.8 1.9-.8-1.9-1.9-.8 1.9-.8z" fill="#93E4D5"/></svg>
+          <span><span class="brand-name" data-cfg="nombreCorto">Nácar</span><span class="brand-sub">Clínica dental</span></span>
+        </a>
+        <p class="foot-about">Odontología integral para familias de Peñaflor, Talagante, Padre Hurtado, El Monte e Isla de Maipo. Evaluación sin costo, Fonasa MLE, isapres y cuotas sin interés.</p>
+        <div class="social">
+          <a data-link="instagram" href="https://instagram.com/" aria-label="Instagram"><svg class="i"><use href="#i-insta"/></svg></a>
+          <a data-link="facebook" href="https://facebook.com/" aria-label="Facebook"><svg class="i"><use href="#i-fb"/></svg></a>
+          <a data-link="wa" href="https://wa.me/56987654321" aria-label="WhatsApp"><svg class="i"><use href="#i-wa"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul class="foot-contact">
+          <li><svg class="i"><use href="#i-pin"/></svg><span data-cfg="direccionCompleta">Av. Vicuña Mackenna 1480, local 3, Peñaflor</span></li>
+          <li><svg class="i"><use href="#i-phone"/></svg><a data-link="tel" href="tel:+56987654321" data-cfg="telefono">+56 9 8765 4321</a></li>
+          <li><svg class="i"><use href="#i-wa"/></svg><a data-link="wa" href="https://wa.me/56987654321">Escríbenos por WhatsApp</a></li>
+          <li><svg class="i"><use href="#i-mail"/></svg><a data-link="mail" href="mailto:contacto@nacarclinicadental.cl" data-cfg="email">contacto@nacarclinicadental.cl</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Horarios</h4>
+        <ul class="foot-hours" id="footHours"></ul>
+      </div>
+      <div>
+        <h4>Explora</h4>
+        <ul>
+          <li><a href="#tratamientos">Tratamientos y precios</a></li>
+          <li><a href="#equipo">Nuestro equipo</a></li>
+          <li><a href="#convenios">Fonasa, isapres y cuotas</a></li>
+          <li><a href="#simulador">Simulador de cuotas</a></li>
+          <li><a href="#faq">Preguntas frecuentes</a></li>
+          <li><a href="#agendar" data-reserva>Agenda tu evaluación</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© <span data-cfg="anio">2026</span> <span data-cfg="nombre">Nácar Clínica Dental</span> · Director técnico: <span data-cfg="directorTecnico">Dra. Catalina Fuentes Rojas</span></p>
+      <p>Sitio de demostración: nombre, datos y reseñas son ficticios. · <a id="credito" href="#">Diseño web para negocios de Talagante</a></p>
+    </div>
+  </div>
+</footer>
+
+<!-- ===================== MODAL AGENDA ===================== -->
+<dialog class="modal" id="agenda" aria-labelledby="agendaTitle" aria-describedby="agendaDesc">
+  <div class="modal-card">
+    <div class="modal-top">
+      <span class="eyebrow">Evaluación sin costo</span>
+      <h2 id="agendaTitle">Agenda tu evaluación</h2>
+      <p id="agendaDesc">Completa tus datos y te llevamos a WhatsApp con el mensaje listo. Te confirmamos la hora en minutos.</p>
+      <button type="button" class="modal-close" data-close-modal aria-label="Cerrar formulario"><svg class="i"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <form id="agendaForm" novalidate>
+        <div class="form-grid">
+          <div class="field full">
+            <label for="fNombre">Nombre y apellido</label>
+            <input id="fNombre" name="nombre" type="text" autocomplete="name" required placeholder="Ej: Camila Rojas" aria-describedby="eNombre">
+            <span class="err" id="eNombre"></span>
+          </div>
+          <div class="field">
+            <label for="fRut">RUT <span class="opt">(opcional)</span></label>
+            <input id="fRut" name="rut" type="text" inputmode="text" autocomplete="off" placeholder="12.345.678-9" maxlength="12" aria-describedby="eRut">
+            <span class="err" id="eRut"></span>
+          </div>
+          <div class="field">
+            <label for="fTel">Teléfono / WhatsApp</label>
+            <input id="fTel" name="telefono" type="tel" autocomplete="tel" required placeholder="+56 9 1234 5678" aria-describedby="eTel">
+            <span class="err" id="eTel"></span>
+          </div>
+          <div class="field">
+            <label for="fPrev">Previsión</label>
+            <select id="fPrev" name="prevision" required aria-describedby="ePrev">
+              <option value="">Selecciona</option>
+              <option>Fonasa</option>
+              <option>Isapre</option>
+              <option>Particular</option>
+            </select>
+            <span class="err" id="ePrev"></span>
+          </div>
+          <div class="field" id="isapreField" hidden>
+            <label for="fIsapre">¿Cuál isapre? <span class="opt">(opcional)</span></label>
+            <select id="fIsapre" name="isapre"><option value="">Selecciona</option></select>
+          </div>
+          <div class="field full">
+            <label for="fTrat">Tratamiento de interés</label>
+            <select id="fTrat" name="tratamiento" required aria-describedby="eTrat"><option value="">Selecciona una opción</option></select>
+            <span class="err" id="eTrat"></span>
+          </div>
+          <div class="field">
+            <label for="fFecha">Fecha preferida</label>
+            <input id="fFecha" name="fecha" type="date" required aria-describedby="eFecha hFecha">
+            <span class="hint" id="hFecha">Lunes a sábado</span>
+            <span class="err" id="eFecha"></span>
+          </div>
+          <div class="field">
+            <label for="fBloque">Horario preferido <span class="opt">(opcional)</span></label>
+            <select id="fBloque" name="bloque">
+              <option value="">Cualquier horario</option>
+              <option>Mañana (09:00 a 13:00)</option>
+              <option>Tarde (13:00 a 17:00)</option>
+              <option>Después de las 17:00</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="fComent">Comentario <span class="opt">(opcional)</span></label>
+            <textarea id="fComent" name="comentario" rows="2" placeholder="Cuéntanos brevemente qué te pasa o qué te gustaría mejorar"></textarea>
+          </div>
+        </div>
+        <div class="form-foot">
+          <button type="submit" class="btn btn-primary btn-lg btn-block"><svg class="i"><use href="#i-wa"/></svg>Enviar por WhatsApp</button>
+          <p class="form-note"><svg class="i"><use href="#i-lock"/></svg>Tus datos solo se usan para coordinar tu hora y no se guardan en este sitio.</p>
+        </div>
+      </form>
+      <div class="success" id="agendaOk" hidden>
+        <div class="big-ico"><svg class="i"><use href="#i-check"/></svg></div>
+        <h3 id="okTitle">¡Listo!</h3>
+        <p>Abrimos WhatsApp con tu solicitud. Solo presiona <strong>enviar</strong> y te confirmaremos la hora en minutos.</p>
+        <div class="btns">
+          <a class="btn btn-primary" id="okWa" href="#" target="_blank" rel="noopener"><svg class="i"><use href="#i-wa"/></svg>Abrir WhatsApp de nuevo</a>
+          <button type="button" class="btn btn-ghost" data-close-modal>Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- ===================== SELECTOR DEMO: MODO DE RESERVA ===================== -->
+<div class="demo-switch" id="demoSwitch" role="group" aria-labelledby="demoLbl">
+  <div class="demo-top"><span id="demoLbl">Demo: modo de reserva</span><button type="button" class="demo-x" id="demoHide" aria-label="Ocultar selector de demo"><svg class="i"><use href="#i-close"/></svg></button></div>
+  <div class="seg">
+    <button type="button" data-modo="whatsapp" aria-pressed="true">WhatsApp</button>
+    <button type="button" data-modo="agendapro" aria-pressed="false">AgendaPro</button>
+  </div>
+</div>
+
+<!-- ===================== ASISTENTE (chat) ===================== -->
+<div class="chat-teaser" id="chatTeaser" hidden>
+  <button type="button" class="x" id="teaserX" aria-label="Cerrar mensaje"><svg class="i"><use href="#i-close"/></svg></button>
+  <strong>¿Dudas con precios o convenios?</strong>Pregúntale a nuestro asistente, responde al instante.
+</div>
+<section class="chat-panel" id="chatPanel" role="dialog" aria-modal="false" aria-labelledby="chatTitle" hidden>
+  <div class="chat-head">
+    <span class="chat-av"><svg class="i"><use href="#i-tooth"/></svg></span>
+    <div><strong id="chatTitle">Asistente <span data-cfg="nombreCorto">Nácar</span><span class="ai-tag">IA</span></strong><small>En línea · responde al instante</small></div>
+    <button type="button" class="chat-x" id="chatClose" aria-label="Cerrar asistente"><svg class="i"><use href="#i-close"/></svg></button>
+  </div>
+  <div class="chat-body" id="chatBody" role="log" aria-live="polite" aria-relevant="additions"></div>
+  <div class="chat-chips" id="chatChips" aria-label="Preguntas rápidas">
+    <button type="button">Precios</button>
+    <button type="button">Convenios</button>
+    <button type="button">¿Duele un implante?</button>
+    <button type="button">Agendar</button>
+    <button type="button">Urgencia dental</button>
+    <button type="button">Horarios</button>
+    <button type="button">¿Dónde están?</button>
+  </div>
+  <form class="chat-form" id="chatForm" autocomplete="off">
+    <label for="chatInput" class="sr-only">Escribe tu pregunta</label>
+    <input id="chatInput" type="text" placeholder="Escribe tu pregunta…" maxlength="400">
+    <button type="submit" aria-label="Enviar mensaje"><svg class="i"><use href="#i-send"/></svg></button>
+  </form>
+  <p class="chat-legal">Asistente automático. No reemplaza una evaluación profesional.</p>
+</section>
+<button type="button" class="chat-fab" id="chatFab" aria-expanded="false" aria-controls="chatPanel" aria-label="Abrir asistente virtual">
+  <span class="ping" aria-hidden="true"></span>
+  <svg class="i ic-open" aria-hidden="true"><use href="#i-chat"/></svg>
+  <svg class="i ic-close" aria-hidden="true"><use href="#i-close"/></svg>
+  <span class="badge" aria-hidden="true">1</span>
+</button>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ---------------------------------------------------------------
+     Utilidades
+     --------------------------------------------------------------- */
+  const $ = (s, c) => (c || document).querySelector(s);
+  const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
+  const soloDigitos = (s) => String(s || '').replace(/\D/g, '');
+  const miles = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  const clp = (n) => '$' + miles(n);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[¿?¡!.,;:()]/g, ' ').replace(/\s+/g, ' ').trim();
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const TEL_HREF = 'tel:+' + soloDigitos(CONFIG.telefono);
+  const waLink = (texto) => 'https://wa.me/' + soloDigitos(CONFIG.whatsapp) + (texto ? '?text=' + encodeURIComponent(texto) : '');
+  const MAPS_DIR = 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(CONFIG.direccion + ', ' + CONFIG.comuna + ', Chile');
+  const RATING_TXT = String(CONFIG.rating).replace('.', ',');
+
+  const DIAS_KEYS = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+  const DIAS_NOMBRE = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const ORDEN_SEMANA = [1, 2, 3, 4, 5, 6, 0];
+
+  const TRAT_EXTRA = [
+    { id: 'evaluacion', nombre: 'Evaluación general (no estoy seguro/a)' },
+    { id: 'rehabilitacion', nombre: 'Coronas y prótesis (rehabilitación oral)' },
+    { id: 'ninos', nombre: 'Odontopediatría (niños)' },
+    { id: 'urgencia', nombre: 'Urgencia dental' }
+  ];
+  const buscarTrat = (id) => CONFIG.tratamientos.find((t) => t.id === id) || TRAT_EXTRA.find((t) => t.id === id);
+
+  /* ---------------------------------------------------------------
+     Toast
+     --------------------------------------------------------------- */
+  let toastTimer;
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
+  }
+
+  /* ---------------------------------------------------------------
+     Rellenar datos desde CONFIG
+     --------------------------------------------------------------- */
+  function rellenarConfig() {
+    const valores = {
+      nombre: CONFIG.nombre,
+      nombreCorto: CONFIG.nombreCorto,
+      telefono: CONFIG.telefono,
+      email: CONFIG.email,
+      direccionCompleta: CONFIG.direccion + ', ' + CONFIG.comuna,
+      referencia: CONFIG.referencia,
+      rating: RATING_TXT,
+      totalResenas: CONFIG.totalResenas,
+      pacientes: CONFIG.pacientes,
+      directorTecnico: CONFIG.directorTecnico,
+      anio: new Date().getFullYear()
+    };
+    $$('[data-cfg]').forEach((el) => {
+      const v = valores[el.dataset.cfg];
+      if (v !== undefined && v !== null) el.textContent = v;
+    });
+    $$('[data-link]').forEach((el) => {
+      const tipo = el.dataset.link;
+      const externo = (url) => { el.href = url; el.target = '_blank'; el.rel = 'noopener'; };
+      if (tipo === 'tel') el.href = TEL_HREF;
+      else if (tipo === 'wa') externo(waLink(CONFIG.mensajeWhatsApp));
+      else if (tipo === 'mail') el.href = 'mailto:' + CONFIG.email;
+      else if (tipo === 'maps') externo(MAPS_DIR);
+      else if (tipo === 'instagram') externo(CONFIG.instagram);
+      else if (tipo === 'facebook') externo(CONFIG.facebook);
+    });
+    const map = $('#mapFrame');
+    if (map && CONFIG.mapaEmbedUrl && map.getAttribute('src') !== CONFIG.mapaEmbedUrl) map.src = CONFIG.mapaEmbedUrl;
+    const cred = $('#credito');
+    if (cred && CONFIG.creditoWeb) { cred.textContent = CONFIG.creditoWeb.texto; cred.href = CONFIG.creditoWeb.url; }
+    document.title = CONFIG.nombre + ' | Dentistas en ' + CONFIG.comuna + ' y Talagante';
+    $('#comunas').innerHTML = CONFIG.comunasAtendidas.map((c) => '<li>' + esc(c) + '</li>').join('');
+    $('#isapresPills').innerHTML = CONFIG.isapres.map((i) => '<li class="pill">' + esc(i) + '</li>').join('');
+  }
+
+  /* ---------------------------------------------------------------
+     Tratamientos, equipo y selects
+     --------------------------------------------------------------- */
+  function renderTratamientos() {
+    $('#tGrid').innerHTML = CONFIG.tratamientos.map((t, i) => (
+      '<article class="t-card reveal" style="--d:' + (i % 3) * 0.07 + 's">' +
+        (t.badge ? '<span class="t-badge">' + esc(t.badge) + '</span>' : '') +
+        '<span class="t-icon" aria-hidden="true"><svg class="i"><use href="#t-' + esc(t.icono) + '"/></svg></span>' +
+        '<h3>' + esc(t.nombre) + '</h3>' +
+        '<p>' + esc(t.descripcion) + '</p>' +
+        '<span class="t-meta"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>' + esc(t.detalle) + '</span>' +
+        '<div class="t-foot">' +
+          '<div class="t-price"><small>Desde</small><strong>' + clp(t.desde) + '</strong></div>' +
+          '<a href="#agendar" class="btn btn-soft btn-sm" data-reserva data-tratamiento="' + esc(t.id) + '" aria-label="Consultar por ' + esc(t.nombre) + '">Consultar</a>' +
+        '</div>' +
+      '</article>'
+    )).join('');
+  }
+
+  function renderEquipo() {
+    $('#teamGrid').innerHTML = CONFIG.equipo.map((p, i) => {
+      const partes = p.nombre.split(' ');
+      const titulo = partes[0];
+      const apellido = partes[2] || partes[1] || '';
+      const articulo = /dra/i.test(titulo) ? 'la' : 'el';
+      return (
+        '<article class="doc-card reveal" style="--d:' + i * 0.07 + 's">' +
+          '<div class="doc-photo"><img src="' + esc(p.foto) + '" alt="Retrato de ' + esc(p.nombre) + ', ' + esc(p.especialidad) + '" width="600" height="700" loading="lazy"><span class="doc-tag">' + esc(p.especialidad) + '</span></div>' +
+          '<div class="doc-body">' +
+            '<h3>' + esc(p.nombre) + '</h3>' +
+            '<p class="doc-role">' + esc(p.rol) + '</p>' +
+            '<p class="doc-uni"><svg class="i" aria-hidden="true"><use href="#i-cap"/></svg>' + esc(p.universidad) + '</p>' +
+            '<p class="doc-bio">' + esc(p.bio) + '</p>' +
+            '<a href="#agendar" class="link-arrow" data-reserva data-tratamiento="' + esc(p.tratamiento) + '">Agendar con ' + articulo + ' ' + esc(titulo + ' ' + apellido) + ' <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>' +
+          '</div>' +
+        '</article>'
+      );
+    }).join('');
+  }
+
+  function renderSelects() {
+    const sel = $('#fTrat');
+    const opts = [TRAT_EXTRA[0]].concat(CONFIG.tratamientos, TRAT_EXTRA.slice(1));
+    opts.forEach((t) => {
+      const o = document.createElement('option');
+      o.value = t.id;
+      o.textContent = t.desde ? t.nombre + ' (desde ' + clp(t.desde) + ')' : t.nombre;
+      sel.appendChild(o);
+    });
+    const selIs = $('#fIsapre');
+    CONFIG.isapres.concat(['Otra']).forEach((n) => {
+      const o = document.createElement('option');
+      o.textContent = n;
+      selIs.appendChild(o);
+    });
+  }
+
+  /* ---------------------------------------------------------------
+     Horarios y estado "Abierto ahora / Cerrado" (America/Santiago)
+     --------------------------------------------------------------- */
+  const aMin = (hhmm) => { const p = hhmm.split(':').map(Number); return p[0] * 60 + (p[1] || 0); };
+  const fmtHora = (m) => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  const rangos = (d) => (CONFIG.horarios[DIAS_KEYS[d]] || []).map((r) => [aMin(r[0]), aMin(r[1])]);
+  const textoDia = (d) => {
+    const r = CONFIG.horarios[DIAS_KEYS[d]] || [];
+    return r.length ? r.map((x) => x[0] + ' – ' + x[1]).join(' / ') : 'Cerrado';
+  };
+
+  function ahoraSantiago() {
+    try {
+      const partes = new Intl.DateTimeFormat('en-US', {
+        timeZone: CONFIG.zonaHoraria || 'America/Santiago',
+        weekday: 'short', hour: 'numeric', minute: 'numeric', hourCycle: 'h23'
+      }).formatToParts(new Date());
+      const get = (t) => (partes.find((p) => p.type === t) || {}).value;
+      const dia = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[get('weekday')];
+      let h = parseInt(get('hour'), 10);
+      if (h === 24) h = 0;
+      return { dia: dia, min: h * 60 + parseInt(get('minute'), 10) };
+    } catch (e) {
+      const d = new Date();
+      return { dia: d.getDay(), min: d.getHours() * 60 + d.getMinutes() };
+    }
+  }
+
+  function estadoApertura() {
+    const ahora = ahoraSantiago();
+    const hoy = rangos(ahora.dia);
+    for (const r of hoy) {
+      if (ahora.min >= r[0] && ahora.min < r[1]) {
+        const faltan = r[1] - ahora.min;
+        return { abierto: true, corto: 'Abierto ahora', texto: faltan <= 60 ? 'Abierto ahora · cierra pronto (' + fmtHora(r[1]) + ')' : 'Abierto ahora · hasta las ' + fmtHora(r[1]), dia: ahora.dia };
+      }
+    }
+    for (const r of hoy) {
+      if (ahora.min < r[0]) return { abierto: false, corto: 'Cerrado ahora', texto: 'Cerrado · abre hoy a las ' + fmtHora(r[0]), dia: ahora.dia };
+    }
+    for (let i = 1; i <= 7; i++) {
+      const d = (ahora.dia + i) % 7;
+      const r = rangos(d);
+      if (r.length) {
+        const cuando = i === 1 ? 'mañana' : 'el ' + DIAS_NOMBRE[d].toLowerCase();
+        return { abierto: false, corto: 'Cerrado ahora', texto: 'Cerrado · abre ' + cuando + ' a las ' + fmtHora(r[0][0]), dia: ahora.dia };
+      }
+    }
+    return { abierto: false, corto: 'Cerrado', texto: 'Cerrado', dia: ahora.dia };
+  }
+
+  function resumenHorario() {
+    // Agrupa días consecutivos con el mismo horario: "Lunes a viernes: 09:00 – 20:00"
+    const grupos = [];
+    ORDEN_SEMANA.forEach((d) => {
+      const txt = textoDia(d);
+      const ult = grupos[grupos.length - 1];
+      if (ult && ult.txt === txt) ult.fin = d; else grupos.push({ ini: d, fin: d, txt: txt });
+    });
+    return grupos.map((g) => ({
+      dias: g.ini === g.fin ? DIAS_NOMBRE[g.ini] : DIAS_NOMBRE[g.ini] + ' a ' + DIAS_NOMBRE[g.fin].toLowerCase(),
+      txt: g.txt
+    }));
+  }
+
+  function renderHorarios() {
+    const tb = $('#hoursTable tbody');
+    tb.innerHTML = ORDEN_SEMANA.map((d) => {
+      const txt = textoDia(d);
+      return '<tr data-dia="' + d + '"><th scope="row">' + DIAS_NOMBRE[d] + '</th><td' + (txt === 'Cerrado' ? ' class="cerrado"' : '') + '>' + esc(txt) + '</td></tr>';
+    }).join('');
+    $('#footHours').innerHTML = resumenHorario().map((g) => '<li><span>' + esc(g.dias) + '</span><span>' + esc(g.txt) + '</span></li>').join('');
+    const hint = $('#hFecha');
+    if (hint) {
+      // Días de atención agrupados sin importar el horario: "Atendemos de lunes a sábado"
+      const grupos = [];
+      ORDEN_SEMANA.forEach((d) => {
+        const abierto = rangos(d).length > 0;
+        const ult = grupos[grupos.length - 1];
+        if (ult && ult.abierto === abierto) ult.fin = d; else grupos.push({ ini: d, fin: d, abierto: abierto });
+      });
+      const txt = grupos.filter((g) => g.abierto).map((g) => g.ini === g.fin ? DIAS_NOMBRE[g.ini].toLowerCase() : DIAS_NOMBRE[g.ini].toLowerCase() + ' a ' + DIAS_NOMBRE[g.fin].toLowerCase()).join(' y ');
+      hint.textContent = txt ? 'Atendemos de ' + txt : '';
+    }
+  }
+
+  function pintarEstado() {
+    const est = estadoApertura();
+    $$('[data-status]').forEach((el) => {
+      el.classList.toggle('is-open', est.abierto);
+      el.classList.toggle('is-closed', !est.abierto);
+      const t = el.querySelector('.status-text');
+      if (t) t.textContent = el.dataset.status === 'short' ? est.corto : est.texto;
+    });
+    $$('#hoursTable tr').forEach((tr) => tr.classList.toggle('hoy', Number(tr.dataset.dia) === est.dia));
+    return est;
+  }
+
+  /* ---------------------------------------------------------------
+     MODO DE RESERVA: "whatsapp" (modal) | "agendapro" (link externo)
+     Prioridad: ?reserva=agendapro en la URL > CONFIG.modoReserva
+     --------------------------------------------------------------- */
+  const MODOS = ['whatsapp', 'agendapro'];
+  let modo = (new URLSearchParams(location.search).get('reserva') || CONFIG.modoReserva || 'whatsapp').toLowerCase();
+  if (MODOS.indexOf(modo) === -1) modo = 'whatsapp';
+
+  function configurarBotonReserva(el) {
+    if (el.tagName !== 'A') return;
+    let sr = el.querySelector('.sr-ext');
+    if (modo === 'agendapro') {
+      el.href = CONFIG.agendaProUrl;
+      el.target = '_blank';
+      el.rel = 'noopener';
+      if (!sr) { sr = document.createElement('span'); sr.className = 'sr-only sr-ext'; el.appendChild(sr); }
+      sr.textContent = ' (reserva online vía AgendaPro, se abre en una pestaña nueva)';
+      el.title = 'Reserva online vía AgendaPro';
+    } else {
+      el.href = '#agendar';
+      el.removeAttribute('target');
+      el.removeAttribute('rel');
+      el.removeAttribute('title');
+      if (sr) sr.remove();
+    }
+  }
+
+  function aplicarModo(nuevo, opciones) {
+    const o = opciones || {};
+    modo = MODOS.indexOf(nuevo) === -1 ? 'whatsapp' : nuevo;
+    document.body.classList.toggle('modo-agendapro', modo === 'agendapro');
+    document.body.dataset.modoReserva = modo; // ojo: no usar data-reserva en body (es el selector de los botones)
+    $$('[data-reserva]').forEach(configurarBotonReserva);
+    $$('[data-reserva-hint]').forEach((el) => {
+      el.textContent = modo === 'agendapro' ? 'Reserva online vía AgendaPro' : 'Te confirmamos por WhatsApp en minutos';
+    });
+    $$('#demoSwitch [data-modo]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.modo === modo)));
+    if (o.actualizarUrl) {
+      try {
+        const u = new URL(location.href);
+        u.searchParams.set('reserva', modo);
+        history.replaceState(null, '', u.toString());
+      } catch (e) { /* file:// u otros contextos sin history */ }
+    }
+    if (o.anunciar) {
+      toast(modo === 'agendapro' ? 'Modo AgendaPro: los botones abren la reserva online' : 'Modo WhatsApp: los botones abren el formulario de agenda');
+    }
+  }
+
+  function reservar(datos) {
+    if (modo === 'agendapro') {
+      window.open(CONFIG.agendaProUrl, '_blank', 'noopener');
+      toast('Abriendo reserva online vía AgendaPro…');
+      return;
+    }
+    abrirAgenda(datos || {});
+  }
+
+  document.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-reserva]');
+    if (!el) return;
+    cerrarMenu();
+    if (modo === 'agendapro') {
+      if (el.tagName !== 'A') { e.preventDefault(); window.open(CONFIG.agendaProUrl, '_blank', 'noopener'); }
+      toast('Abriendo reserva online vía AgendaPro…');
+      return;
+    }
+    e.preventDefault();
+    abrirAgenda({ tratamiento: el.dataset.tratamiento || '', nota: el.dataset.nota || '' });
+  });
+
+  function initDemoSwitch() {
+    const box = $('#demoSwitch');
+    if (!CONFIG.mostrarSelectorDemo) { box.remove(); return; }
+    $$('[data-modo]', box).forEach((b) => b.addEventListener('click', () => aplicarModo(b.dataset.modo, { anunciar: true, actualizarUrl: true })));
+    $('#demoHide').addEventListener('click', () => { box.hidden = true; });
+  }
+
+  /* ---------------------------------------------------------------
+     Modal de agenda -> WhatsApp
+     --------------------------------------------------------------- */
+  const dlg = $('#agenda');
+  const form = $('#agendaForm');
+  const F = form.elements;
+
+  function hoyISO() {
+    try { return new Intl.DateTimeFormat('en-CA', { timeZone: CONFIG.zonaHoraria, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
+    catch (e) { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  }
+  const fechaLocal = (iso) => { const p = iso.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  const diaCerrado = (iso) => rangos(fechaLocal(iso).getDay()).length === 0;
+
+  function abrirAgenda(datos) {
+    $('#agendaOk').hidden = true;
+    form.hidden = false;
+    F.fecha.min = hoyISO();
+    if (datos.tratamiento && buscarTrat(datos.tratamiento)) F.tratamiento.value = datos.tratamiento;
+    if (datos.nota) F.comentario.value = datos.nota;
+    if (typeof dlg.showModal === 'function') { if (!dlg.open) dlg.showModal(); }
+    else dlg.setAttribute('open', '');
+    document.documentElement.classList.add('modal-open');
+    setTimeout(() => F.nombre.focus(), 60);
+  }
+  function cerrarAgenda() {
+    if (typeof dlg.close === 'function' && dlg.open) dlg.close(); else dlg.removeAttribute('open');
+    document.documentElement.classList.remove('modal-open');
+  }
+  dlg.addEventListener('close', () => document.documentElement.classList.remove('modal-open'));
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) cerrarAgenda(); });
+  $$('[data-close-modal]').forEach((b) => b.addEventListener('click', cerrarAgenda));
+
+  F.prevision.addEventListener('change', () => {
+    const esIsapre = F.prevision.value === 'Isapre';
+    $('#isapreField').hidden = !esIsapre;
+    if (!esIsapre) F.isapre.value = '';
+  });
+
+  // RUT chileno: formato y dígito verificador (módulo 11)
+  function limpiarRut(r) { return String(r || '').replace(/[^0-9kK]/g, '').toUpperCase(); }
+  function rutValido(r) {
+    const c = limpiarRut(r);
+    if (c.length < 8 || c.length > 9) return false;
+    const cuerpo = c.slice(0, -1), dv = c.slice(-1);
+    if (!/^\d+$/.test(cuerpo)) return false;
+    let suma = 0, mul = 2;
+    for (let i = cuerpo.length - 1; i >= 0; i--) { suma += Number(cuerpo[i]) * mul; mul = mul === 7 ? 2 : mul + 1; }
+    const res = 11 - (suma % 11);
+    const esperado = res === 11 ? '0' : res === 10 ? 'K' : String(res);
+    return dv === esperado;
+  }
+  function formatearRut(r) {
+    const c = limpiarRut(r);
+    if (c.length < 2) return c;
+    return miles(c.slice(0, -1)) + '-' + c.slice(-1);
+  }
+  F.rut.addEventListener('blur', () => { if (F.rut.value.trim()) F.rut.value = formatearRut(F.rut.value); });
+
+  function normalizarTel(v) {
+    let d = soloDigitos(v);
+    if (d.startsWith('56')) d = d.slice(2);
+    if (d.length === 8) d = '9' + d; // números antiguos de 8 dígitos
+    if (d.length !== 9) return null;
+    return d[0] === '9' ? '+56 9 ' + d.slice(1, 5) + ' ' + d.slice(5) : '+56 ' + d.slice(0, 1) + ' ' + d.slice(1, 5) + ' ' + d.slice(5);
+  }
+
+  function marcar(campo, msg) {
+    campo.setAttribute('aria-invalid', 'true');
+    const idErr = (campo.getAttribute('aria-describedby') || '').split(' ')[0];
+    const err = idErr && document.getElementById(idErr);
+    if (err) err.textContent = msg;
+  }
+  function limpiarErrores() {
+    $$('[aria-invalid]', form).forEach((c) => c.removeAttribute('aria-invalid'));
+    $$('.err', form).forEach((e) => { e.textContent = ''; });
+  }
+  $$('input, select, textarea', form).forEach((c) => c.addEventListener('input', () => {
+    if (c.getAttribute('aria-invalid') === 'true') {
+      c.removeAttribute('aria-invalid');
+      const idErr = (c.getAttribute('aria-describedby') || '').split(' ')[0];
+      const err = idErr && document.getElementById(idErr);
+      if (err) err.textContent = '';
+    }
+  }));
+  F.fecha.addEventListener('change', () => {
+    if (F.fecha.value && diaCerrado(F.fecha.value)) marcar(F.fecha, 'Ese día estamos cerrados. Elige otro día, por favor.');
+  });
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    limpiarErrores();
+    const nombre = F.nombre.value.trim().replace(/\s+/g, ' ');
+    const rut = F.rut.value.trim();
+    const tel = normalizarTel(F.telefono.value);
+    if (nombre.length < 3) marcar(F.nombre, 'Ingresa tu nombre y apellido.');
+    if (rut && !rutValido(rut)) marcar(F.rut, 'El RUT no parece válido. Revísalo o déjalo en blanco.');
+    if (!tel) marcar(F.telefono, 'Ingresa un teléfono de 9 dígitos, por ejemplo +56 9 1234 5678.');
+    if (!F.prevision.value) marcar(F.prevision, 'Selecciona tu previsión.');
+    if (!F.tratamiento.value) marcar(F.tratamiento, 'Elige el tratamiento que te interesa.');
+    if (!F.fecha.value) marcar(F.fecha, 'Elige una fecha preferida.');
+    else if (F.fecha.value < hoyISO()) marcar(F.fecha, 'Elige una fecha desde hoy en adelante.');
+    else if (diaCerrado(F.fecha.value)) marcar(F.fecha, 'Ese día estamos cerrados. Elige otro día, por favor.');
+
+    const primero = $('[aria-invalid="true"]', form);
+    if (primero) { primero.focus(); return; }
+    if (rut) F.rut.value = formatearRut(rut);
+    F.telefono.value = tel;
+
+    const trat = buscarTrat(F.tratamiento.value);
+    const fechaTxt = fechaLocal(F.fecha.value).toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long' });
+    const prev = F.prevision.value + (F.prevision.value === 'Isapre' && F.isapre.value ? ' (' + F.isapre.value + ')' : '');
+    const lineas = [
+      'Hola ' + CONFIG.nombre + ', quiero agendar una evaluación.',
+      '',
+      '• Nombre: ' + nombre,
+      rut ? '• RUT: ' + formatearRut(rut) : null,
+      '• Teléfono: ' + tel,
+      '• Previsión: ' + prev,
+      '• Tratamiento de interés: ' + (trat ? trat.nombre : F.tratamiento.value),
+      '• Fecha preferida: ' + fechaTxt,
+      F.bloque.value ? '• Horario preferido: ' + F.bloque.value : null,
+      F.comentario.value.trim() ? '• Comentario: ' + F.comentario.value.trim() : null,
+      '',
+      '¡Gracias!'
+    ].filter((l) => l !== null);
+    const url = waLink(lineas.join('\n'));
+    window.open(url, '_blank', 'noopener');
+
+    $('#okWa').href = url;
+    $('#okTitle').textContent = '¡Listo, ' + nombre.split(' ')[0] + '!';
+    form.hidden = true;
+    $('#agendaOk').hidden = false;
+    $('#okWa').focus();
+  });
+
+  /* ---------------------------------------------------------------
+     Simulador de cuotas
+     --------------------------------------------------------------- */
+  function initSimulador() {
+    const inp = $('#simMonto'), rng = $('#simRange'), quick = $('#simQuick'), btn = $('#simBtn');
+    const MIN = Number(rng.min), MAX = Number(rng.max);
+    const s = { monto: 690000, cuotas: 12, tratamiento: 'implantes' };
+
+    quick.innerHTML = CONFIG.tratamientos.map((t) => '<button type="button" data-id="' + esc(t.id) + '" data-monto="' + t.desde + '" aria-pressed="false">' + esc(t.corto || t.nombre.replace(/\s+dental(es)?$/i, '').replace(/^Tapadura de resina$/i, 'Resina')) + '</button>').join('');
+
+    function pintar(desde) {
+      const cuota = Math.ceil(s.monto / s.cuotas);
+      $('#simCuota').textContent = clp(cuota);
+      $('#simN').textContent = s.cuotas;
+      $('#simTotal').textContent = clp(s.monto);
+      if (desde !== 'input') inp.value = s.monto ? miles(s.monto) : '';
+      if (desde !== 'range') rng.value = Math.min(Math.max(s.monto, MIN), MAX);
+      rng.style.setProperty('--p', ((Math.min(Math.max(s.monto, MIN), MAX) - MIN) / (MAX - MIN) * 100).toFixed(1) + '%');
+      $$('button', quick).forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.monto) === s.monto && b.dataset.id === s.tratamiento)));
+      $$('.seg-cuotas label').forEach((l) => l.classList.toggle('checked', $('input', l).checked));
+      btn.dataset.tratamiento = s.tratamiento || 'evaluacion';
+      btn.dataset.nota = 'Me interesa pagar ' + clp(s.monto) + ' en ' + s.cuotas + ' cuotas sin interés.';
+    }
+
+    inp.addEventListener('input', () => {
+      const d = soloDigitos(inp.value).slice(0, 8);
+      s.monto = Number(d || 0);
+      s.tratamiento = 'evaluacion';
+      inp.value = d ? miles(d) : '';
+      pintar('input');
+    });
+    inp.addEventListener('blur', () => { if (s.monto < 1000) { s.monto = MIN; pintar(); } });
+    rng.addEventListener('input', () => { s.monto = Number(rng.value); s.tratamiento = 'evaluacion'; pintar('range'); });
+    quick.addEventListener('click', (e) => {
+      const b = e.target.closest('button');
+      if (!b) return;
+      s.monto = Number(b.dataset.monto);
+      s.tratamiento = b.dataset.id;
+      pintar();
+    });
+    $$('input[name="cuotas"]').forEach((r) => r.addEventListener('change', () => { s.cuotas = Number(r.value); pintar(); }));
+    pintar();
+  }
+
+  /* ---------------------------------------------------------------
+     Navegación: sticky, menú móvil, link activo
+     --------------------------------------------------------------- */
+  const nav = $('#nav'), menuBtn = $('#menuBtn'), menu = $('#mobileMenu');
+  function cerrarMenu() {
+    if (menu.hidden) return;
+    menu.hidden = true;
+    menu.classList.remove('open');
+    menuBtn.setAttribute('aria-expanded', 'false');
+    menuBtn.setAttribute('aria-label', 'Abrir menú');
+    $('use', menuBtn).setAttribute('href', '#i-menu');
+  }
+  function initNav() {
+    const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 12);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    menuBtn.addEventListener('click', () => {
+      if (!menu.hidden) { cerrarMenu(); return; }
+      menu.hidden = false;
+      menu.classList.add('open');
+      menuBtn.setAttribute('aria-expanded', 'true');
+      menuBtn.setAttribute('aria-label', 'Cerrar menú');
+      $('use', menuBtn).setAttribute('href', '#i-close');
+    });
+    $$('a', menu).forEach((a) => a.addEventListener('click', cerrarMenu));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarMenu(); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 1060) cerrarMenu(); });
+
+    if ('IntersectionObserver' in window) {
+      const links = $$('.nav-links a');
+      const mapa = new Map(links.map((a) => [a.getAttribute('href').slice(1), a]));
+      const obs = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) {
+            links.forEach((a) => a.classList.remove('active'));
+            const a = mapa.get(en.target.id);
+            if (a) a.classList.add('active');
+          }
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      mapa.forEach((_, id) => { const sec = document.getElementById(id); if (sec) obs.observe(sec); });
+    }
+  }
+
+  /* ---------------------------------------------------------------
+     Animaciones al hacer scroll + contadores
+     --------------------------------------------------------------- */
+  function animarContador(el) {
+    const fin = parseFloat(el.dataset.count);
+    const dec = parseInt(el.dataset.decimals || '0', 10);
+    const fmt = (v) => dec ? v.toFixed(dec).replace('.', ',') : miles(v);
+    if (reduceMotion) { el.textContent = fmt(fin); return; }
+    const t0 = performance.now(), dur = 1700;
+    const paso = (t) => {
+      const p = Math.min(1, (t - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(fin * e);
+      if (p < 1) requestAnimationFrame(paso);
+    };
+    requestAnimationFrame(paso);
+  }
+  function initReveal() {
+    const items = $$('.reveal');
+    const contadores = $$('[data-count]');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach((el) => el.classList.add('in'));
+      return;
+    }
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        en.target.classList.add('in');
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    items.forEach((el) => io.observe(el));
+
+    const ioC = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        animarContador(en.target);
+        ioC.unobserve(en.target);
+      });
+    }, { threshold: 0.6 });
+    contadores.forEach((el) => ioC.observe(el));
+  }
+
+  /* ---------------------------------------------------------------
+     FAQ: acordeón (uno abierto a la vez)
+     --------------------------------------------------------------- */
+  function initFaq() {
+    const items = $$('details.faq');
+    items.forEach((d) => d.addEventListener('toggle', () => {
+      if (d.open) items.forEach((o) => { if (o !== d) o.open = false; });
+    }));
+  }
+
+  /* =================================================================
+     ASISTENTE VIRTUAL (chat)
+     -----------------------------------------------------------------
+     CONECTAR UNA IA REAL
+     Esta demo responde con reglas locales (función responderLocal).
+     Para usar un modelo de lenguaje real, reemplaza el cuerpo de
+     obtenerRespuesta() por una llamada a TU backend, por ejemplo:
+
+       const r = await fetch('https://tu-backend.com/api/chat', {
+         method: 'POST',
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ mensaje: texto, historial: chat.historial, negocio: CONFIG })
+       });
+       const data = await r.json();
+       return { texto: data.respuesta, acciones: [] };
+
+     El backend (Cloudflare Worker, Vercel, Netlify Functions, etc.)
+     guarda la API key del proveedor de IA y le entrega como contexto
+     los datos de CONFIG (precios, horarios, convenios). Nunca pongas
+     una API key en este archivo HTML: sería pública.
+     ================================================================= */
+  const chat = { iniciado: false, historial: [], ocupado: false };
+  const panel = $('#chatPanel'), body = $('#chatBody'), fab = $('#chatFab'), input = $('#chatInput'), teaser = $('#chatTeaser');
+
+  async function obtenerRespuesta(texto) {
+    // <<< Aquí se conecta la IA real (ver comentario de arriba) >>>
+    return responderLocal(texto);
+  }
+
+  const lblReserva = () => (modo === 'agendapro' ? 'Reservar online (AgendaPro)' : 'Agendar evaluación');
+  const accReserva = (tratamiento, label) => ({ tipo: 'reservar', tratamiento: tratamiento || 'evaluacion', label: label || lblReserva() });
+  const accWa = (texto, label) => ({ tipo: 'whatsapp', texto: texto, label: label || 'Escribir por WhatsApp' });
+
+  const SINONIMOS = {
+    limpieza: ['limpieza', 'destartraje', 'sarro', 'profilaxis', 'limpiar'],
+    resina: ['tapadura', 'tapar', 'resina', 'caries', 'empaste', 'calza', 'obturacion', 'carie'],
+    ortodoncia: ['ortodoncia', 'frenillo', 'bracket', 'alineador', 'chueco', 'invisible', 'ortodoncista'],
+    implantes: ['implante', 'perdi un diente', 'me falta un diente', 'diente perdido', 'me faltan dientes'],
+    blanqueamiento: ['blanqueamiento', 'blanquear', 'dientes blancos', 'amarillo', 'manchas', 'blanquea'],
+    endodoncia: ['endodoncia', 'conducto', 'nervio', 'tratamiento de conducto']
+  };
+  function detectarTratamiento(t) {
+    for (const id in SINONIMOS) {
+      if (SINONIMOS[id].some((k) => t.indexOf(k) !== -1)) return CONFIG.tratamientos.find((x) => x.id === id);
+    }
+    return null;
+  }
+
+  const R = {
+    bienvenida: () => ({
+      texto: '¡Hola! Soy el asistente virtual de **' + CONFIG.nombre + '**. Te puedo ayudar con precios, convenios, horarios o a agendar tu **evaluación sin costo**. ¿En qué te ayudo?'
+    }),
+    saludo: () => ({
+      texto: '¡Hola! ¿Cómo estás? Cuéntame qué necesitas: precios, convenios Fonasa o isapre, horarios o agendar una hora.'
+    }),
+    gracias: () => ({ texto: '¡De nada! Si te surge otra duda, aquí estoy. Que tengas un lindo día.' }),
+    dolorImplante: () => ({
+      texto: 'Es la duda más común, y la respuesta te va a tranquilizar: la instalación del implante se hace con **anestesia local**, así que durante el procedimiento no sientes dolor, solo algo de presión.\nLos días siguientes puede haber una molestia leve que se controla con analgésicos comunes. La mayoría de nuestros pacientes retoma su rutina **al día siguiente**.\n¿Quieres que el Dr. Sepúlveda evalúe tu caso sin costo?',
+      acciones: [accReserva('implantes', modo === 'agendapro' ? 'Reservar online (AgendaPro)' : 'Agendar evaluación de implante'), { tipo: 'ir', destino: '#simulador', label: 'Simular cuotas' }]
+    }),
+    urgencia: (est) => ({
+      texto: 'Lamento que estés con molestias. Si tienes **dolor intenso, hinchazón o un diente quebrado**, te atendemos el mismo día según disponibilidad. Llámanos o escríbenos y te damos la primera hora libre.' +
+        (est.abierto ? '\nAhora estamos **abiertos**.' : '\nAhora estamos cerrados (' + est.texto.replace('Cerrado · ', '') + '). Si tienes fiebre o una hinchazón que avanza hacia el ojo o el cuello, acude al servicio de urgencia más cercano.'),
+      acciones: [{ tipo: 'tel', label: 'Llamar ahora', primario: true }, accWa('Hola, tengo una urgencia dental y necesito hora lo antes posible.', 'WhatsApp urgencia')]
+    }),
+    evaluacion: () => ({
+      texto: 'La evaluación es **sin costo**. Revisamos tu boca, resolvemos tus dudas y te entregamos un presupuesto por escrito, sin compromiso.',
+      acciones: [accReserva('evaluacion')]
+    }),
+    tratamiento: (t, dolor) => ({
+      texto: '**' + t.nombre + '**: valor desde **' + clp(t.desde) + '**.\n' + t.chat +
+        (dolor ? '\nTodo se realiza con anestesia local, así que es un tratamiento cómodo.' : '') +
+        '\nPuedes pagarlo en hasta **12 cuotas sin interés**. ¿Lo evaluamos sin costo?',
+      acciones: [accReserva(t.id), { tipo: 'ir', destino: '#simulador', label: 'Simular cuotas' }]
+    }),
+    precios: () => ({
+      texto: 'Estos son nuestros valores de referencia (desde):\n' +
+        CONFIG.tratamientos.map((t) => '• ' + t.nombre + ': **' + clp(t.desde) + '**').join('\n') +
+        '\nLa **evaluación es sin costo** y ahí te damos el presupuesto exacto por escrito.',
+      acciones: [accReserva('evaluacion'), { tipo: 'ir', destino: '#simulador', label: 'Simular cuotas' }]
+    }),
+    convenios: () => ({
+      texto: 'Atendemos **Fonasa** en Modalidad Libre Elección (con bono para prestaciones dentales con código Fonasa) y pacientes de **isapre**: ' + CONFIG.isapres.join(', ') + '.\nTe entregamos boleta y detalle para que pidas tu reembolso según tu plan. Si eres particular, tienes hasta **12 cuotas sin interés**.',
+      acciones: [{ tipo: 'ir', destino: '#convenios', label: 'Ver convenios' }, accReserva('evaluacion')]
+    }),
+    pagos: () => ({
+      texto: 'Puedes pagar con **débito, crédito** (hasta **12 cuotas sin interés** con tarjetas bancarias participantes), **transferencia** o efectivo. En tratamientos largos, como ortodoncia o implantes, también puedes pagar por etapas.',
+      acciones: [{ tipo: 'ir', destino: '#simulador', label: 'Simular mis cuotas' }]
+    }),
+    horario: (est) => ({
+      texto: 'Nuestro horario:\n' + resumenHorario().map((g) => '• ' + g.dias + ': ' + g.txt).join('\n') + '\nEn este momento: **' + est.texto + '**.',
+      acciones: [accReserva('evaluacion')]
+    }),
+    ubicacion: () => ({
+      texto: 'Estamos en **' + CONFIG.direccion + ', ' + CONFIG.comuna + '**. ' + CONFIG.referencia + '. Tenemos estacionamiento para pacientes.\nAtendemos a vecinos de ' + CONFIG.comunasAtendidas.join(', ') + '.',
+      acciones: [{ tipo: 'maps', label: 'Cómo llegar' }, { tipo: 'ir', destino: '#ubicacion', label: 'Ver mapa' }]
+    }),
+    ninos: () => ({
+      texto: '¡Nos encanta atender niños! La **Dra. Javiera Contreras** es odontopediatra y recomendamos la primera visita al aparecer el primer diente o antes del primer año. Usamos técnicas amigables para que lleguen sin miedo y se vayan felices.',
+      acciones: [accReserva('ninos', modo === 'agendapro' ? 'Reservar online (AgendaPro)' : 'Agendar hora para mi hijo/a')]
+    }),
+    agendar: () => (modo === 'agendapro'
+      ? { texto: '¡Perfecto! Puedes elegir profesional, día y hora directamente en nuestra agenda online. **Reserva online vía AgendaPro**, toma menos de un minuto.', acciones: [accReserva('evaluacion', 'Reservar en AgendaPro')] }
+      : { texto: '¡Perfecto! La evaluación es **sin costo**. Abre el formulario, completa tus datos y te llevamos a WhatsApp con el mensaje listo. Te confirmamos la hora en minutos.', acciones: [accReserva('evaluacion', 'Abrir agenda')] }),
+    equipo: () => ({
+      texto: 'Nuestro equipo:\n' + CONFIG.equipo.map((p) => '• **' + p.nombre + '**, ' + p.especialidad.toLowerCase() + ' (' + p.universidad + ')').join('\n'),
+      acciones: [{ tipo: 'ir', destino: '#equipo', label: 'Conocer al equipo' }]
+    }),
+    contacto: () => ({
+      texto: 'Claro, te conecto con una persona del equipo. Puedes llamarnos al **' + CONFIG.telefono + '** o escribirnos por WhatsApp.',
+      acciones: [accWa(CONFIG.mensajeWhatsApp), { tipo: 'tel', label: 'Llamar' }]
+    }),
+    fallback: () => ({
+      texto: 'Mmm, no estoy seguro de haber entendido. Puedo ayudarte con **precios**, **convenios**, **horarios**, **ubicación** o a **agendar una hora**. Si prefieres, te conecto con una persona por WhatsApp.',
+      acciones: [accWa(CONFIG.mensajeWhatsApp, 'Hablar con una persona')]
+    })
+  };
+
+  function responderLocal(entrada) {
+    const t = norm(entrada);
+    const tiene = function () {
+      return Array.prototype.some.call(arguments, (k) => (k instanceof RegExp ? k.test(t) : t.indexOf(k) !== -1));
+    };
+    const est = estadoApertura();
+    const trat = detectarTratamiento(t);
+    const dolor = tiene('duele', 'dolor', 'doloroso', 'anestesia', 'miedo', 'susto');
+
+    if (!t) return R.fallback();
+    if (t.length < 40 && tiene(/^(muchas )?gracias\b/, /^(ok|oka|vale|perfecto|genial|buenisimo|excelente|chao|adios)\b/)) return R.gracias();
+    if (tiene('implante') && dolor) return R.dolorImplante();
+    if (tiene('urgencia', 'urgente', 'emergencia', 'hinchad', 'hinchazon', 'inflamad', 'flemon', 'absceso', 'quebr', 'se me partio', 'se me cayo', 'sangr', 'no aguanto', 'dolor de muela', 'me duele una muela', 'me duele la muela')) return R.urgencia(est);
+    if (tiene('evaluacion') && tiene('precio', 'valor', 'cuanto', 'cuesta', 'costo', 'cobran', 'gratis', 'pagar')) return R.evaluacion();
+    if (trat) return R.tratamiento(trat, dolor);
+    if (tiene('nino', 'nina', 'hijo', 'hija', 'guagua', 'bebe', 'odontopediatr', 'infantil', 'pediatr')) return R.ninos();
+    if (tiene('fonasa', 'isapre', 'convenio', /\bbonos?\b/, 'prevision', 'banmedica', 'colmena', 'consalud', 'cruz blanca', 'masvida', 'vida tres', 'reembolso', 'seguro')) return R.convenios();
+    if (tiene('cuota', 'tarjeta', 'transferencia', 'pagar', /\bpagos?\b/, 'credito', 'debito', 'efectivo', 'financ')) return R.pagos();
+    if (tiene('precio', 'valor', 'cuanto', 'cuesta', 'costo', /\bsale\b/, 'tarifa', 'arancel', 'cobran')) return R.precios();
+    if (tiene('horario', 'abren', 'abierto', 'cierran', 'cierra', 'sabado', 'domingo', 'feriado', 'a que hora', 'atienden hoy')) return R.horario(est);
+    if (tiene('donde', 'direccion', 'ubicacion', 'ubicados', 'llegar', 'estacionamiento', 'mapa', 'queda', 'talagante', 'penaflor', 'padre hurtado', 'el monte', 'isla de maipo')) return R.ubicacion();
+    if (tiene('agendar', 'agenda', 'reservar', 'reserva', /\bhoras?\b/, /\bcitas?\b/, 'evaluacion', 'atenderme', 'turno')) return R.agendar();
+    if (tiene('dentista', 'doctor', 'doctora', 'especialista', 'equipo', 'quien atiende', 'profesional')) return R.equipo();
+    if (tiene('persona', 'humano', 'ejecutiv', 'hablar con', 'whatsapp', 'llamar', 'telefono', 'numero', 'contacto', 'correo', 'email')) return R.contacto();
+    if (dolor) return R.urgencia(est);
+    if (tiene(/^(hola|holi|buenas|buen dia|buenos dias|buenas tardes|buenas noches|alo|hey|saludos)\b/)) return R.saludo();
+    return R.fallback();
+  }
+
+  function formatearTexto(txt) {
+    return esc(txt).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>');
+  }
+
+  function crearAccion(a) {
+    const el = document.createElement('a');
+    el.className = 'msg-btn';
+    if (a.tipo === 'reservar') {
+      el.className += ' primary';
+      el.setAttribute('data-reserva', '');
+      el.dataset.tratamiento = a.tratamiento;
+      el.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-cal"/></svg>' + esc(a.label);
+      configurarBotonReserva(el);
+    } else if (a.tipo === 'whatsapp') {
+      el.href = waLink(a.texto || CONFIG.mensajeWhatsApp); el.target = '_blank'; el.rel = 'noopener';
+      el.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-wa"/></svg>' + esc(a.label);
+    } else if (a.tipo === 'tel') {
+      if (a.primario) el.className += ' primary';
+      el.href = TEL_HREF;
+      el.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-phone"/></svg>' + esc(a.label);
+    } else if (a.tipo === 'maps') {
+      el.href = MAPS_DIR; el.target = '_blank'; el.rel = 'noopener';
+      el.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-route"/></svg>' + esc(a.label);
+    } else if (a.tipo === 'ir') {
+      el.href = a.destino;
+      el.innerHTML = esc(a.label) + '<svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg>';
+      el.addEventListener('click', () => { if (window.innerWidth <= 720) cerrarChat(false); });
+    }
+    return el;
+  }
+
+  function agregarMensaje(quien, texto, acciones) {
+    const m = document.createElement('div');
+    m.className = 'msg ' + quien;
+    m.innerHTML = formatearTexto(texto);
+    if (acciones && acciones.length) {
+      const box = document.createElement('div');
+      box.className = 'msg-actions';
+      acciones.forEach((a) => box.appendChild(crearAccion(a)));
+      m.appendChild(box);
+    }
+    body.appendChild(m);
+    body.scrollTop = body.scrollHeight;
+    chat.historial.push({ rol: quien === 'user' ? 'usuario' : 'asistente', texto: texto });
+  }
+
+  function mostrarEscribiendo() {
+    const t = document.createElement('div');
+    t.className = 'msg bot typing';
+    t.setAttribute('aria-label', 'El asistente está escribiendo');
+    t.innerHTML = '<span></span><span></span><span></span><em>escribiendo…</em>';
+    body.appendChild(t);
+    body.scrollTop = body.scrollHeight;
+    return t;
+  }
+
+  function botResponde(resp) {
+    const typing = mostrarEscribiendo();
+    const espera = reduceMotion ? 200 : Math.min(1900, 550 + resp.texto.length * 6);
+    return new Promise((ok) => setTimeout(() => { typing.remove(); agregarMensaje('bot', resp.texto, resp.acciones); ok(); }, espera));
+  }
+
+  async function enviar(texto) {
+    const limpio = String(texto || '').trim();
+    if (!limpio || chat.ocupado) return;
+    chat.ocupado = true;
+    agregarMensaje('user', limpio);
+    try {
+      const resp = await obtenerRespuesta(limpio);
+      await botResponde(resp);
+    } catch (e) {
+      await botResponde({ texto: 'Tuve un problema para responder. Escríbenos por WhatsApp y te ayudamos altiro.', acciones: [accWa(CONFIG.mensajeWhatsApp)] });
+    }
+    chat.ocupado = false;
+  }
+
+  function abrirChat() {
+    ocultarTeaser(true);
+    panel.hidden = false;
+    panel.classList.remove('open');
+    void panel.offsetWidth;
+    panel.classList.add('open');
+    fab.setAttribute('aria-expanded', 'true');
+    fab.setAttribute('aria-label', 'Cerrar asistente virtual');
+    if (!chat.iniciado) {
+      chat.iniciado = true;
+      botResponde(R.bienvenida());
+    }
+    setTimeout(() => input.focus(), 120);
+  }
+  function cerrarChat(devolverFoco) {
+    panel.hidden = true;
+    fab.setAttribute('aria-expanded', 'false');
+    fab.setAttribute('aria-label', 'Abrir asistente virtual');
+    if (devolverFoco !== false) fab.focus();
+  }
+  function ocultarTeaser(recordar) {
+    teaser.hidden = true;
+    if (recordar) { try { sessionStorage.setItem('nacarTeaser', '1'); } catch (e) { /* sin almacenamiento */ } }
+  }
+
+  function initChat() {
+    fab.addEventListener('click', () => (panel.hidden ? abrirChat() : cerrarChat()));
+    $('#chatClose').addEventListener('click', () => cerrarChat());
+    $('#chatForm').addEventListener('submit', (e) => { e.preventDefault(); const v = input.value; input.value = ''; enviar(v); });
+    $('#chatChips').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) enviar(b.textContent); });
+    panel.addEventListener('keydown', (e) => { if (e.key === 'Escape') cerrarChat(); });
+    $$('[data-open-chat]').forEach((b) => b.addEventListener('click', abrirChat));
+    teaser.addEventListener('click', (e) => { if (e.target.closest('#teaserX')) { ocultarTeaser(true); return; } abrirChat(); });
+    let visto = false;
+    try { visto = sessionStorage.getItem('nacarTeaser') === '1'; } catch (e) { /* sin almacenamiento */ }
+    if (!visto) setTimeout(() => { if (panel.hidden && !(dlg.open)) teaser.hidden = false; }, 6000);
+  }
+
+  /* ---------------------------------------------------------------
+     SEO: datos estructurados generados desde CONFIG
+     --------------------------------------------------------------- */
+  function jsonLd() {
+    const mapaDias = { lunes: 'Monday', martes: 'Tuesday', miercoles: 'Wednesday', jueves: 'Thursday', viernes: 'Friday', sabado: 'Saturday', domingo: 'Sunday' };
+    const horas = [];
+    Object.keys(CONFIG.horarios).forEach((k) => (CONFIG.horarios[k] || []).forEach((r) => horas.push({ '@type': 'OpeningHoursSpecification', dayOfWeek: 'https://schema.org/' + mapaDias[k], opens: r[0], closes: r[1] })));
+    const data = {
+      '@context': 'https://schema.org', '@type': 'Dentist', name: CONFIG.nombre, telephone: CONFIG.telefono, email: CONFIG.email,
+      address: { '@type': 'PostalAddress', streetAddress: CONFIG.direccion, addressLocality: CONFIG.comuna, addressRegion: CONFIG.region, addressCountry: 'CL' },
+      areaServed: CONFIG.comunasAtendidas, openingHoursSpecification: horas, priceRange: '$$'
+    };
+    const s = document.createElement('script');
+    s.type = 'application/ld+json';
+    s.textContent = JSON.stringify(data);
+    document.head.appendChild(s);
+  }
+
+  /* ---------------------------------------------------------------
+     Inicio
+     --------------------------------------------------------------- */
+  rellenarConfig();
+  renderTratamientos();
+  renderEquipo();
+  renderSelects();
+  renderHorarios();
+  pintarEstado();
+  setInterval(pintarEstado, 60000);
+  aplicarModo(modo);
+  initDemoSwitch();
+  initSimulador();
+  initNav();
+  initReveal();
+  initFaq();
+  initChat();
+  jsonLd();
+
+  if (location.hash === '#agendar' && modo === 'whatsapp') abrirAgenda({});
+  // Exponer para pruebas desde la consola: NacarDemo.modo('agendapro')
+  window.NacarDemo = { modo: (m) => aplicarModo(m, { anunciar: true, actualizarUrl: true }), reservar: reservar, estado: estadoApertura };
+})();
+</script>
+</body>
+</html>

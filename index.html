@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Páginas web para negocios locales</title>
+<meta name="description" content="Ejemplos de sitios web a medida para negocios de Talagante y alrededores.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f3ee; --ink:#16181d; --muted:#5d6068; --line:#e3ddd3; --card:#fff;
+    --accent:#e2573b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 20px}
+  header{padding:72px 0 40px}
+  .kicker{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+  h1{font-family:"Instrument Serif",serif;font-weight:400;font-size:clamp(2.4rem,6vw,4.4rem);line-height:1.02;margin:14px 0 18px;max-width:14ch}
+  h1 em{color:var(--accent)}
+  .lead{color:var(--muted);font-size:1.12rem;max-width:56ch}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:22px;padding:24px 0 80px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:22px;overflow:hidden;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s}
+  .card:hover,.card:focus-visible{transform:translateY(-4px);box-shadow:0 18px 40px -18px rgba(0,0,0,.25)}
+  .card:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+  .thumb{height:190px;display:flex;align-items:flex-end;padding:20px;position:relative;overflow:hidden}
+  .thumb .emoji{font-size:3.2rem;line-height:1;filter:drop-shadow(0 6px 12px rgba(0,0,0,.2))}
+  .thumb .tag{position:absolute;top:16px;right:16px;background:rgba(255,255,255,.9);color:#16181d;font-size:.72rem;font-weight:600;padding:5px 10px;border-radius:99px}
+  .body{padding:20px 22px 24px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .body h2{font-family:"Instrument Serif",serif;font-weight:400;font-size:1.75rem;line-height:1.1}
+  .body p{color:var(--muted);font-size:.95rem}
+  .feats{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:8px}
+  .feats span{font-size:.75rem;background:var(--bg);border:1px solid var(--line);padding:4px 9px;border-radius:99px}
+  .go{font-weight:600;font-size:.92rem;color:var(--accent);margin-top:6px}
+  .t1{background:linear-gradient(135deg,#1f8a7a,#f2a07b)}
+  .t2{background:linear-gradient(135deg,#0e5f78,#8fe0d4)}
+  .t3{background:linear-gradient(135deg,#2f4a36,#c9875a)}
+  .t4{background:linear-gradient(135deg,#0d1b3d,#22c38e)}
+  .t5{background:linear-gradient(135deg,#0b0b0c 40%,#d4ff3a)}
+  footer{border-top:1px solid var(--line);padding:28px 0 40px;color:var(--muted);font-size:.9rem}
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){--bg:#121317;--ink:#f1efe9;--muted:#a3a6ae;--line:#2a2c33;--card:#1a1c21;--accent:#ff7a5c}
+  }
+  :root[data-theme="dark"]{--bg:#121317;--ink:#f1efe9;--muted:#a3a6ae;--line:#2a2c33;--card:#1a1c21;--accent:#ff7a5c}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="kicker">Sitios web para negocios locales · Talagante y alrededores</div>
+  <h1>Tu negocio, <em>con una web</em> que trabaja por ti</h1>
+  <p class="lead">Cinco ejemplos reales de lo que puedo hacer por tu negocio: reservas por WhatsApp, asistente virtual 24/7, catálogos, calendarios y portales de clientes. Todo adaptado a tu marca, tus colores y tus horarios.</p>
+</header>
+
+<main class="wrap grid">
+  <a class="card" href="veterinaria/index.html">
+    <div class="thumb t1"><span class="emoji">🐾</span><span class="tag">Veterinarias</span></div>
+    <div class="body">
+      <h2>Veterinaria</h2>
+      <p>Reserva de horas, urgencias por WhatsApp y recordatorio de vacunas directo al calendario del cliente.</p>
+      <div class="feats"><span>Reservas</span><span>Calendario de vacunas</span><span>Reseñas Google</span><span>Asistente IA</span></div>
+      <div class="go">Ver ejemplo →</div>
+    </div>
+  </a>
+  <a class="card" href="odontologia/index.html">
+    <div class="thumb t2"><span class="emoji">🦷</span><span class="tag">Clínicas dentales</span></div>
+    <div class="body">
+      <h2>Odontología</h2>
+      <p>Tratamientos con precios “desde”, equipo, convenios Fonasa e isapres, simulador de cuotas y conexión con AgendaPro.</p>
+      <div class="feats"><span>Agenda</span><span>AgendaPro</span><span>Cuotas</span><span>Asistente IA</span></div>
+      <div class="go">Ver ejemplo →</div>
+    </div>
+  </a>
+  <a class="card" href="corredora/index.html">
+    <div class="thumb t3"><span class="emoji">🏠</span><span class="tag">Corredoras</span></div>
+    <div class="body">
+      <h2>Corredora de propiedades</h2>
+      <p>Buscador por comuna, tipo y precio, catálogo en UF o pesos, captación de propietarios y asistente que califica interesados.</p>
+      <div class="feats"><span>Buscador</span><span>UF / CLP</span><span>Captación</span><span>Filtro de leads</span></div>
+      <div class="go">Ver ejemplo →</div>
+    </div>
+  </a>
+  <a class="card" href="contable/index.html">
+    <div class="thumb t4"><span class="emoji">📊</span><span class="tag">Contadores</span></div>
+    <div class="body">
+      <h2>Estudio contable</h2>
+      <p>Cotizador de planes, portal para subir documentos y calendario de vencimientos tributarios (F29, Previred, Renta).</p>
+      <div class="feats"><span>Cotizador</span><span>Portal clientes</span><span>Vencimientos SII</span><span>Asistente IA</span></div>
+      <div class="go">Ver ejemplo →</div>
+    </div>
+  </a>
+  <a class="card" href="gimnasio/index.html">
+    <div class="thumb t5"><span class="emoji">💪</span><span class="tag">Gimnasios</span></div>
+    <div class="body">
+      <h2>Gimnasio</h2>
+      <p>Clase de prueba gratis, planes, horario de clases en vivo y app de socios para reservar, ver la rutina y pagar.</p>
+      <div class="feats"><span>Clase gratis</span><span>Horarios</span><span>App de socios</span><span>Asistente IA</span></div>
+      <div class="go">Ver ejemplo →</div>
+    </div>
+  </a>
+</main>
+
+<footer class="wrap">Los negocios, nombres y datos de estos ejemplos son ficticios. Cada sitio se personaliza con la información, fotos y colores de tu negocio.</footer>
+</body>
+</html>

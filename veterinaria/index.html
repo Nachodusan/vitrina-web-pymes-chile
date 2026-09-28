@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="utf-8">
+<!--
+=====================================================================
+  CONFIGURACIÓN RÁPIDA  (edita SOLO el objeto CONFIG de más abajo)
+=====================================================================
+  1. Nombre, WhatsApp, teléfono, dirección, horarios, precios,
+     reseñas y redes están en el objeto CONFIG. El JavaScript de la
+     página usa esos datos para rellenar todo automáticamente
+     (portada, servicios, reserva, horarios, chat, footer...).
+  2. Colores y tipografías: variables CSS en :root (busca "PALETA").
+  3. Fotos: los servicios usan CONFIG.servicios[].imagen; la portada
+     y otras fotos están en el HTML (busca "images.unsplash.com").
+  4. SEO: cambia también <title>, meta description y og:* aquí abajo
+     (WhatsApp y Google leen esos datos sin ejecutar JavaScript).
+  5. Hotel y Peluquería son OPCIONALES: pon activo:false en
+     CONFIG.servicios para ocultarlos en toda la página.
+=====================================================================
+-->
+<script>
+const CONFIG = {
+  /* ---------- Identidad ---------- */
+  nombre: "Huellitas del Maipo",
+  nombreCompleto: "Clínica Veterinaria Huellitas del Maipo",
+  nombreAsistente: "Pati",
+
+  /* ---------- Contacto ---------- */
+  whatsapp: "56987654321",            // solo dígitos: 56 + 9 + número (sin "+" ni espacios)
+  telefonoLlamadas: "56987654321",    // número para el botón "Llamar"
+  telefonoVisible: "+56 9 8765 4321",
+  email: "contacto@huellitasdelmaipo.cl",
+  direccion: "Av. Bernardo O'Higgins 1245",
+  comuna: "Talagante",
+  region: "Región Metropolitana",
+  referencia: "a pasos de la Plaza de Armas",
+  comunasCercanas: "Peñaflor, El Monte, Isla de Maipo y Padre Hurtado",
+  mapaEmbedUrl: "https://www.google.com/maps?q=Talagante,+Chile&output=embed",
+  mapaComoLlegarUrl: "https://www.google.com/maps/dir/?api=1&destination=Talagante,+Chile",
+  googleResenasUrl: "https://www.google.com/maps/search/?api=1&query=Talagante,+Chile", // reemplazar por el link real de la ficha de Google
+
+  /* ---------- Cifras y reputación ---------- */
+  rating: 4.9,
+  totalResenas: 327,
+  aniosExperiencia: 12,
+  mascotasAtendidas: 8500,
+  director: "Dr. Tomás Fuentes",
+  cargoDirector: "Director clínico",
+
+  /* ---------- Horarios (24 h "HH:MM"). null = cerrado ---------- */
+  zonaHoraria: "America/Santiago",
+  horarios: {
+    lunes:     ["09:00", "20:00"],
+    martes:    ["09:00", "20:00"],
+    miercoles: ["09:00", "20:00"],
+    jueves:    ["09:00", "20:00"],
+    viernes:   ["09:00", "20:00"],
+    sabado:    ["10:00", "18:00"],
+    domingo:   ["10:00", "14:00"]
+  },
+  duracionBloqueMin: 30,          // intervalo de horas en el formulario de reserva
+  urgencias24_7: true,
+
+  /* ---------- Servicios y precios "desde" (CLP) ----------
+     activo:false oculta el servicio en tarjetas, reserva, chat y footer. */
+  servicios: [
+    { id: "consulta", nombre: "Consulta general", desde: 18000, icono: "stetho", etiqueta: "El más pedido",
+      descripcion: "Examen físico completo, control sano y diagnóstico explicado con palabras simples. Sin apuros y con un plan claro para tu mascota.",
+      incluye: ["Perros, gatos y exóticos", "Control de peso y condición corporal"],
+      imagen: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&q=80&auto=format&fit=crop",
+      alt: "Veterinaria acariciando a un gato atigrado durante un control" },
+    { id: "vacunas", nombre: "Vacunas y desparasitación", desde: 12000, icono: "syringe", etiqueta: "Con certificado",
+      descripcion: "Óctuple, séxtuple, triple felina, leucemia felina y antirrábica. Te avisamos cuándo toca el próximo refuerzo.",
+      incluye: ["Certificado para trámites y viajes", "Recordatorio de la próxima dosis"],
+      imagen: "https://images.unsplash.com/photo-1611003228941-98852ba62227?w=800&q=80&auto=format&fit=crop",
+      alt: "Cachorro golden retriever recostado, listo para su vacuna" },
+    { id: "cirugia", nombre: "Cirugía y esterilización", desde: 65000, icono: "pulse", etiqueta: "Pabellón propio",
+      descripcion: "Esterilizaciones, cirugías de tejidos blandos y limpiezas dentales con anestesia inhalatoria y monitoreo constante.",
+      incluye: ["Evaluación prequirúrgica", "Control postoperatorio incluido"],
+      imagen: "https://images.unsplash.com/photo-1644675443401-ea4c14bad0e6?w=800&q=80&auto=format&fit=crop",
+      alt: "Dos veterinarios examinando a un perro en la clínica" },
+    { id: "peluqueria", nombre: "Peluquería canina y felina", desde: 15000, icono: "scissors", etiqueta: "Opcional", activo: true,
+      descripcion: "Baño, corte de raza, corte de uñas y limpieza de oídos con productos hipoalergénicos y mucha paciencia.",
+      incluye: ["Productos hipoalergénicos", "Perfume y pañuelo de regalo"],
+      imagen: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800&q=80&auto=format&fit=crop",
+      alt: "Golden retriever feliz mientras recibe un baño" },
+    { id: "hotel", nombre: "Hotel y guardería", desde: 14000, sufijo: "/noche", icono: "bed", etiqueta: "Fotos diarias", activo: true,
+      descripcion: "Estadías seguras con paseos, comida a su hora y supervisión veterinaria. Te mandamos fotos todos los días mientras viajas.",
+      incluye: ["Supervisión veterinaria 24 h", "Fotos y videos por WhatsApp"],
+      imagen: "https://images.unsplash.com/photo-1581888227599-779811939961?w=800&q=80&auto=format&fit=crop",
+      alt: "Perro descansando en una cama acolchada" }
+  ],
+  precioUrgencia: 30000,
+  precioDomicilio: 25000,
+  precioMicrochip: 20000,
+  mediosPago: "efectivo, débito, crédito y transferencia",
+
+  /* ---------- Redes (deja "" para ocultar) ---------- */
+  redes: {
+    instagram: "https://www.instagram.com/",
+    facebook: "https://www.facebook.com/",
+    tiktok: "https://www.tiktok.com/"
+  },
+
+  /* ---------- Reseñas (reemplazar por reseñas reales) ---------- */
+  resenas: [
+    { nombre: "Camila Rojas", fecha: "hace 1 semana", estrellas: 5,
+      texto: "Llevé a mi perrita Canela un domingo en la noche porque se comió algo raro y la atendieron al tiro. El doctor nos explicó todo con paciencia y volvimos a la casa tranquilos. Súper agradecida." },
+    { nombre: "Felipe Muñoz", fecha: "hace 3 semanas", estrellas: 5,
+      texto: "Esterilizamos a nuestra gata Mora y el trato fue impecable. Nos mandaron fotos por WhatsApp después de la cirugía y cobraron exactamente lo que cotizaron. 100% recomendable." },
+    { nombre: "Javiera Soto", fecha: "hace 1 mes", estrellas: 5,
+      texto: "El mejor baño y corte que le han hecho a mi poodle Tobías. Volvió feliz, perfumado y sin estrés. Además me avisaron por WhatsApp que le tocaba la óctuple." },
+    { nombre: "Matías González", fecha: "hace 2 meses", estrellas: 5,
+      texto: "Dejamos a Rucio en el hotel durante las vacaciones de invierno. Todos los días nos llegaban fotos y videos. Se nota que aman a los animales. Volveremos sí o sí." },
+    { nombre: "Daniela Contreras", fecha: "hace 2 meses", estrellas: 4,
+      texto: "Muy buena atención y ordenados con la ficha de mi gato Simón. A veces hay que esperar un poquito porque se llena, pero vale totalmente la pena." },
+    { nombre: "Ignacio Pérez", fecha: "hace 3 meses", estrellas: 5,
+      texto: "Vivo en Peñaflor y viajo a Talagante solo por ellos. Precios justos, veterinarios que te explican sin apurarte y una recepción muy cariñosa. Mi Luna los adora." }
+  ],
+
+  /* ---------- Crédito del sitio (footer) ---------- */
+  creditoWeb: { texto: "Sitio web creado por Tu Marca Web", url: "#" }
+};
+document.documentElement.classList.add("js");
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Clínica Veterinaria Huellitas del Maipo · Veterinaria en Talagante · Urgencias 24/7</title>
+<meta name="description" content="Clínica veterinaria en Talagante: consultas, vacunas, cirugía, peluquería y hotel para perros y gatos. Urgencias 24/7 por WhatsApp. Reserva tu hora en un minuto.">
+<meta name="theme-color" content="#0E7C74">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:title" content="Clínica Veterinaria Huellitas del Maipo · Talagante">
+<meta property="og:description" content="Cuidamos a tu mascota como parte de tu familia. Consultas, vacunas, cirugía y urgencias 24/7 en Talagante.">
+<meta property="og:image" content="https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=1200&q=80&auto=format&fit=crop">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%230E7C74'/%3E%3Cg fill='%23fff'%3E%3Cellipse cx='19' cy='28' rx='5' ry='6.5'/%3E%3Cellipse cx='27.5' cy='17' rx='5' ry='6.5'/%3E%3Cellipse cx='36.5' cy='17' rx='5' ry='6.5'/%3E%3Cellipse cx='45' cy='28' rx='5' ry='6.5'/%3E%3Cpath d='M32 30c-7 0-13 8-13 14 0 4 3 6 7 5 2-.5 4-1.5 6-1.5s4 1 6 1.5c4 1 7-1 7-5 0-6-6-14-13-14z'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://images.unsplash.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* =====================================================================
+   PALETA Y TIPOGRAFÍA — cambia estas variables para cada cliente
+   ===================================================================== */
+:root{
+  --c-primary:#0E7C74;      /* verde azulado principal */
+  --c-primary-600:#0A6660;
+  --c-primary-800:#0B3F3C;
+  --c-primary-100:#D7F0EC;
+  --c-primary-50:#EEF8F6;
+  --c-accent:#FF7F5C;       /* coral */
+  --c-accent-600:#E8603D;
+  --c-accent-ink:#B4431F;   /* coral legible sobre fondos claros */
+  --c-peach:#FFD9C7;
+  --c-peach-50:#FFF1E8;
+  --c-cream:#FFF9F1;
+  --c-sun:#FFC24B;
+  --c-urgent:#D92D20;
+  --c-urgent-600:#B42318;
+  --c-wa:#1DA851;
+  --c-wa-ink:#0E7A43;
+  --c-ink:#1D2B2A;
+  --c-ink-soft:#4A5B59;
+  --c-line:#EADFD1;
+  --c-white:#FFFFFF;
+
+  --font-display:"Fredoka","Nunito",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-body:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+
+  --radius-sm:14px;
+  --radius:22px;
+  --radius-lg:32px;
+  --shadow-sm:0 4px 14px -6px rgba(29,43,42,.18);
+  --shadow:0 14px 34px -16px rgba(29,43,42,.28);
+  --shadow-lg:0 28px 60px -24px rgba(11,63,60,.45);
+  --container:1180px;
+  --header-h:72px;
+}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-body);font-size:1.0625rem;line-height:1.65;color:var(--c-ink);background:var(--c-cream);overflow-x:clip;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body.modal-open{overflow:hidden}
+img{max-width:100%;height:auto;display:block}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:600;line-height:1.12;letter-spacing:-.01em;margin:0 0 .5em;color:var(--c-ink)}
+p{margin:0 0 1em}
+a{color:var(--c-primary-600)}
+button{font:inherit}
+:focus-visible{outline:3px solid var(--c-accent-600);outline-offset:3px;border-radius:8px}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.container{width:min(100% - 2.5rem, var(--container));margin-inline:auto}
+section[id]{scroll-margin-top:calc(var(--header-h) + 12px)}
+.icon{width:1.25em;height:1.25em;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+.skip-link{position:absolute;left:1rem;top:-100px;z-index:200;background:var(--c-ink);color:#fff;padding:.7rem 1rem;border-radius:12px;font-weight:800;text-decoration:none}
+.skip-link:focus{top:1rem}
+
+/* ---------- Botones ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.55em;font:800 1rem/1.2 var(--font-body);padding:.85em 1.4em;border-radius:999px;border:2px solid transparent;cursor:pointer;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease,background-color .2s ease,color .2s ease;white-space:nowrap;position:relative}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--c-primary);color:#fff;box-shadow:0 10px 22px -10px rgba(14,124,116,.8)}
+.btn-primary:hover{background:var(--c-primary-600)}
+.btn-urgent{background:var(--c-urgent);color:#fff;box-shadow:0 10px 24px -10px rgba(217,45,32,.85);animation:urgentRing 2.4s infinite}
+.btn-urgent:hover{background:var(--c-urgent-600)}
+.btn-accent{background:var(--c-accent);color:var(--c-ink)}
+.btn-accent:hover{background:#FF9474}
+.btn-ghost{background:transparent;border-color:currentColor;color:var(--c-primary-600)}
+.btn-ghost:hover{background:var(--c-primary-50)}
+.btn-white{background:#fff;color:var(--c-ink)}
+.btn-outline-white{background:transparent;border-color:rgba(255,255,255,.75);color:#fff}
+.btn-outline-white:hover{background:rgba(255,255,255,.12)}
+.btn-wa{background:var(--c-wa-ink);color:#fff}
+.btn-wa:hover{background:#0B6737}
+.btn-lg{font-size:1.07rem;padding:1em 1.6em}
+.btn-sm{font-size:.9rem;padding:.6em 1.05em}
+.btn-block{width:100%}
+.link-btn{background:none;border:0;color:inherit;text-decoration:underline;cursor:pointer;font-weight:700;padding:.4rem}
+@keyframes urgentRing{0%{box-shadow:0 10px 24px -10px rgba(217,45,32,.85),0 0 0 0 rgba(217,45,32,.45)}70%{box-shadow:0 10px 24px -10px rgba(217,45,32,.85),0 0 0 14px rgba(217,45,32,0)}100%{box-shadow:0 10px 24px -10px rgba(217,45,32,.85),0 0 0 0 rgba(217,45,32,0)}}
+
+/* ---------- Topbar + Header ---------- */
+.topbar{background:var(--c-primary-800);color:#DDEFEB;font-size:.84rem;font-weight:700}
+.topbar .container{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:.45rem 0}
+.topbar a{color:#fff;text-decoration:none}
+.topbar a:hover{text-decoration:underline}
+.tb-left,.tb-right{display:flex;align-items:center;gap:1.1rem;min-width:0}
+.tb-item{display:inline-flex;align-items:center;gap:.4rem;white-space:nowrap}
+.tb-urgent{color:#FFD2CC}
+.tb-dot{width:8px;height:8px;border-radius:50%;background:#FF6B5E;animation:pulse 1.8s infinite}
+.tb-status{display:inline-flex;align-items:center;gap:.4rem;padding:.12rem .6rem;border-radius:999px;background:rgba(255,255,255,.1)}
+.tb-status::before{content:"";width:7px;height:7px;border-radius:50%;background:#6EE7A8}
+.tb-status.closed::before{background:#FF9C92}
+.site-header{position:sticky;top:0;z-index:60;background:rgba(255,249,241,.88);-webkit-backdrop-filter:saturate(1.4) blur(12px);backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid transparent;transition:box-shadow .3s,border-color .3s}
+.site-header.scrolled{border-color:var(--c-line);box-shadow:0 8px 26px -16px rgba(29,43,42,.35)}
+.nav-wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:var(--header-h)}
+.brand{display:inline-flex;align-items:center;gap:.65rem;text-decoration:none;color:var(--c-ink);min-width:0}
+.brand-mark{width:46px;height:46px;flex:none;border-radius:16px 16px 16px 6px;background:var(--c-primary);color:#fff;display:grid;place-items:center;transform:rotate(-6deg);box-shadow:0 8px 18px -8px rgba(14,124,116,.8)}
+.brand-mark .icon{width:26px;height:26px}
+.brand-text{display:flex;flex-direction:column;min-width:0}
+.brand-text strong{font-family:var(--font-display);font-weight:700;font-size:1.22rem;line-height:1.1;white-space:nowrap}
+.brand-text small{font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--c-accent-ink);white-space:nowrap}
+.nav-links{display:flex;align-items:center;gap:.15rem;list-style:none;margin:0;padding:0}
+.nav-links a{display:block;padding:.5rem .8rem;border-radius:999px;text-decoration:none;color:var(--c-ink);font-weight:800;font-size:.95rem;transition:background .2s,color .2s}
+.nav-links a:hover,.nav-links a.active{background:var(--c-primary-100);color:var(--c-primary-800)}
+.nav-mobile-cta{display:none}
+.nav-actions{display:flex;align-items:center;gap:.6rem}
+.nav-toggle{display:none;width:48px;height:48px;border-radius:14px;border:2px solid var(--c-line);background:#fff;color:var(--c-ink);cursor:pointer;place-items:center}
+.nav-toggle .icon{width:24px;height:24px}
+.nav-toggle .i-close{display:none}
+.nav-toggle[aria-expanded="true"] .i-open{display:none}
+.nav-toggle[aria-expanded="true"] .i-close{display:block}
+@media (max-width:1020px){
+  .nav-toggle{display:inline-grid}
+  .nav{position:absolute;left:0;right:0;top:100%;background:var(--c-cream);border-bottom:1px solid var(--c-line);box-shadow:0 20px 30px -20px rgba(29,43,42,.35);padding:.75rem 1.25rem 1.5rem;display:none}
+  .nav.open{display:block;animation:slideDown .25s ease}
+  .nav-links{flex-direction:column;align-items:stretch;gap:.2rem}
+  .nav-links a{padding:.85rem 1rem;font-size:1.1rem;border-radius:14px}
+  .nav-mobile-cta{display:grid;gap:.6rem;margin-top:.8rem}
+}
+@media (max-width:560px){
+  .nav-actions .btn-reserve{display:none}
+  .tb-hide-sm{display:none!important}
+  .brand-text strong{font-size:1.08rem}
+}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,107,94,.7)}70%{box-shadow:0 0 0 8px rgba(255,107,94,0)}100%{box-shadow:0 0 0 0 rgba(255,107,94,0)}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;overflow:hidden;padding:clamp(2rem,5vw,4.5rem) 0 clamp(4.5rem,8vw,6.5rem);background:radial-gradient(900px 520px at 88% 8%,rgba(255,127,92,.16),transparent 60%),radial-gradient(700px 500px at -5% 105%,rgba(14,124,116,.12),transparent 60%),var(--c-cream)}
+.paw-trail{position:absolute;inset:0;pointer-events:none;color:var(--c-primary);opacity:.09}
+.paw-trail .icon{position:absolute;width:34px;height:34px}
+.hero-grid{display:grid;gap:2.75rem;align-items:center;position:relative}
+@media (min-width:920px){.hero-grid{grid-template-columns:1.05fr .95fr;gap:3rem}}
+.eyebrow{display:inline-flex;align-items:center;gap:.55rem;padding:.35rem .95rem .35rem .4rem;background:#fff;border:1px solid var(--c-line);border-radius:999px;font-weight:800;font-size:.86rem;color:var(--c-primary-800);box-shadow:var(--shadow-sm)}
+.eyebrow-paw{width:28px;height:28px;border-radius:50%;background:var(--c-accent);color:#fff;display:grid;place-items:center}
+.eyebrow-paw .icon{width:16px;height:16px}
+.hero h1{font-size:clamp(2.3rem,7vw,4.25rem);font-weight:700;letter-spacing:-.025em;margin:1.1rem 0 1.1rem;line-height:1.05}
+.hl{position:relative;display:inline-block;color:var(--c-primary);white-space:nowrap}
+.hl svg{position:absolute;left:-3%;bottom:-.2em;width:106%;height:.42em;overflow:visible}
+.hl path{fill:none;stroke:var(--c-accent);stroke-width:7;stroke-linecap:round;stroke-dasharray:260;stroke-dashoffset:260;animation:draw 1.1s .6s cubic-bezier(.6,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.lead{font-size:clamp(1.06rem,2.2vw,1.24rem);color:var(--c-ink-soft);max-width:35rem;margin:0}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:.8rem;margin:1.8rem 0 1.05rem}
+@media (max-width:560px){.hero-ctas .btn{width:100%}}
+.urgent-note{display:flex;align-items:center;gap:.6rem;margin:0;font-weight:800;font-size:.95rem;color:var(--c-urgent-600)}
+.pulse-dot{width:11px;height:11px;flex:none;border-radius:50%;background:var(--c-urgent);animation:pulseRed 1.8s infinite}
+@keyframes pulseRed{0%{box-shadow:0 0 0 0 rgba(217,45,32,.55)}70%{box-shadow:0 0 0 10px rgba(217,45,32,0)}100%{box-shadow:0 0 0 0 rgba(217,45,32,0)}}
+.hero-trust{display:flex;flex-wrap:wrap;gap:1.1rem 2rem;list-style:none;margin:1.8rem 0 0;padding:1.4rem 0 0;border-top:2px dashed var(--c-line)}
+.hero-trust li{display:flex;align-items:center;gap:.65rem;line-height:1.2}
+.hero-trust strong{font-family:var(--font-display);font-size:1.45rem;font-weight:700}
+.hero-trust small{display:block;font-size:.82rem;font-weight:700;color:var(--c-ink-soft)}
+.g-icon{width:34px;height:34px;flex:none}
+.trust-top{display:flex;align-items:center;gap:.4rem}
+.stars{position:relative;display:inline-flex;line-height:1;vertical-align:middle}
+.stars-base,.stars-fill{display:flex;gap:1px}
+.stars-base{color:#DADCE0}
+.stars-fill{position:absolute;inset:0 auto 0 0;width:var(--pct,100%);overflow:hidden;color:#FBBC04}
+.stars .icon{width:1em;height:1em}
+
+.hero-visual{position:relative;width:100%;max-width:520px;margin-inline:auto;padding:1rem 1rem 2.2rem;isolation:isolate}
+.hero-blob{position:absolute;inset:3% 0 10% 8%;background:var(--c-accent);border-radius:58% 42% 52% 48%/45% 55% 45% 55%;transform:rotate(8deg);z-index:-2;animation:morph 16s ease-in-out infinite}
+.hero-dots{position:absolute;width:150px;height:150px;left:-10px;bottom:0;border-radius:50%;background-image:radial-gradient(var(--c-primary) 1.7px,transparent 2px);background-size:15px 15px;opacity:.35;z-index:-1}
+.hero-photo{margin:0;aspect-ratio:4/5;overflow:hidden;background:var(--c-primary-100);border:8px solid #fff;border-radius:46% 54% 44% 56%/52% 44% 56% 48%;box-shadow:var(--shadow-lg);animation:morph 14s ease-in-out infinite reverse}
+.hero-photo img{width:100%;height:100%;object-fit:cover}
+@keyframes morph{0%,100%{border-radius:46% 54% 44% 56%/52% 44% 56% 48%}50%{border-radius:56% 44% 54% 46%/44% 56% 44% 56%}}
+.float-card{position:absolute;display:flex;align-items:center;gap:.65rem;background:#fff;border-radius:18px;padding:.7rem .95rem;box-shadow:0 18px 40px -18px rgba(29,43,42,.5);font-size:.84rem;line-height:1.25;animation:bob 6s ease-in-out infinite}
+.float-card strong{display:block;font-family:var(--font-display);font-size:1.05rem;font-weight:600}
+.float-card small{color:var(--c-ink-soft);font-weight:700}
+.fc-ico{width:40px;height:40px;flex:none;border-radius:13px;display:grid;place-items:center;color:#fff}
+.fc-1{top:9%;left:-4%}
+.fc-1 .fc-ico{background:var(--c-primary)}
+.fc-2{bottom:14%;right:-4%;animation-delay:-2s}
+.fc-2 img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:3px solid var(--c-peach);background:var(--c-peach)}
+.fc-3{bottom:0;left:6%;animation-delay:-4s}
+.fc-3 .fc-ico{background:var(--c-wa-ink)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.spin-badge{position:absolute;top:-2%;right:2%;width:112px;height:112px;border-radius:50%;background:var(--c-sun);color:var(--c-ink);display:grid;place-items:center;box-shadow:0 14px 30px -14px rgba(29,43,42,.55)}
+.spin-badge svg.ring{position:absolute;inset:0;width:100%;height:100%;animation:spin 18s linear infinite}
+.spin-badge text{font-family:var(--font-display);font-weight:600;font-size:11.5px;letter-spacing:1.2px;fill:var(--c-ink)}
+.spin-core{width:44px;height:44px;border-radius:50%;background:var(--c-urgent);color:#fff;display:grid;place-items:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (max-width:480px){
+  .float-card{font-size:.76rem;padding:.55rem .7rem;gap:.5rem}
+  .float-card strong{font-size:.95rem}
+  .fc-ico{width:34px;height:34px;border-radius:11px}
+  .fc-1{left:-2%}.fc-2{right:-2%}.fc-3{display:none}
+  .spin-badge{width:88px;height:88px;right:-1%}
+  .spin-badge text{font-size:11px}
+  .spin-core{width:36px;height:36px}
+}
+
+/* ---------- Banda inclinada (marquee) ---------- */
+.band{overflow:hidden;padding:1.6rem 0;margin-top:-3rem;position:relative;z-index:2}
+.band-inner{background:var(--c-primary);color:#fff;transform:rotate(-2deg);width:106%;margin-left:-3%;padding:.95rem 0;box-shadow:0 16px 30px -18px rgba(11,63,60,.7)}
+.marquee{display:flex;width:max-content;animation:marquee 40s linear infinite}
+.marquee-group{display:flex;align-items:center}
+.marquee-item{display:inline-flex;align-items:center;gap:1.1rem;padding-right:1.1rem;font-family:var(--font-display);font-weight:600;font-size:1.3rem;white-space:nowrap}
+.marquee-item .icon{color:var(--c-peach);width:22px;height:22px}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ---------- Secciones genéricas ---------- */
+.section{position:relative;padding:clamp(4rem,9vw,7rem) 0}
+.section-head{max-width:740px;margin:0 auto clamp(2.5rem,5vw,3.5rem);text-align:center}
+.section-head h2{font-size:clamp(1.95rem,4.6vw,3.05rem);font-weight:700}
+.section-head p{color:var(--c-ink-soft);font-size:1.1rem;margin:0}
+.kicker{display:inline-flex;align-items:center;gap:.45rem;margin-bottom:1rem;padding:.35rem .85rem;border-radius:999px;background:var(--c-peach-50);color:var(--c-accent-ink);font-weight:800;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+.kicker .icon{width:16px;height:16px}
+.js .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s cubic-bezier(.2,.7,.2,1),transform .8s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0s)}
+.js .reveal.is-visible{opacity:1;transform:none}
+</style>
+<style>
+/* ---------- Servicios ---------- */
+.services-grid{display:grid;gap:1.5rem;grid-template-columns:repeat(auto-fill,minmax(min(100%,310px),1fr))}
+.svc{display:flex;flex-direction:column;background:#fff;border-radius:28px;overflow:hidden;box-shadow:var(--shadow);border:1px solid rgba(234,223,209,.8);transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s}
+.svc:hover{transform:translateY(-6px) rotate(-.4deg);box-shadow:var(--shadow-lg)}
+.svc-media{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--c-primary-100)}
+.svc-media img{width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.2,.8,.2,1)}
+.svc:hover .svc-media img{transform:scale(1.07)}
+.svc-tag{position:absolute;top:14px;left:14px;background:rgba(255,255,255,.94);color:var(--c-primary-800);font-size:.78rem;font-weight:800;padding:.3rem .75rem;border-radius:999px;box-shadow:var(--shadow-sm)}
+.svc-body{display:flex;flex-direction:column;flex:1;padding:0 1.5rem 1.5rem}
+.svc-icon{width:62px;height:62px;margin-top:-31px;border-radius:20px;display:grid;place-items:center;color:#fff;background:var(--c-primary);border:5px solid #fff;transform:rotate(-6deg);position:relative;box-shadow:var(--shadow-sm)}
+.svc-icon .icon{width:26px;height:26px}
+.svc[data-accent="coral"] .svc-icon{background:var(--c-accent);color:var(--c-ink)}
+.svc[data-accent="sun"] .svc-icon{background:var(--c-sun);color:var(--c-ink)}
+.svc[data-accent="dark"] .svc-icon{background:var(--c-primary-800)}
+.svc-body h3{font-size:1.42rem;margin:.8rem 0 .4rem}
+.svc-body>p{color:var(--c-ink-soft);font-size:1rem;margin:0 0 1rem}
+.svc-list{list-style:none;margin:0 0 1.25rem;padding:0;display:grid;gap:.4rem;font-size:.92rem;font-weight:700}
+.svc-list li{display:flex;align-items:center;gap:.5rem}
+.svc-list .icon{width:18px;height:18px;padding:3px;border-radius:50%;background:var(--c-primary-100);color:var(--c-primary-600);stroke-width:3}
+.svc-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-top:1.1rem;border-top:2px dashed var(--c-line)}
+.price{line-height:1.1}
+.price span{display:block;font-size:.78rem;font-weight:800;color:var(--c-ink-soft);text-transform:uppercase;letter-spacing:.06em}
+.price strong{font-family:var(--font-display);font-size:1.6rem;font-weight:700;color:var(--c-accent-ink)}
+.price small{font-weight:700;color:var(--c-ink-soft);font-size:.85rem}
+.svc--urgent{background:linear-gradient(160deg,#E4402F 0%,#B42318 100%);color:#fff;border:0;position:relative}
+.svc--urgent h3,.svc--urgent .price strong{color:#fff}
+.svc--urgent .svc-body>p{color:#FFE5E1}
+.svc--urgent .price span{color:#FFD2CC}
+.svc--urgent .svc-list .icon{background:rgba(255,255,255,.2);color:#fff}
+.svc--urgent .svc-foot{border-color:rgba(255,255,255,.3)}
+.urg-top{position:relative;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 1.5rem 0;min-height:130px}
+.urg-siren{width:74px;height:74px;border-radius:24px;background:rgba(255,255,255,.16);display:grid;place-items:center;animation:pulseWhite 2s infinite}
+.urg-siren .icon{width:38px;height:38px}
+@keyframes pulseWhite{0%{box-shadow:0 0 0 0 rgba(255,255,255,.45)}70%{box-shadow:0 0 0 16px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+.urg-247{font-family:var(--font-display);font-weight:700;font-size:3.6rem;line-height:1;opacity:.95}
+.urg-actions{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1rem}
+.urg-actions .btn{flex:1 1 140px}
+.services-note{text-align:center;color:var(--c-ink-soft);font-size:.92rem;margin:2rem auto 0;max-width:620px}
+
+/* ---------- Por qué elegirnos ---------- */
+.why{overflow-x:clip;background:var(--c-primary-800);color:#DCEEEA;padding-top:clamp(6rem,11vw,9rem);padding-bottom:clamp(6rem,11vw,9rem)}
+.why h2{color:#fff}
+.why .kicker{background:rgba(255,255,255,.1);color:var(--c-peach)}
+.wave{position:absolute;left:0;width:100%;height:70px;display:block}
+.wave-top{top:-1px}
+.wave-bottom{bottom:-1px}
+.why-grid{display:grid;gap:3.5rem;align-items:center}
+@media (min-width:920px){.why-grid{grid-template-columns:.95fr 1.05fr;gap:4rem}}
+.why-visual{position:relative;width:100%;max-width:500px;margin-inline:auto;isolation:isolate}
+.why-photo{margin:0;aspect-ratio:1/1;overflow:hidden;background:var(--c-primary-600);border-radius:42% 58% 60% 40%/45% 45% 55% 55%;border:8px solid rgba(255,255,255,.1)}
+.why-photo img{width:100%;height:100%;object-fit:cover}
+.why-ring{position:absolute;inset:-6% -4% auto auto;width:45%;aspect-ratio:1;border-radius:50%;border:3px dashed rgba(255,217,199,.45);z-index:-1;animation:spin 40s linear infinite}
+.why-vet{position:absolute;right:-2%;bottom:-5%;display:flex;align-items:center;gap:.75rem;background:#fff;color:var(--c-ink);padding:.7rem 1.1rem .7rem .7rem;border-radius:22px;box-shadow:var(--shadow-lg);max-width:88%}
+.why-vet img{width:58px;height:58px;border-radius:50%;object-fit:cover;background:var(--c-peach);flex:none}
+.why-vet strong{display:block;font-family:var(--font-display);font-size:1.05rem;font-weight:600;line-height:1.2}
+.why-vet small{font-size:.8rem;font-weight:700;color:var(--c-ink-soft)}
+.why-badge{position:absolute;left:-2%;top:8%;background:var(--c-accent);color:var(--c-ink);border-radius:20px;padding:.7rem 1rem;font-weight:800;font-size:.85rem;line-height:1.2;transform:rotate(-6deg);box-shadow:var(--shadow)}
+.why-badge strong{display:block;font-family:var(--font-display);font-size:1.5rem}
+.why-copy>p{font-size:1.1rem;color:#C6E0DB}
+.why-list{list-style:none;margin:1.8rem 0 2.2rem;padding:0;display:grid;gap:1.2rem}
+@media (min-width:600px){.why-list{grid-template-columns:1fr 1fr}}
+.why-list li{display:flex;gap:.9rem;align-items:flex-start}
+.why-ico{width:48px;height:48px;flex:none;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.08);color:var(--c-peach)}
+.why-list h3{color:#fff;font-size:1.1rem;margin:.1rem 0 .25rem}
+.why-list p{margin:0;font-size:.94rem;color:#BCD8D3}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:.9rem}
+@media (min-width:700px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{padding:1.1rem .8rem;text-align:center;border-radius:22px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.stat strong{display:block;font-family:var(--font-display);font-weight:700;font-size:clamp(1.8rem,4vw,2.3rem);line-height:1.1;color:var(--c-peach)}
+.stat span{font-size:.84rem;font-weight:700;color:#C6E0DB}
+
+/* ---------- Vacunas ---------- */
+.vaccines{background:var(--c-peach-50)}
+.vax-layout{display:grid;gap:2rem;align-items:start}
+@media (min-width:1000px){.vax-layout{grid-template-columns:1.2fr .9fr;gap:2.5rem}.reminder{position:sticky;top:calc(var(--header-h) + 20px)}}
+.tabs{display:inline-flex;gap:4px;padding:6px;margin-bottom:1.6rem;background:#fff;border-radius:999px;box-shadow:var(--shadow-sm)}
+.tab{display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.3rem;border:0;border-radius:999px;background:transparent;color:var(--c-ink-soft);font-weight:800;font-size:1rem;cursor:pointer;transition:background .25s,color .25s}
+.tab[aria-selected="true"]{background:var(--c-primary);color:#fff}
+.tab .icon{width:22px;height:22px}
+.timeline{position:relative;list-style:none;margin:0;padding:0}
+.timeline::before{content:"";position:absolute;left:39px;top:12px;bottom:12px;width:3px;border-radius:3px;background:repeating-linear-gradient(to bottom,var(--c-accent) 0 8px,transparent 8px 16px)}
+.tl-item{position:relative;display:grid;grid-template-columns:80px 1fr;gap:1rem;padding-bottom:1rem}
+.tl-item:last-child{padding-bottom:0}
+.tl-age{position:relative;z-index:1;width:80px;height:80px;border-radius:50%;background:#fff;border:3px solid var(--c-accent);display:grid;place-content:center;text-align:center;font-family:var(--font-display);box-shadow:var(--shadow-sm)}
+.tl-age strong{font-size:1.2rem;font-weight:700;line-height:1}
+.tl-age span{font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--c-ink-soft)}
+.tl-item--year .tl-age{background:var(--c-primary);border-color:var(--c-primary);color:#fff}
+.tl-item--year .tl-age span{color:#DDF1ED}
+.tl-body{background:#fff;border-radius:20px;padding:1rem 1.2rem;box-shadow:var(--shadow-sm);transition:transform .25s}
+.tl-body:hover{transform:translateX(4px)}
+.tl-body h3{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem;font-size:1.15rem;margin:0 0 .3rem}
+.tl-body p{margin:0;font-size:.95rem;color:var(--c-ink-soft)}
+.tl-body .tl-extra{margin-top:.5rem;display:flex;align-items:center;gap:.4rem;font-size:.87rem;font-weight:800;color:var(--c-primary-600)}
+.tl-extra .icon{width:16px;height:16px}
+.tag{display:inline-block;padding:.18rem .55rem;border-radius:999px;font-family:var(--font-body);font-size:.7rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:var(--c-primary-100);color:var(--c-primary-800)}
+.tag--must{background:#FDE3E1;color:#9B1C12}
+.tag--opt{background:#EFEAE3;color:#5B5048}
+.tag--year{background:#FFF0C7;color:#6E4B00}
+.vax-note{display:flex;gap:.6rem;margin:1.5rem 0 0;padding:1rem 1.2rem;border-radius:18px;background:rgba(255,255,255,.7);border:1px dashed var(--c-accent);font-size:.9rem;color:var(--c-ink-soft)}
+.vax-note .icon{color:var(--c-accent-ink);margin-top:.15rem}
+@media (max-width:480px){
+  .timeline::before{left:31px}
+  .tl-item{grid-template-columns:64px 1fr;gap:.75rem}
+  .tl-age{width:64px;height:64px}
+  .tl-age strong{font-size:1rem}
+  .tl-age span{font-size:.56rem}
+  .tl-body{padding:.9rem 1rem}
+}
+.reminder{position:relative;overflow:hidden;background:var(--c-primary);color:#fff;border-radius:var(--radius-lg);padding:clamp(1.5rem,4vw,2.2rem);box-shadow:var(--shadow-lg)}
+.reminder::after{content:"";position:absolute;right:-40px;bottom:-40px;width:200px;height:200px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cg fill='%23ffffff' fill-opacity='.08'%3E%3Cellipse cx='19' cy='28' rx='5' ry='6.5'/%3E%3Cellipse cx='27.5' cy='17' rx='5' ry='6.5'/%3E%3Cellipse cx='36.5' cy='17' rx='5' ry='6.5'/%3E%3Cellipse cx='45' cy='28' rx='5' ry='6.5'/%3E%3Cpath d='M32 30c-7 0-13 8-13 14 0 4 3 6 7 5 2-.5 4-1.5 6-1.5s4 1 6 1.5c4 1 7-1 7-5 0-6-6-14-13-14z'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/contain;transform:rotate(-18deg);pointer-events:none}
+.reminder-head{display:flex;align-items:center;gap:.8rem;margin-bottom:.4rem}
+.reminder-bell{width:52px;height:52px;flex:none;border-radius:18px;background:var(--c-sun);color:var(--c-ink);display:grid;place-items:center;transform:rotate(-8deg)}
+.reminder-bell .icon{width:26px;height:26px;animation:ring 3s ease-in-out infinite;transform-origin:50% 10%}
+@keyframes ring{0%,80%,100%{transform:rotate(0)}84%{transform:rotate(14deg)}88%{transform:rotate(-12deg)}92%{transform:rotate(8deg)}96%{transform:rotate(-4deg)}}
+.reminder h3{color:#fff;font-size:1.55rem;margin:0}
+.reminder-sub{color:#D6EEEA;font-size:.98rem;margin:.4rem 0 1.3rem}
+.reminder .field label{color:#fff}
+.reminder .field-error{color:#FFD2CC}
+.reminder .btn-accent{margin-top:.3rem}
+.rem-result{position:relative;z-index:1;background:#fff;color:var(--c-ink);border-radius:24px;padding:1.5rem 1.3rem;text-align:center;animation:popIn .45s cubic-bezier(.2,.9,.3,1.25)}
+.rem-result:focus{outline:none}
+.rem-check{width:74px;height:74px;margin:-.2rem auto .6rem;border-radius:50%;background:var(--c-primary-100);display:grid;place-items:center}
+.rem-check svg{width:44px;height:44px}
+.rem-check circle{fill:none;stroke:var(--c-primary);stroke-width:3;stroke-dasharray:139;stroke-dashoffset:139;animation:draw .6s .1s forwards}
+.rem-check path{fill:none;stroke:var(--c-primary);stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:40;stroke-dashoffset:40;animation:draw .4s .6s forwards}
+.rem-kicker{font-family:var(--font-display);font-size:1.35rem;font-weight:700;color:var(--c-primary-800);margin:0 0 .3rem}
+.rem-text{margin:0;color:var(--c-ink-soft)}
+.rem-date{font-family:var(--font-display);font-weight:700;font-size:1.45rem;line-height:1.2;color:var(--c-accent-ink);margin:.35rem 0 .45rem}
+.rem-when{display:inline-block;padding:.3rem .8rem;border-radius:999px;background:var(--c-primary-50);color:var(--c-primary-800);font-weight:800;font-size:.86rem;margin:0 0 1.2rem}
+.rem-when.late{background:#FDE3E1;color:#9B1C12}
+.rem-actions{display:grid;gap:.6rem}
+.rem-actions .btn{white-space:normal}
+.rem-reset{display:block;margin:.8rem auto 0;color:var(--c-ink-soft);font-size:.9rem}
+
+/* ---------- Formularios ---------- */
+.field{display:grid;gap:.35rem;margin:0 0 1rem;padding:0;border:0;min-width:0}
+.field label,.field legend{font-weight:800;font-size:.9rem;padding:0}
+.field legend{margin-bottom:.35rem}
+.opt{font-weight:600;color:var(--c-ink-soft)}
+.field input,.field select,.field textarea{width:100%;min-height:52px;padding:.8rem 1rem;border-radius:14px;border:2px solid var(--c-line);background:#fff;color:var(--c-ink);font:inherit;font-size:1rem;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none;appearance:none}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A5B59' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center;background-size:18px;padding-right:2.6rem}
+.field select:disabled{background-color:#F6F1EA;color:#8A9694}
+.field textarea{min-height:84px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--c-primary);box-shadow:0 0 0 4px rgba(14,124,116,.2)}
+.field [aria-invalid="true"]{border-color:var(--c-urgent)}
+.field-error{font-size:.82rem;font-weight:800;color:var(--c-urgent-600);min-height:0}
+.field-error:empty{display:none}
+.field-row{display:grid;gap:0 1rem}
+@media (min-width:520px){.field-row{grid-template-columns:1fr 1fr}}
+.field-hint{font-size:.85rem;color:var(--c-ink-soft);margin:-.5rem 0 1rem;font-weight:600}
+.field-hint:empty{display:none}
+.species{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem}
+.species label{position:relative;cursor:pointer}
+.species input{position:absolute;inset:0;width:100%;height:100%;min-height:0;margin:0;opacity:0;cursor:pointer}
+.species span{display:flex;flex-direction:column;align-items:center;gap:.3rem;padding:.75rem .4rem;border:2px solid var(--c-line);border-radius:16px;background:#fff;font-weight:800;font-size:.92rem;transition:border-color .2s,background .2s,box-shadow .2s}
+.species span .icon{width:28px;height:28px;color:var(--c-primary)}
+.species input:checked+span{border-color:var(--c-primary);background:var(--c-primary-50);color:var(--c-primary-800);box-shadow:0 0 0 4px rgba(14,124,116,.16)}
+.species input:focus-visible+span{outline:3px solid var(--c-accent-600);outline-offset:2px}
+.species input[aria-invalid="true"]+span{border-color:var(--c-urgent)}
+.form-legal{font-size:.8rem;color:var(--c-ink-soft);text-align:center;margin:.8rem 0 0}
+
+/* ---------- Horarios + mapa ---------- */
+.visit-grid{display:grid;gap:1.5rem;align-items:stretch}
+@media (min-width:920px){.visit-grid{grid-template-columns:.95fr 1.05fr}}
+.hours-card{background:#fff;border-radius:var(--radius-lg);padding:clamp(1.4rem,4vw,2.2rem);box-shadow:var(--shadow)}
+.status{display:inline-flex;align-items:center;gap:.6rem;padding:.55rem 1.1rem;border-radius:999px;font-weight:800;background:#E1F6E9;color:#11683A;font-size:1rem}
+.status .dot{width:11px;height:11px;border-radius:50%;background:currentColor;animation:pulseGreen 1.8s infinite}
+.status.closed{background:#FDE8E6;color:#9B1C12}
+.status.closed .dot{animation:none}
+@keyframes pulseGreen{0%{box-shadow:0 0 0 0 rgba(17,104,58,.45)}70%{box-shadow:0 0 0 9px rgba(17,104,58,0)}100%{box-shadow:0 0 0 0 rgba(17,104,58,0)}}
+.status-sub{margin:.6rem 0 0;color:var(--c-ink-soft);font-weight:700;font-size:.95rem}
+.hours-table{width:100%;border-collapse:collapse;margin:1.2rem 0 1.2rem;font-variant-numeric:tabular-nums}
+.hours-table th,.hours-table td{padding:.72rem .6rem;border-bottom:1px dashed var(--c-line);text-align:left;font-size:.98rem}
+.hours-table th{font-weight:700}
+.hours-table td{text-align:right;font-weight:800}
+.hours-table tr.is-closed td{color:var(--c-ink-soft);font-weight:700}
+.hours-table tr.today{background:var(--c-primary-50)}
+.hours-table tr.today th,.hours-table tr.today td{color:var(--c-primary-800)}
+.hours-table tr.today th{border-radius:12px 0 0 12px}
+.hours-table tr.today td{border-radius:0 12px 12px 0}
+.today-tag{display:inline-block;margin-left:.45rem;padding:.08rem .5rem;border-radius:999px;background:var(--c-primary);color:#fff;font-size:.68rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;vertical-align:middle}
+.urgent-strip{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem .9rem;padding:.9rem 1rem;border-radius:18px;background:#FDECEA;color:#8A1B12;font-weight:800;font-size:.95rem}
+.urgent-strip .icon{color:var(--c-urgent)}
+.urgent-strip a{margin-left:auto;color:var(--c-urgent-600)}
+.contact-list{list-style:none;margin:1.3rem 0;padding:0;display:grid;gap:.75rem}
+.contact-list li{display:flex;gap:.7rem;align-items:flex-start}
+.contact-list .icon{color:var(--c-primary);margin-top:.15rem}
+.contact-list a{color:var(--c-ink);font-weight:800;text-decoration:none}
+.contact-list a:hover{color:var(--c-primary-600);text-decoration:underline}
+.visit-actions{display:flex;flex-wrap:wrap;gap:.6rem}
+.visit-actions .btn{flex:1 1 150px}
+.map-card{position:relative;min-height:380px;overflow:hidden;border-radius:var(--radius-lg);background:var(--c-primary-100);box-shadow:var(--shadow);border:6px solid #fff}
+.map-card iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.map-pin{position:absolute;left:1rem;bottom:1rem;right:1rem;max-width:340px;display:flex;align-items:center;gap:.7rem;padding:.75rem 1rem;border-radius:18px;background:#fff;box-shadow:var(--shadow);font-size:.88rem;line-height:1.3}
+.map-pin .brand-mark{width:40px;height:40px;border-radius:13px 13px 13px 5px}
+.map-pin .brand-mark .icon{width:22px;height:22px}
+.map-pin strong{display:block;font-family:var(--font-display);font-size:1rem;font-weight:600}
+
+/* ---------- Reseñas ---------- */
+.reviews{background:var(--c-primary-50);overflow:hidden}
+.reviews-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1.5rem;margin-bottom:2rem}
+.reviews-top .section-head{margin:0;text-align:left}
+.g-summary{display:flex;align-items:center;gap:1rem;background:#fff;border-radius:24px;padding:1rem 1.3rem;box-shadow:var(--shadow)}
+.g-summary .g-icon{width:46px;height:46px}
+.g-label{font-size:.85rem;font-weight:800;color:var(--c-ink-soft)}
+.g-score{display:flex;align-items:center;gap:.55rem}
+.g-score strong{font-family:var(--font-display);font-size:2.1rem;font-weight:700;line-height:1}
+.g-score .stars{font-size:1.15rem}
+.g-count{font-size:.85rem;color:var(--c-ink-soft);font-weight:700}
+.carousel-track{display:flex;gap:1.25rem;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding:.5rem .25rem 1.5rem;margin:0 -.25rem;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.carousel-track::-webkit-scrollbar{display:none}
+.carousel-track:focus-visible{outline-offset:6px}
+.review{flex:0 0 min(86%,370px);scroll-snap-align:start;display:flex;flex-direction:column;gap:.8rem;background:#fff;border-radius:24px;padding:1.4rem;box-shadow:var(--shadow-sm);border:1px solid #E3EFEC}
+@media (min-width:980px){.review{flex-basis:calc((100% - 2.5rem)/3)}}
+.rv-head{display:flex;align-items:center;gap:.8rem}
+.avatar{position:relative;width:48px;height:48px;flex:none;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.05rem}
+.avatar .g-mini{position:absolute;right:-4px;bottom:-4px;width:20px;height:20px;padding:2px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.rv-name{font-weight:800;line-height:1.2}
+.rv-date{font-size:.82rem;color:var(--c-ink-soft);font-weight:600}
+.review .stars{font-size:1.05rem}
+.review p{margin:0;font-size:.98rem;color:var(--c-ink-soft)}
+.carousel-nav{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem}
+.carousel-btns{display:flex;gap:.6rem}
+.icon-btn{width:50px;height:50px;border-radius:50%;border:2px solid var(--c-primary);background:#fff;color:var(--c-primary);display:grid;place-items:center;cursor:pointer;transition:background .2s,color .2s,opacity .2s}
+.icon-btn:hover:not(:disabled){background:var(--c-primary);color:#fff}
+.icon-btn:disabled{opacity:.35;cursor:default}
+
+/* ---------- FAQ ---------- */
+.faq-list{max-width:840px;margin:0 auto;display:grid;gap:.9rem}
+.faq{background:#fff;border-radius:22px;border:1px solid var(--c-line);box-shadow:var(--shadow-sm);transition:box-shadow .25s}
+.faq[open]{box-shadow:var(--shadow)}
+.faq summary{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1.15rem 1.35rem;cursor:pointer;list-style:none;font-family:var(--font-display);font-weight:600;font-size:1.12rem;border-radius:22px}
+.faq summary::-webkit-details-marker{display:none}
+.faq-plus{width:36px;height:36px;flex:none;border-radius:50%;display:grid;place-items:center;background:var(--c-peach-50);color:var(--c-accent-ink);transition:transform .3s,background .3s}
+.faq[open] .faq-plus{transform:rotate(45deg);background:var(--c-accent);color:var(--c-ink)}
+.faq-a{padding:0 1.35rem 1.25rem;color:var(--c-ink-soft)}
+.faq-a p{margin:0}
+
+/* ---------- CTA final ---------- */
+.cta{padding:0 0 clamp(4rem,8vw,6rem)}
+.cta-card{position:relative;display:grid;overflow:hidden;border-radius:40px;background:linear-gradient(135deg,var(--c-accent) 0%,#FFB592 100%);box-shadow:var(--shadow-lg)}
+@media (min-width:860px){.cta-card{grid-template-columns:1.2fr .8fr}}
+.cta-copy{position:relative;z-index:1;padding:clamp(2rem,5vw,3.5rem)}
+.cta-copy h2{font-size:clamp(1.9rem,4.4vw,2.9rem);font-weight:700}
+.cta-copy p{font-size:1.1rem;color:#3B2A22;max-width:34rem}
+.cta-btns{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:1.5rem}
+@media (max-width:560px){.cta-btns .btn{width:100%}}
+.cta-media{position:relative;min-height:280px;background:var(--c-peach)}
+.cta-media img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+@media (min-width:860px){.cta-media{clip-path:ellipse(92% 100% at 100% 50%)}}
+
+/* ---------- Footer ---------- */
+.site-footer{position:relative;background:var(--c-primary-800);color:#C6E0DB;padding:4.5rem 0 6.5rem;font-size:.97rem}
+.site-footer h3{color:#fff;font-size:1.12rem;margin-bottom:1rem}
+.site-footer a{color:#fff;text-decoration:none}
+.site-footer a:hover{text-decoration:underline}
+.footer-grid{display:grid;gap:2.2rem;grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.brand--light{color:#fff}
+.brand--light .brand-text small{color:var(--c-peach)}
+.f-brand p{margin:1rem 0 1.2rem}
+.socials{display:flex;gap:.6rem}
+.socials a{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:rgba(255,255,255,.08);transition:background .2s,transform .2s}
+.socials a:hover{background:var(--c-accent);color:var(--c-ink);transform:translateY(-3px)}
+.f-list{list-style:none;margin:0;padding:0;display:grid;gap:.55rem}
+.f-list li{display:flex;gap:.6rem;align-items:flex-start}
+.f-list .icon{color:var(--c-peach);margin-top:.2rem;width:1.1em;height:1.1em}
+.f-hours li{justify-content:space-between;gap:1rem;border-bottom:1px dashed rgba(255,255,255,.12);padding-bottom:.45rem}
+.f-hours b{color:#fff;white-space:nowrap}
+.f-urg{display:inline-flex;align-items:center;gap:.5rem;margin-top:1rem;padding:.45rem .9rem;border-radius:999px;background:rgba(217,45,32,.25);color:#FFD2CC;font-weight:800;font-size:.9rem}
+.footer-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:.75rem;margin-top:3rem;padding-top:1.4rem;border-top:1px solid rgba(255,255,255,.12);font-size:.85rem}
+.footer-bottom p{margin:0}
+
+/* ---------- Modal de reserva ---------- */
+dialog.modal{width:100%;max-width:min(580px,calc(100vw - 20px));max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);padding:0;border:0;background:transparent;color:var(--c-ink);overflow:visible}
+dialog.modal::backdrop{background:rgba(8,38,36,.6);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+dialog.modal[open] .modal-card{animation:modalIn .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes modalIn{from{opacity:0;transform:translateY(24px) scale(.97)}to{opacity:1;transform:none}}
+.modal-card{position:relative;max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px);overflow-y:auto;overscroll-behavior:contain;background:var(--c-cream);border-radius:30px;padding:clamp(1.3rem,4vw,2.1rem);box-shadow:var(--shadow-lg)}
+.modal-close{position:absolute;top:14px;right:14px;width:44px;height:44px;border-radius:50%;border:0;background:#fff;color:var(--c-ink);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow-sm);z-index:2}
+.modal-close:hover{background:var(--c-peach-50)}
+.modal-head{text-align:center;margin-bottom:1.3rem;padding:0 1.5rem}
+.modal-icon{width:64px;height:64px;margin:0 auto .8rem;border-radius:22px;background:var(--c-primary);color:#fff;display:grid;place-items:center;transform:rotate(-6deg)}
+.modal-icon .icon{width:30px;height:30px}
+.modal-head h2{font-size:1.8rem;font-weight:700;margin-bottom:.3rem}
+.modal-head p{margin:0;color:var(--c-ink-soft);font-size:.98rem}
+.booking-success{text-align:center;padding:.5rem 0}
+.booking-success:focus{outline:none}
+.booking-success h3{font-size:1.7rem;margin:.4rem 0}
+.booking-success p{color:var(--c-ink-soft)}
+.bs-summary{display:inline-block;margin:0 0 1.2rem;padding:.5rem 1rem;border-radius:14px;background:#fff;border:1px dashed var(--c-primary);color:var(--c-primary-800)!important;font-weight:800}
+.bs-actions{display:grid;gap:.6rem}
+
+/* ---------- Chat / asistente ---------- */
+.chat-fab{position:fixed;right:20px;bottom:20px;z-index:80;width:66px;height:66px;border:0;border-radius:50%;background:var(--c-primary);color:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 16px 32px -12px rgba(11,63,60,.75);transition:transform .25s}
+.chat-fab:hover{transform:scale(1.06)}
+.chat-fab::before{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid var(--c-primary);animation:fabRing 2.6s infinite}
+@keyframes fabRing{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+.chat-fab .icon{width:30px;height:30px}
+.chat-fab .i-close{display:none}
+.chat-fab[aria-expanded="true"] .i-chat{display:none}
+.chat-fab[aria-expanded="true"] .i-close{display:block}
+.chat-fab[aria-expanded="true"]::before{animation:none;opacity:0}
+.chat-badge{position:absolute;top:-2px;right:-2px;width:24px;height:24px;border-radius:50%;background:var(--c-accent);color:var(--c-ink);font-size:.78rem;font-weight:800;display:grid;place-items:center;border:2px solid #fff}
+.chat-ai{position:absolute;left:-6px;bottom:-4px;padding:.05rem .35rem;border-radius:8px;background:var(--c-sun);color:var(--c-ink);font-size:.62rem;font-weight:800;border:2px solid #fff}
+.fab-wa{position:fixed;right:29px;bottom:100px;z-index:79;width:50px;height:50px;border-radius:50%;background:var(--c-wa);color:#fff;display:grid;place-items:center;box-shadow:0 12px 26px -10px rgba(14,122,67,.8);transition:transform .25s,opacity .25s}
+.fab-wa:hover{transform:scale(1.08)}
+.fab-wa .icon{width:26px;height:26px}
+body.chat-is-open .fab-wa{opacity:0;pointer-events:none;transform:scale(.5)}
+.chat-teaser{position:fixed;right:98px;bottom:28px;z-index:79;width:max-content;max-width:min(270px,calc(100vw - 118px));padding:.85rem 2.3rem .85rem 1rem;border-radius:18px 18px 4px 18px;background:#fff;color:var(--c-ink);box-shadow:var(--shadow-lg);font-size:.92rem;font-weight:700;line-height:1.35;animation:popIn .4s cubic-bezier(.2,.9,.3,1.25);cursor:pointer}
+.chat-teaser button{position:absolute;top:6px;right:6px;width:28px;height:28px;border:0;border-radius:50%;background:var(--c-peach-50);color:var(--c-ink);display:grid;place-items:center;cursor:pointer}
+.chat-teaser button .icon{width:14px;height:14px}
+@keyframes popIn{from{opacity:0;transform:translateY(10px) scale(.95)}to{opacity:1;transform:none}}
+.chat-panel{position:fixed;right:20px;bottom:100px;z-index:90;width:min(390px,calc(100vw - 32px));height:min(620px,calc(100vh - 130px));height:min(620px,calc(100dvh - 130px));display:flex;flex-direction:column;overflow:hidden;background:#fff;border-radius:28px;box-shadow:0 30px 70px -20px rgba(11,63,60,.6);transform-origin:bottom right;animation:popIn .3s cubic-bezier(.2,.9,.3,1.2)}
+@media (max-width:560px){
+  .chat-panel{left:8px;right:8px;bottom:8px;width:auto;height:calc(100vh - 16px);height:calc(100dvh - 16px);max-height:700px;border-radius:24px}
+  body.chat-is-open .chat-fab{opacity:0;pointer-events:none}
+}
+.chat-header{display:flex;align-items:center;gap:.75rem;padding:.95rem .9rem .95rem 1.1rem;background:var(--c-primary);color:#fff}
+.chat-avatar{position:relative;width:46px;height:46px;flex:none;border-radius:50%;background:var(--c-peach);color:var(--c-accent-ink);display:grid;place-items:center}
+.chat-avatar .icon{width:26px;height:26px}
+.chat-avatar::after{content:"";position:absolute;right:0;bottom:1px;width:12px;height:12px;border-radius:50%;background:#6EE7A8;border:2px solid var(--c-primary)}
+.chat-title{flex:1;min-width:0}
+.chat-title h2{color:#fff;font-size:1.08rem;margin:0;display:flex;align-items:center;gap:.4rem}
+.chat-title h2 .ai-tag{padding:.05rem .4rem;border-radius:7px;background:var(--c-sun);color:var(--c-ink);font-family:var(--font-body);font-size:.62rem;font-weight:800}
+.chat-title p{margin:0;font-size:.8rem;color:#D6EEEA}
+.chat-hbtn{width:40px;height:40px;flex:none;border:0;border-radius:12px;background:rgba(255,255,255,.14);color:#fff;display:grid;place-items:center;cursor:pointer;text-decoration:none}
+.chat-hbtn:hover{background:rgba(255,255,255,.26)}
+.chat-body{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:1rem;display:flex;flex-direction:column;gap:.6rem;background:var(--c-cream) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70' viewBox='0 0 64 64'%3E%3Cg fill='%230E7C74' fill-opacity='.05' transform='rotate(-18 32 32)'%3E%3Cellipse cx='19' cy='28' rx='5' ry='6.5'/%3E%3Cellipse cx='27.5' cy='17' rx='5' ry='6.5'/%3E%3Cellipse cx='36.5' cy='17' rx='5' ry='6.5'/%3E%3Cellipse cx='45' cy='28' rx='5' ry='6.5'/%3E%3Cpath d='M32 30c-7 0-13 8-13 14 0 4 3 6 7 5 2-.5 4-1.5 6-1.5s4 1 6 1.5c4 1 7-1 7-5 0-6-6-14-13-14z'/%3E%3C/g%3E%3C/svg%3E")}
+.msg{max-width:88%;padding:.7rem .95rem;border-radius:18px;font-size:.95rem;line-height:1.45;animation:msgIn .28s ease}
+.msg p{margin:0 0 .45rem}
+.msg p:last-child{margin-bottom:0}
+.msg.bot{align-self:flex-start;background:#fff;border-bottom-left-radius:6px;box-shadow:var(--shadow-sm)}
+.msg.user{align-self:flex-end;background:var(--c-primary);color:#fff;border-bottom-right-radius:6px;white-space:pre-wrap;word-break:break-word}
+@keyframes msgIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg .small{font-size:.84rem;color:var(--c-ink-soft)}
+.msg .t-urgent{color:var(--c-urgent-600)}
+.mini-list{list-style:none;margin:.3rem 0 .5rem;padding:0;display:grid;gap:.25rem;font-size:.9rem}
+.mini-list li{display:flex;justify-content:space-between;gap:.8rem;padding:.25rem 0;border-bottom:1px dashed var(--c-line)}
+.mini-list b{white-space:nowrap}
+.dot-inline{display:inline-block;width:9px;height:9px;border-radius:50%;background:#1F9D55;margin-right:.3rem;vertical-align:middle}
+.dot-inline.off{background:var(--c-urgent)}
+.msg-actions{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.65rem}
+.chat-action{display:inline-flex;align-items:center;gap:.35rem;padding:.5rem .8rem;border:0;border-radius:999px;background:var(--c-primary-100);color:var(--c-primary-800);font:800 .84rem/1.2 var(--font-body);text-decoration:none;cursor:pointer;transition:filter .2s}
+.chat-action:hover{filter:brightness(.95)}
+.chat-action .icon{width:16px;height:16px}
+.chat-action.wa{background:var(--c-wa-ink);color:#fff}
+.chat-action.urgent{background:var(--c-urgent);color:#fff}
+.typing{display:inline-flex;gap:5px;padding:.9rem 1rem}
+.typing span{width:8px;height:8px;border-radius:50%;background:#9FB3B0;animation:blink 1.2s infinite}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.3;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+.chat-chips{display:flex;gap:.45rem;padding:.65rem .8rem;overflow-x:auto;border-top:1px solid var(--c-line);background:#fff;scrollbar-width:none}
+.chat-chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:.5rem .85rem;border:1.5px solid var(--c-primary);border-radius:999px;background:#fff;color:var(--c-primary-600);font:800 .85rem/1.2 var(--font-body);cursor:pointer;transition:background .2s,color .2s}
+.chip:hover{background:var(--c-primary);color:#fff}
+.chip.urgent{border-color:var(--c-urgent);color:var(--c-urgent-600)}
+.chip.urgent:hover{background:var(--c-urgent);color:#fff}
+.chat-form{display:flex;gap:.5rem;padding:.4rem .8rem .7rem;background:#fff}
+.chat-form input{flex:1;min-width:0;min-height:48px;padding:.6rem 1rem;border-radius:999px;border:2px solid var(--c-line);font:inherit;font-size:1rem;color:var(--c-ink);background:#fff}
+.chat-form input:focus{outline:none;border-color:var(--c-primary);box-shadow:0 0 0 4px rgba(14,124,116,.18)}
+.chat-send{width:48px;height:48px;flex:none;border:0;border-radius:50%;background:var(--c-accent);color:var(--c-ink);display:grid;place-items:center;cursor:pointer}
+.chat-send:hover{background:#FF9474}
+.chat-foot{margin:0;padding:0 1rem .6rem;background:#fff;text-align:center;font-size:.72rem;color:var(--c-ink-soft)}
+
+/* ---------- Toast ---------- */
+.toast{position:fixed;left:50%;top:calc(var(--header-h) + 16px);z-index:150;max-width:calc(100vw - 32px);display:flex;align-items:center;gap:.6rem;padding:.85rem 1.2rem;border-radius:16px;background:var(--c-ink);color:#fff;font-weight:700;font-size:.95rem;box-shadow:var(--shadow-lg);transform:translate(-50%,-20px);opacity:0;pointer-events:none;transition:transform .35s,opacity .35s}
+.toast.show{transform:translate(-50%,0);opacity:1}
+.toast .icon{color:#6EE7A8}
+
+/* ---------- Movimiento reducido ---------- */
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  .js .reveal{opacity:1;transform:none}
+  .hl path{stroke-dashoffset:0}
+}
+</style>
+</head>
+<body>
+<!-- ===== Sprite de íconos SVG (se usan con <svg class="icon"><use href="#i-..."/></svg>) ===== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-paw" viewBox="0 0 24 24"><g fill="currentColor" stroke="none"><ellipse cx="5.4" cy="10.2" rx="2.1" ry="2.7" transform="rotate(-18 5.4 10.2)"/><ellipse cx="9.4" cy="5.6" rx="2.2" ry="2.9"/><ellipse cx="14.6" cy="5.6" rx="2.2" ry="2.9"/><ellipse cx="18.6" cy="10.2" rx="2.1" ry="2.7" transform="rotate(18 18.6 10.2)"/><path d="M12 11.3c-3.2 0-6.3 3.6-6.3 6.5 0 1.9 1.4 3 3.2 2.7 1.1-.2 1.9-.7 3.1-.7s2 .5 3.1.7c1.8.3 3.2-.8 3.2-2.7 0-2.9-3.1-6.5-6.3-6.5z"/></g></symbol>
+  <symbol id="i-cal" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 5-5.5 10.2-7.4 11.8a1 1 0 0 1-1.2 0C9.5 20.2 4 15 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></symbol>
+  <symbol id="i-mail" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></symbol>
+  <symbol id="i-stetho" viewBox="0 0 24 24"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6 6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6 6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></symbol>
+  <symbol id="i-syringe" viewBox="0 0 24 24"><path d="m18 2 4 4M17 7l3-3M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5M9 11l4 4M5 19l-3 3M14 4l6 6"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/><path d="M3.2 12h6.3l.5-1 2 4.5 2-7 1.5 3.5h5.3"/></symbol>
+  <symbol id="i-scissors" viewBox="0 0 24 24"><circle cx="6" cy="6" r="3"/><path d="M8.1 8.1 12 12M20 4 8.1 15.9"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></symbol>
+  <symbol id="i-bed" viewBox="0 0 24 24"><path d="M2 4v16M2 8h18a2 2 0 0 1 2 2v10M2 17h20M6 8v9"/></symbol>
+  <symbol id="i-siren" viewBox="0 0 24 24"><path d="M7 18v-6a5 5 0 1 1 10 0v6"/><path d="M5 21a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-1a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2z"/><path d="M21 12h1M18.5 4.5 18 5M2 12h1M12 2v1M4.9 4.9l.7.7M12 12v6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+  <symbol id="i-send" viewBox="0 0 24 24"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></symbol>
+  <symbol id="i-left" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></symbol>
+  <symbol id="i-right" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M10 2v7.5a2 2 0 0 1-.2.9L4.7 20.6a1 1 0 0 0 .9 1.4h12.8a1 1 0 0 0 .9-1.4l-5.1-10.2a2 2 0 0 1-.2-.9V2M8.5 2h7M7 16h10"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><path d="M2 10h20M6 15h4"/></symbol>
+  <symbol id="i-chat" viewBox="0 0 24 24"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/><path d="M8 12h.01M12 12h.01M16 12h.01"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.7 9a1 1 0 0 1-.6 0C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.2-2.7a1.2 1.2 0 0 1 1.6 0C14.5 3.8 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-nav" viewBox="0 0 24 24"><path d="M3 11 22 2l-9 19-2-8-8-2z"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+  <symbol id="i-dog" viewBox="0 0 24 24"><path d="M11.25 16.25h1.5L12 17z"/><path d="M16 14v.5M8 14v.5"/><path d="M4.42 11.25A13 13 0 0 0 4 14.56C4 18.73 7.58 21 12 21s8-2.27 8-6.44a11.7 11.7 0 0 0-.5-3.31"/><path d="M8.5 8.5c-.38 1.05-1.08 2.03-2.34 2.5-1.93.72-3.58-.3-3.66-1-.11-1 1.18-6.53 4-7 1.92-.32 3.65.85 3.65 2.24A7.5 7.5 0 0 1 14 5.28c0-1.39 1.84-2.6 3.77-2.28 2.82.47 4.11 6 4 7-.08.7-1.73 1.72-3.66 1-1.26-.47-1.85-1.45-2.24-2.5"/></symbol>
+  <symbol id="i-cat" viewBox="0 0 24 24"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9 9 0 0 1 12 5Z"/><path d="M8 14v.5M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/></symbol>
+  <symbol id="i-rabbit" viewBox="0 0 24 24"><path d="M13 16a3 3 0 0 1 2.24 5M18 12h.01"/><path d="M18 21h-8a4 4 0 0 1-4-4 7 7 0 0 1 7-7h.2L9.6 6.4a1 1 0 1 1 2.8-2.8L15.8 7h.2c3.3 0 6 2.7 6 6v1a2 2 0 0 1-2 2h-1a3 3 0 0 0-3 3"/><path d="M20 8.54V4a2 2 0 1 0-4 0v3M7.61 12.52a3 3 0 1 0-1.6 4.3"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M12 1.8l3.1 6.4 7 .9-5.1 4.9 1.3 7L12 17.6 5.7 21l1.3-7L1.9 9.1l7-.9z"/></symbol>
+  <symbol id="i-wa" viewBox="0 0 24 24"><path fill="currentColor" stroke="none" d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.51l-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.7.63.71.22 1.36.19 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.27-.2-.57-.34M12.05 21.79h-.01a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.83 9.83 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.31-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89 0-3.18-1.24-6.16-3.48-8.41z"/></symbol>
+  <symbol id="i-google" viewBox="0 0 48 48"><g stroke="none"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A11.9 11.9 0 0 1 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></g></symbol>
+  <symbol id="i-instagram" viewBox="0 0 24 24"><rect width="20" height="20" x="2" y="2" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37zM17.5 6.5h.01"/></symbol>
+  <symbol id="i-facebook" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></symbol>
+  <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M16 3c.3 2.3 1.9 4 4.5 4.3v3.2c-1.7 0-3.2-.5-4.5-1.4v6.4A5.5 5.5 0 1 1 10.5 10v3.3a2.3 2.3 0 1 0 2.2 2.3V3z"/></symbol>
+  <symbol id="i-sparkles" viewBox="0 0 24 24"><path d="M9.9 15.5A2 2 0 0 0 8.5 14l-6.1-1.6a.5.5 0 0 1 0-1L8.5 10A2 2 0 0 0 9.9 8.5l1.6-6.1a.5.5 0 0 1 1 0L14 8.5a2 2 0 0 0 1.5 1.4l6.1 1.6a.5.5 0 0 1 0 1L15.5 14a2 2 0 0 0-1.4 1.5l-1.6 6.1a.5.5 0 0 1-1 0z"/></symbol>
+</svg>
+
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<!-- ===== Barra superior ===== -->
+<div class="topbar">
+  <div class="container">
+    <div class="tb-left">
+      <a class="tb-item tb-urgent" data-wa="urgencia" href="https://wa.me/56987654321" target="_blank" rel="noopener"><span class="tb-dot" aria-hidden="true"></span> Urgencias 24/7</a>
+      <span class="tb-item tb-hide-sm"><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span><span data-cfg="direccion">Av. Bernardo O'Higgins 1245</span>, <span data-cfg="comuna">Talagante</span></span></span>
+    </div>
+    <div class="tb-right">
+      <span class="tb-status" data-status-mini>Horario de atención</span>
+      <a class="tb-item tb-hide-sm" data-tel href="tel:+56987654321"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><span data-cfg="telefonoVisible">+56 9 8765 4321</span></a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Header / navegación ===== -->
+<header class="site-header" id="top">
+  <div class="container nav-wrap">
+    <a class="brand" href="#inicio" aria-label="Ir al inicio">
+      <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg></span>
+      <span class="brand-text"><strong data-cfg="nombre">Huellitas del Maipo</strong><small>Clínica veterinaria · <span data-cfg="comuna">Talagante</span></small></span>
+    </a>
+    <nav class="nav" id="site-nav" aria-label="Principal">
+      <ul class="nav-links">
+        <li><a href="#servicios">Servicios</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#vacunas">Vacunas</a></li>
+        <li><a href="#horarios">Horarios</a></li>
+        <li><a href="#resenas">Reseñas</a></li>
+        <li><a href="#faq">Preguntas</a></li>
+      </ul>
+      <div class="nav-mobile-cta">
+        <button type="button" class="btn btn-primary" data-open-booking><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg> Reservar hora</button>
+        <a class="btn btn-urgent" data-wa="urgencia" href="https://wa.me/56987654321" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg> Urgencias por WhatsApp</a>
+      </div>
+    </nav>
+    <div class="nav-actions">
+      <button type="button" class="btn btn-primary btn-sm btn-reserve" data-open-booking><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg> Reservar hora</button>
+      <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="site-nav" aria-label="Abrir menú">
+        <svg class="icon i-open" aria-hidden="true"><use href="#i-menu"/></svg>
+        <svg class="icon i-close" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="contenido">
+
+<!-- ===== 1. PORTADA (HERO) ===== -->
+<section class="hero" id="inicio" aria-labelledby="hero-title">
+  <div class="paw-trail" aria-hidden="true">
+    <svg class="icon" style="left:4%;top:14%;transform:rotate(-25deg)"><use href="#i-paw"/></svg>
+    <svg class="icon" style="left:9%;top:24%;transform:rotate(-10deg)"><use href="#i-paw"/></svg>
+    <svg class="icon" style="left:6%;top:36%;transform:rotate(-30deg)"><use href="#i-paw"/></svg>
+    <svg class="icon" style="left:48%;top:88%;transform:rotate(70deg)"><use href="#i-paw"/></svg>
+    <svg class="icon" style="left:55%;top:82%;transform:rotate(85deg)"><use href="#i-paw"/></svg>
+    <svg class="icon" style="right:4%;top:6%;transform:rotate(20deg)"><use href="#i-paw"/></svg>
+  </div>
+  <div class="container hero-grid">
+    <div class="hero-copy reveal">
+      <span class="eyebrow"><span class="eyebrow-paw"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg></span><span>Clínica veterinaria en <span data-cfg="comuna">Talagante</span></span></span>
+      <h1 id="hero-title">Cuidamos a tu mascota como parte de tu <span class="hl">familia<svg viewBox="0 0 220 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 16 C 50 4, 95 6, 130 13 S 190 22, 216 8"/></svg></span></h1>
+      <p class="lead">Medicina veterinaria cercana y honesta en <span data-cfg="comuna">Talagante</span>: consultas, vacunas, cirugía, peluquería y hotel, con un equipo que conoce a tu regalón por su nombre.</p>
+      <div class="hero-ctas">
+        <button type="button" class="btn btn-primary btn-lg" data-open-booking><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg> Reservar hora</button>
+        <a class="btn btn-urgent btn-lg" data-wa="urgencia" href="https://wa.me/56987654321" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg> Urgencias por WhatsApp</a>
+      </div>
+      <p class="urgent-note"><span class="pulse-dot" aria-hidden="true"></span> Atendemos urgencias 24/7, también domingos y festivos</p>
+      <ul class="hero-trust">
+        <li>
+          <svg class="g-icon" aria-hidden="true"><use href="#i-google"/></svg>
+          <div><div class="trust-top"><strong data-cfg="ratingTxt">4,9</strong> <span class="js-stars" data-size="1rem"></span></div><small><span data-cfg="totalResenas">327</span> reseñas en Google</small></div>
+        </li>
+        <li><div><strong data-cfg="mascotasTxt">+8.500</strong><small>mascotas atendidas</small></div></li>
+        <li><div><strong><span data-cfg="aniosExperiencia">12</span> años</strong><small>cuidando en <span data-cfg="comuna">Talagante</span></small></div></li>
+      </ul>
+    </div>
+
+    <div class="hero-visual reveal" style="--d:.15s">
+      <div class="hero-blob" aria-hidden="true"></div>
+      <div class="hero-dots" aria-hidden="true"></div>
+      <figure class="hero-photo">
+        <!-- Foto principal: reemplazar por una foto real de la clínica o de un paciente -->
+        <img src="https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=900&q=80&auto=format&fit=crop"
+             srcset="https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=600&q=80&auto=format&fit=crop 600w, https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=900&q=80&auto=format&fit=crop 900w"
+             sizes="(min-width: 920px) 480px, 90vw" width="900" height="1125" fetchpriority="high"
+             alt="Golden retriever sonriente sentado en el pasto de un parque">
+      </figure>
+      <div class="spin-badge" aria-hidden="true">
+        <svg class="ring" viewBox="0 0 120 120"><defs><path id="circle-path" d="M60,60 m-45,0 a45,45 0 1,1 90,0 a45,45 0 1,1 -90,0"/></defs><text><textPath href="#circle-path" textLength="280">URGENCIAS 24/7 · CON CARIÑO · TALAGANTE ·</textPath></text></svg>
+        <span class="spin-core"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span>
+      </div>
+      <div class="float-card fc-1">
+        <span class="fc-ico"><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg></span>
+        <div><small>Próxima hora disponible</small><strong id="next-slot">Hoy</strong></div>
+      </div>
+      <div class="float-card fc-2">
+        <img src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?w=200&q=80&auto=format&fit=crop" alt="" width="46" height="46" loading="lazy">
+        <div><strong>¡Gatitos también!</strong><small>Sala de espera felina</small></div>
+      </div>
+      <div class="float-card fc-3">
+        <span class="fc-ico"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg></span>
+        <div><strong>Vacunas al día</strong><small>Te avisamos cada refuerzo</small></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Banda inclinada decorativa -->
+<div class="band" aria-hidden="true">
+  <div class="band-inner">
+    <div class="marquee">
+      <div class="marquee-group">
+        <span class="marquee-item">Consultas <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Vacunas <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Cirugía <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Peluquería <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Hotel <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Urgencias 24/7 <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Microchip <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Perros, gatos y exóticos <svg class="icon"><use href="#i-paw"/></svg></span>
+      </div>
+      <div class="marquee-group">
+        <span class="marquee-item">Consultas <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Vacunas <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Cirugía <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Peluquería <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Hotel <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Urgencias 24/7 <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Microchip <svg class="icon"><use href="#i-paw"/></svg></span>
+        <span class="marquee-item">Perros, gatos y exóticos <svg class="icon"><use href="#i-paw"/></svg></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. SERVICIOS ===== -->
+<section class="section services" id="servicios" aria-labelledby="servicios-title">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="kicker"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg> Servicios</span>
+      <h2 id="servicios-title">Todo lo que tu regalón necesita, en un solo lugar</h2>
+      <p>Valores referenciales "desde" para que sepas cuánto invertir antes de venir. Siempre te confirmamos el precio final antes de cualquier procedimiento.</p>
+    </header>
+    <!--
+      NOTA PARA EL FREELANCER:
+      Hotel y Peluquería son servicios OPCIONALES por cliente (no todas las
+      veterinarias los ofrecen). Para quitarlos, pon activo:false en
+      CONFIG.servicios; desaparecen de las tarjetas, del formulario de reserva,
+      del chat y del footer. La tarjeta roja de Urgencias depende de
+      CONFIG.urgencias24_7. Las tarjetas se generan con JavaScript desde CONFIG.
+    -->
+    <div class="services-grid" id="services-grid"></div>
+    <p class="services-note">Los valores pueden variar según especie, peso y estado de salud. Aceptamos <span data-cfg="mediosPago">efectivo, débito, crédito y transferencia</span>.</p>
+  </div>
+</section>
+
+<!-- ===== POR QUÉ ELEGIRNOS ===== -->
+<section class="section why" id="nosotros" aria-labelledby="nosotros-title">
+  <svg class="wave wave-top" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path fill="#FFF9F1" d="M0,0 H1440 V28 C1200,70 960,6 720,30 C480,54 240,64 0,26 Z"/></svg>
+  <div class="container why-grid">
+    <div class="why-visual reveal">
+      <div class="why-ring" aria-hidden="true"></div>
+      <figure class="why-photo">
+        <img src="https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?w=900&q=80&auto=format&fit=crop" width="900" height="900" loading="lazy" alt="Un gato y un cachorro descansando juntos sobre el pasto">
+      </figure>
+      <div class="why-badge"><strong data-cfg="mascotasTxt">+8.500</strong>mascotas felices</div>
+      <div class="why-vet">
+        <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=200&q=80&auto=format&fit=crop" width="58" height="58" loading="lazy" alt="Retrato del director clínico sonriendo, con uniforme y estetoscopio">
+        <div><strong data-cfg="director">Dr. Tomás Fuentes</strong><small><span data-cfg="cargoDirector">Director clínico</span> · Médico veterinario</small></div>
+      </div>
+    </div>
+    <div class="why-copy">
+      <div class="reveal">
+        <span class="kicker"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg> ¿Por qué elegirnos?</span>
+        <h2 id="nosotros-title" style="font-size:clamp(1.95rem,4.4vw,2.9rem)">Somos vecinos de <span data-cfg="comuna">Talagante</span> y cuidamos a tu mascota como si fuera nuestra</h2>
+        <p>Hace más de <span data-cfg="aniosExperiencia">12</span> años acompañamos a las familias de la provincia de Talagante: desde la primera vacuna del cachorro hasta los cuidados de sus años dorados.</p>
+      </div>
+      <ul class="why-list">
+        <li class="reveal"><span class="why-ico"><svg class="icon" aria-hidden="true"><use href="#i-heart"/></svg></span><div><h3>Trato cariñoso y sin apuros</h3><p>Cada consulta dura lo que tu mascota necesita. Te explicamos todo con palabras simples.</p></div></li>
+        <li class="reveal" style="--d:.08s"><span class="why-ico"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg></span><div><h3>Pabellón y laboratorio propios</h3><p>Exámenes, ecografía y cirugía en el mismo lugar, sin derivarte a otra comuna.</p></div></li>
+        <li class="reveal" style="--d:.16s"><span class="why-ico"><svg class="icon" aria-hidden="true"><use href="#i-wallet"/></svg></span><div><h3>Precios claros, sin sorpresas</h3><p>Te cotizamos antes de cualquier procedimiento. Lo que te decimos es lo que pagas.</p></div></li>
+        <li class="reveal" style="--d:.24s"><span class="why-ico"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg></span><div><h3>Seguimiento por WhatsApp</h3><p>Te escribimos después de la consulta y te avisamos cuando toca la próxima vacuna.</p></div></li>
+      </ul>
+      <div class="stats">
+        <div class="stat reveal"><strong data-count-key="aniosExperiencia">12</strong><span>años en <span data-cfg="comuna">Talagante</span></span></div>
+        <div class="stat reveal" style="--d:.08s"><strong data-count-key="mascotasAtendidas" data-prefix="+">+8.500</strong><span>mascotas atendidas</span></div>
+        <div class="stat reveal" style="--d:.16s"><strong data-count-key="rating" data-dec="1">4,9</strong><span>promedio en Google</span></div>
+        <div class="stat reveal" style="--d:.24s"><strong>24/7</strong><span>urgencias todo el año</span></div>
+      </div>
+    </div>
+  </div>
+  <svg class="wave wave-bottom" viewBox="0 0 1440 70" preserveAspectRatio="none" aria-hidden="true"><path fill="#FFF1E8" d="M0,70 H1440 V40 C1180,4 940,62 700,40 C460,18 220,8 0,44 Z"/></svg>
+</section>
+
+<!-- ===== 3. CALENDARIO DE VACUNAS ===== -->
+<section class="section vaccines" id="vacunas" aria-labelledby="vacunas-title">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="kicker"><svg class="icon" aria-hidden="true"><use href="#i-syringe"/></svg> Calendario de vacunas</span>
+      <h2 id="vacunas-title">Que no se te pase ninguna dosis</h2>
+      <p>Este es el esquema que usamos con la mayoría de los cachorros y gatitos en Chile. En la consulta lo ajustamos a la edad, la salud y el estilo de vida de tu mascota.</p>
+    </header>
+
+    <div class="vax-layout">
+      <div class="vax-schedule reveal">
+        <div class="tabs" role="tablist" aria-label="Elige la especie">
+          <button type="button" class="tab" role="tab" id="tab-perros" aria-controls="panel-perros" aria-selected="true"><svg class="icon" aria-hidden="true"><use href="#i-dog"/></svg> Perros</button>
+          <button type="button" class="tab" role="tab" id="tab-gatos" aria-controls="panel-gatos" aria-selected="false" tabindex="-1"><svg class="icon" aria-hidden="true"><use href="#i-cat"/></svg> Gatos</button>
+        </div>
+
+        <div role="tabpanel" id="panel-perros" aria-labelledby="tab-perros" tabindex="0">
+          <ol class="timeline">
+            <li class="tl-item"><div class="tl-age"><strong>6–8</strong><span>semanas</span></div>
+              <div class="tl-body"><h3>Séxtuple u óctuple <span class="tag">1ª dosis</span></h3>
+                <p>Primera protección contra distemper, parvovirus, hepatitis, parainfluenza y leptospirosis, entre otras.</p>
+                <p class="tl-extra"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg> Desparasitación interna cada 15 días hasta los 3 meses</p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>9–11</strong><span>semanas</span></div>
+              <div class="tl-body"><h3>Óctuple <span class="tag">2ª dosis</span></h3>
+                <p>Refuerza sus defensas mientras el cachorro pierde los anticuerpos que le dio su mamá.</p>
+                <p class="tl-extra"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg> Tos de las perreras (KC) <span class="tag tag--opt">Opcional</span></p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>12–14</strong><span>semanas</span></div>
+              <div class="tl-body"><h3>Óctuple <span class="tag">3ª dosis</span></h3>
+                <p>Completa el esquema de cachorro. Después de esta dosis ya puede empezar a salir a pasear y socializar.</p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>4</strong><span>meses</span></div>
+              <div class="tl-body"><h3>Antirrábica <span class="tag tag--must">Obligatoria</span></h3>
+                <p>Exigida por la autoridad sanitaria para todos los perros y gatos. Te entregamos el certificado de vacunación.</p></div></li>
+            <li class="tl-item tl-item--year"><div class="tl-age"><strong>1</strong><span>vez al año</span></div>
+              <div class="tl-body"><h3>Refuerzo anual <span class="tag tag--year">Cada año</span></h3>
+                <p>Óctuple + antirrábica en una sola visita, junto a un chequeo general completo.</p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>Todo</strong><span>el año</span></div>
+              <div class="tl-body"><h3>Desparasitación</h3>
+                <p>Interna cada 3 meses y externa (pulgas y garrapatas) todos los meses, según el producto.</p></div></li>
+          </ol>
+        </div>
+
+        <div role="tabpanel" id="panel-gatos" aria-labelledby="tab-gatos" tabindex="0" hidden>
+          <ol class="timeline">
+            <li class="tl-item"><div class="tl-age"><strong>8–9</strong><span>semanas</span></div>
+              <div class="tl-body"><h3>Triple felina <span class="tag">1ª dosis</span></h3>
+                <p>Protege contra panleucopenia, rinotraqueítis y calicivirus, las enfermedades más comunes en gatitos.</p>
+                <p class="tl-extra"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg> Desparasitación interna cada 15 días hasta los 3 meses</p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>12</strong><span>semanas</span></div>
+              <div class="tl-body"><h3>Triple felina <span class="tag">2ª dosis</span></h3>
+                <p>Refuerzo de la triple y test rápido de leucemia felina antes de vacunar contra ella.</p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>12–16</strong><span>semanas</span></div>
+              <div class="tl-body"><h3>Leucemia felina <span class="tag tag--opt">Recomendada</span></h3>
+                <p>Dos dosis separadas por 3 a 4 semanas. Clave si sale al patio o al techo, o si vive con otros gatos.</p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>4</strong><span>meses</span></div>
+              <div class="tl-body"><h3>Antirrábica <span class="tag tag--must">Obligatoria</span></h3>
+                <p>También es obligatoria para gatos, aunque vivan dentro de la casa. Incluye certificado.</p></div></li>
+            <li class="tl-item tl-item--year"><div class="tl-age"><strong>1</strong><span>vez al año</span></div>
+              <div class="tl-body"><h3>Refuerzo anual <span class="tag tag--year">Cada año</span></h3>
+                <p>Triple felina + antirrábica (y leucemia según su estilo de vida), con chequeo general.</p></div></li>
+            <li class="tl-item"><div class="tl-age"><strong>Todo</strong><span>el año</span></div>
+              <div class="tl-body"><h3>Desparasitación</h3>
+                <p>Interna cada 3 meses y externa mensual. Aunque no salga, los parásitos pueden entrar en tus zapatos.</p></div></li>
+          </ol>
+        </div>
+
+        <p class="vax-note"><svg class="icon" aria-hidden="true"><use href="#i-info"/></svg><span>Esquema referencial. Las edades y vacunas exactas las define tu veterinario según el historial de tu mascota y la marca de la vacuna.</span></p>
+      </div>
+
+      <!-- Mini-formulario: Recuérdame la próxima dosis -->
+      <aside class="reminder reveal" id="recordatorio" aria-labelledby="rem-title" style="--d:.1s">
+        <div id="reminder-form-wrap">
+          <div class="reminder-head">
+            <span class="reminder-bell"><svg class="icon" aria-hidden="true"><use href="#i-bell"/></svg></span>
+            <h3 id="rem-title">Recuérdame la próxima dosis</h3>
+          </div>
+          <p class="reminder-sub">Te calculamos la fecha y la agregas a tu calendario o te la recordamos por WhatsApp. Gratis y en 10 segundos.</p>
+          <form id="reminder-form" novalidate>
+            <div class="field">
+              <label for="r-mascota">Nombre de tu mascota</label>
+              <input id="r-mascota" name="mascota" type="text" autocomplete="off" placeholder="Ej: Canela" aria-describedby="err-r-mascota" maxlength="40">
+              <small class="field-error" id="err-r-mascota" data-err="mascota"></small>
+            </div>
+            <div class="field">
+              <label for="r-vacuna">Vacuna o tratamiento</label>
+              <select id="r-vacuna" name="vacuna" aria-describedby="err-r-vacuna">
+                <option value="">Elige una opción</option>
+                <optgroup label="Perros">
+                  <option value="octuple-anual" data-meses="12" data-short="Óctuple">Óctuple / séxtuple · refuerzo anual</option>
+                  <option value="octuple-cachorro" data-dias="21" data-short="Óctuple cachorro">Óctuple · siguiente dosis de cachorro</option>
+                  <option value="kc" data-meses="12" data-short="Tos de las perreras">Tos de las perreras (KC) · anual</option>
+                </optgroup>
+                <optgroup label="Gatos">
+                  <option value="triple-anual" data-meses="12" data-short="Triple felina">Triple felina · refuerzo anual</option>
+                  <option value="triple-gatito" data-dias="21" data-short="Triple felina gatito">Triple felina · siguiente dosis de gatito</option>
+                  <option value="leucemia-2" data-dias="28" data-short="Leucemia felina 2ª dosis">Leucemia felina · 2ª dosis</option>
+                  <option value="leucemia-anual" data-meses="12" data-short="Leucemia felina">Leucemia felina · refuerzo anual</option>
+                </optgroup>
+                <optgroup label="Perros y gatos">
+                  <option value="antirrabica" data-meses="12" data-short="Antirrábica">Antirrábica · anual (obligatoria)</option>
+                  <option value="desp-interna" data-meses="3" data-short="Desparasitación interna">Desparasitación interna · cada 3 meses</option>
+                  <option value="desp-externa" data-meses="1" data-short="Antipulgas">Antipulgas y garrapatas · mensual</option>
+                </optgroup>
+              </select>
+              <small class="field-error" id="err-r-vacuna" data-err="vacuna"></small>
+            </div>
+            <div class="field">
+              <label for="r-fecha">Fecha de la última dosis</label>
+              <input id="r-fecha" name="fecha" type="date" aria-describedby="err-r-fecha">
+              <small class="field-error" id="err-r-fecha" data-err="fecha"></small>
+            </div>
+            <button type="submit" class="btn btn-accent btn-block btn-lg"><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg> Calcular próxima dosis</button>
+          </form>
+        </div>
+
+        <div class="rem-result" id="rem-result" hidden tabindex="-1" aria-live="polite">
+          <div class="rem-check" aria-hidden="true"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="22"/><path d="M15 27l7 7 15-15"/></svg></div>
+          <p class="rem-kicker">¡Recordatorio listo!</p>
+          <p class="rem-text">La próxima dosis de <strong id="rr-pet">tu mascota</strong> (<span id="rr-vax"></span>) es el</p>
+          <p class="rem-date" id="rr-date"></p>
+          <p class="rem-when" id="rr-when"></p>
+          <div class="rem-actions">
+            <button type="button" class="btn btn-primary btn-block" id="rr-ics"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Agregar a mi calendario (.ics)</button>
+            <a class="btn btn-wa btn-block" id="rr-wa" href="https://wa.me/56987654321" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg> Recibir recordatorio por WhatsApp</a>
+            <button type="button" class="btn btn-ghost btn-block" id="rr-book"><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg> Reservar hora para esa dosis</button>
+          </div>
+          <button type="button" class="link-btn rem-reset" id="rr-reset">Crear otro recordatorio</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4. HORARIOS + MAPA ===== -->
+<section class="section visit" id="horarios" aria-labelledby="horarios-title">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="kicker"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> Horarios y ubicación</span>
+      <h2 id="horarios-title">Te esperamos en el corazón de <span data-cfg="comuna">Talagante</span></h2>
+      <p>Atendemos también a familias de <span data-cfg="comunasCercanas">Peñaflor, El Monte, Isla de Maipo y Padre Hurtado</span>. Estacionamiento frente a la clínica.</p>
+    </header>
+    <div class="visit-grid">
+      <div class="hours-card reveal">
+        <div class="status closed" id="status-pill" role="status"><span class="dot" aria-hidden="true"></span><span id="status-text">Revisando horario…</span></div>
+        <p class="status-sub" id="status-sub"></p>
+        <table class="hours-table">
+          <caption class="sr-only">Horario de atención semanal (hora de Chile)</caption>
+          <tbody id="hours-body"></tbody>
+        </table>
+        <div class="urgent-strip">
+          <svg class="icon" aria-hidden="true"><use href="#i-siren"/></svg>
+          <span>Urgencias 24/7, todos los días del año</span>
+          <a data-wa="urgencia" href="https://wa.me/56987654321" target="_blank" rel="noopener">Escribir ahora</a>
+        </div>
+        <ul class="contact-list">
+          <li><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span><strong data-cfg="direccion">Av. Bernardo O'Higgins 1245</strong>, <span data-cfg="comuna">Talagante</span>, <span data-cfg="region">Región Metropolitana</span></span></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><a data-tel href="tel:+56987654321" data-cfg="telefonoVisible">+56 9 8765 4321</a></li>
+          <li><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg><a data-mail href="mailto:contacto@huellitasdelmaipo.cl" data-cfg="email">contacto@huellitasdelmaipo.cl</a></li>
+        </ul>
+        <div class="visit-actions">
+          <a class="btn btn-primary" data-link="mapaComoLlegarUrl" href="https://www.google.com/maps/dir/?api=1&amp;destination=Talagante,+Chile" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-nav"/></svg> Cómo llegar</a>
+          <a class="btn btn-ghost" data-tel href="tel:+56987654321"><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg> Llamar</a>
+        </div>
+      </div>
+      <div class="map-card reveal" style="--d:.1s">
+        <iframe id="map" src="https://www.google.com/maps?q=Talagante,+Chile&amp;output=embed" title="Mapa de ubicación de la clínica en Talagante" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        <div class="map-pin">
+          <span class="brand-mark"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg></span>
+          <div><strong data-cfg="nombre">Huellitas del Maipo</strong><span data-cfg="direccion">Av. Bernardo O'Higgins 1245</span>, <span data-cfg="comuna">Talagante</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== RESEÑAS ESTILO GOOGLE ===== -->
+<section class="section reviews" id="resenas" aria-labelledby="resenas-title">
+  <div class="container">
+    <div class="reviews-top">
+      <header class="section-head reveal">
+        <span class="kicker"><svg class="icon" aria-hidden="true"><use href="#i-star"/></svg> Reseñas</span>
+        <h2 id="resenas-title">Lo que dicen las familias de <span data-cfg="comuna">Talagante</span></h2>
+      </header>
+      <div class="g-summary reveal" style="--d:.1s">
+        <svg class="g-icon" aria-hidden="true"><use href="#i-google"/></svg>
+        <div>
+          <div class="g-label">Reseñas de Google</div>
+          <div class="g-score"><strong data-cfg="ratingTxt">4,9</strong><span class="js-stars" data-size="1.15rem"></span></div>
+          <div class="g-count">Basado en <span data-cfg="totalResenas">327</span> reseñas</div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel reveal">
+      <div class="carousel-track" id="reviews-track" tabindex="0" role="region" aria-label="Reseñas de clientes (desliza para ver más)"></div>
+      <div class="carousel-nav">
+        <div class="carousel-btns">
+          <button type="button" class="icon-btn" id="rv-prev" aria-label="Reseña anterior"><svg class="icon" aria-hidden="true"><use href="#i-left"/></svg></button>
+          <button type="button" class="icon-btn" id="rv-next" aria-label="Reseña siguiente"><svg class="icon" aria-hidden="true"><use href="#i-right"/></svg></button>
+        </div>
+        <a class="btn btn-white" data-link="googleResenasUrl" href="https://www.google.com/maps/search/?api=1&amp;query=Talagante,+Chile" target="_blank" rel="noopener" style="box-shadow:var(--shadow-sm)"><svg class="icon" aria-hidden="true"><use href="#i-google"/></svg> Ver todas en Google</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PREGUNTAS FRECUENTES ===== -->
+<section class="section faq-section" id="faq" aria-labelledby="faq-title">
+  <div class="container">
+    <header class="section-head reveal">
+      <span class="kicker"><svg class="icon" aria-hidden="true"><use href="#i-chat"/></svg> Preguntas frecuentes</span>
+      <h2 id="faq-title">Resolvemos tus dudas antes de venir</h2>
+    </header>
+    <div class="faq-list">
+      <details class="faq reveal"><summary>¿Necesito reservar hora o puedo llegar sin cita?<span class="faq-plus"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+        <div class="faq-a"><p>Te recomendamos reservar para no esperar, pero siempre hacemos un espacio para quien llega. Las urgencias se atienden de inmediato, sin necesidad de hora.</p></div></details>
+      <details class="faq reveal"><summary>¿Atienden urgencias de noche, fines de semana y festivos?<span class="faq-plus"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+        <div class="faq-a"><p>Sí. Tenemos veterinario de turno 24/7. Escríbenos por WhatsApp o llama al <a data-tel href="tel:+56987654321" data-cfg="telefonoVisible">+56 9 8765 4321</a> antes de venir, así preparamos todo para recibir a tu mascota.</p></div></details>
+      <details class="faq reveal"><summary>¿La vacuna antirrábica es obligatoria?<span class="faq-plus"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+        <div class="faq-a"><p>Sí. En Chile la antirrábica es obligatoria para perros y gatos y se renueva todos los años. Te entregamos el certificado, que te sirve para trámites, viajes y hoteles de mascotas.</p></div></details>
+      <details class="faq reveal"><summary>¿Atienden gatos y animales exóticos?<span class="faq-plus"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+        <div class="faq-a"><p>¡Claro! Atendemos perros, gatos, conejos, hurones y cuyes. Los gatos tienen una sala de espera separada, más tranquila y sin ladridos.</p></div></details>
+      <details class="faq reveal"><summary>¿Qué medios de pago aceptan?<span class="faq-plus"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+        <div class="faq-a"><p>Aceptamos <span data-cfg="mediosPago">efectivo, débito, crédito y transferencia</span>. En cirugías puedes pagar en cuotas con tu tarjeta de crédito.</p></div></details>
+      <details class="faq reveal"><summary>¿Hacen atención a domicilio?<span class="faq-plus"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg></span></summary>
+        <div class="faq-a"><p>Sí, en <span data-cfg="comuna">Talagante</span> y comunas cercanas (<span data-cfg="comunasCercanas">Peñaflor, El Monte, Isla de Maipo y Padre Hurtado</span>). El traslado parte desde <span data-cfg="precioDomicilioTxt">$25.000</span> más el valor de la atención. Ideal para gatos que se estresan o mascotas mayores.</p></div></details>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA FINAL ===== -->
+<section class="cta" aria-labelledby="cta-title">
+  <div class="container">
+    <div class="cta-card reveal">
+      <div class="cta-copy">
+        <span class="kicker" style="background:rgba(255,255,255,.55);color:#7A2E14"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg> Tu mascota lo agradecerá</span>
+        <h2 id="cta-title">¿Le toca su control o su vacuna? Reserva hoy en un minuto</h2>
+        <p>Eliges el servicio, el día y la hora, y te confirmamos por WhatsApp. Sin llamadas eternas ni formularios complicados.</p>
+        <div class="cta-btns">
+          <button type="button" class="btn btn-primary btn-lg" data-open-booking><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg> Reservar hora</button>
+          <a class="btn btn-white btn-lg" data-wa="general" href="https://wa.me/56987654321" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true" style="color:var(--c-wa-ink)"><use href="#i-wa"/></svg> Escribir por WhatsApp</a>
+        </div>
+      </div>
+      <div class="cta-media">
+        <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=900&q=80&auto=format&fit=crop" width="900" height="700" loading="lazy" alt="Cachorro golden retriever corriendo feliz al atardecer">
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div class="f-brand">
+      <a class="brand brand--light" href="#inicio" aria-label="Volver al inicio">
+        <span class="brand-mark" style="background:var(--c-accent);color:var(--c-ink)"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg></span>
+        <span class="brand-text"><strong data-cfg="nombre">Huellitas del Maipo</strong><small>Clínica veterinaria</small></span>
+      </a>
+      <p>Medicina veterinaria cercana en <span data-cfg="comuna">Talagante</span> desde <span data-cfg="desdeAnio">2014</span>. Cuidamos a perros, gatos y exóticos como parte de tu familia.</p>
+      <div class="socials">
+        <a data-link="redes.instagram" href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg></a>
+        <a data-link="redes.facebook" href="https://www.facebook.com/" target="_blank" rel="noopener" aria-label="Facebook"><svg class="icon" aria-hidden="true"><use href="#i-facebook"/></svg></a>
+        <a data-link="redes.tiktok" href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok"><svg class="icon" aria-hidden="true"><use href="#i-tiktok"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h3>Servicios</h3>
+      <ul class="f-list" id="footer-services"></ul>
+    </div>
+    <div>
+      <h3>Contacto</h3>
+      <ul class="f-list">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-pin"/></svg><span><span data-cfg="direccion">Av. Bernardo O'Higgins 1245</span>, <span data-cfg="comuna">Talagante</span></span></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg><a data-tel href="tel:+56987654321" data-cfg="telefonoVisible">+56 9 8765 4321</a></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg><a data-wa="general" href="https://wa.me/56987654321" target="_blank" rel="noopener">Escríbenos por WhatsApp</a></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg><a data-mail href="mailto:contacto@huellitasdelmaipo.cl" data-cfg="email">contacto@huellitasdelmaipo.cl</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Horarios</h3>
+      <ul class="f-list f-hours" id="footer-hours"></ul>
+      <span class="f-urg"><svg class="icon" aria-hidden="true"><use href="#i-siren"/></svg> Urgencias 24/7</span>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <p>© <span data-cfg="anioActual">2026</span> <span data-cfg="nombreCompleto">Clínica Veterinaria Huellitas del Maipo</span>. Todos los derechos reservados.</p>
+    <p><a data-link="creditoWeb.url" href="#" data-cfg="creditoWeb.texto">Sitio web creado por Tu Marca Web</a></p>
+  </div>
+</footer>
+
+<!-- ===== MODAL DE RESERVA ===== -->
+<dialog class="modal" id="booking" aria-labelledby="booking-title">
+  <div class="modal-card">
+    <button type="button" class="modal-close" data-close aria-label="Cerrar formulario de reserva"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    <div id="booking-form-wrap">
+      <div class="modal-head">
+        <span class="modal-icon"><svg class="icon" aria-hidden="true"><use href="#i-cal"/></svg></span>
+        <h2 id="booking-title">Reserva tu hora</h2>
+        <p>Completa los datos y te llevamos a WhatsApp con el mensaje listo. Te confirmamos en minutos.</p>
+      </div>
+      <form id="booking-form" novalidate>
+        <div class="field-row">
+          <div class="field">
+            <label for="b-nombre">Tu nombre</label>
+            <input id="b-nombre" name="nombre" type="text" autocomplete="name" placeholder="Ej: Camila Rojas" maxlength="60" aria-describedby="err-b-nombre">
+            <small class="field-error" id="err-b-nombre" data-err="nombre"></small>
+          </div>
+          <div class="field">
+            <label for="b-mascota">Nombre de tu mascota</label>
+            <input id="b-mascota" name="mascota" type="text" autocomplete="off" placeholder="Ej: Canela" maxlength="40" aria-describedby="err-b-mascota">
+            <small class="field-error" id="err-b-mascota" data-err="mascota"></small>
+          </div>
+        </div>
+        <fieldset class="field">
+          <legend>Especie</legend>
+          <div class="species">
+            <label><input type="radio" name="especie" value="Perro" aria-describedby="err-b-especie"><span><svg class="icon" aria-hidden="true"><use href="#i-dog"/></svg>Perro</span></label>
+            <label><input type="radio" name="especie" value="Gato" aria-describedby="err-b-especie"><span><svg class="icon" aria-hidden="true"><use href="#i-cat"/></svg>Gato</span></label>
+            <label><input type="radio" name="especie" value="Otro" aria-describedby="err-b-especie"><span><svg class="icon" aria-hidden="true"><use href="#i-rabbit"/></svg>Otro</span></label>
+          </div>
+          <small class="field-error" id="err-b-especie" data-err="especie"></small>
+        </fieldset>
+        <div class="field">
+          <label for="b-servicio">Servicio</label>
+          <select id="b-servicio" name="servicio" aria-describedby="err-b-servicio"></select>
+          <small class="field-error" id="err-b-servicio" data-err="servicio"></small>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="b-fecha">Fecha</label>
+            <input id="b-fecha" name="fecha" type="date" aria-describedby="err-b-fecha b-hint">
+            <small class="field-error" id="err-b-fecha" data-err="fecha"></small>
+          </div>
+          <div class="field">
+            <label for="b-hora">Hora</label>
+            <select id="b-hora" name="hora" disabled aria-describedby="err-b-hora b-hint"><option value="">Elige una fecha primero</option></select>
+            <small class="field-error" id="err-b-hora" data-err="hora"></small>
+          </div>
+        </div>
+        <p class="field-hint" id="b-hint" aria-live="polite"></p>
+        <div class="field">
+          <label for="b-nota">Comentario <span class="opt">(opcional)</span></label>
+          <textarea id="b-nota" name="nota" rows="2" maxlength="300" placeholder="Ej: Está con tos hace 3 días"></textarea>
+        </div>
+        <button type="submit" class="btn btn-wa btn-block btn-lg"><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg> Enviar reserva por WhatsApp</button>
+        <p class="form-legal">Tus datos solo se usan para coordinar tu hora. Este sitio no guarda información.</p>
+      </form>
+    </div>
+    <div class="booking-success" id="booking-success" hidden tabindex="-1">
+      <div class="rem-check" aria-hidden="true"><svg viewBox="0 0 52 52"><circle cx="26" cy="26" r="22"/><path d="M15 27l7 7 15-15"/></svg></div>
+      <h3>¡Listo, <span id="bs-name">vecino</span>!</h3>
+      <p>Abrimos WhatsApp con tu solicitud. Solo toca <strong>Enviar</strong> y te confirmamos la hora en minutos.</p>
+      <p class="bs-summary" id="bs-summary"></p>
+      <div class="bs-actions">
+        <a class="btn btn-wa btn-block" id="bs-link" href="https://wa.me/56987654321" target="_blank" rel="noopener"><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg> ¿No se abrió? Abrir WhatsApp</a>
+        <button type="button" class="btn btn-ghost btn-block" data-close>Cerrar</button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<!-- ===== 5. ASISTENTE VIRTUAL (chat flotante) + WhatsApp ===== -->
+<a class="fab-wa" data-wa="general" href="https://wa.me/56987654321" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg></a>
+
+<div class="chat-teaser" id="chat-teaser" hidden>
+  <span id="chat-teaser-text">¿Dudas con horarios o precios? Soy Pati y te respondo al tiro.</span>
+  <button type="button" id="chat-teaser-close" aria-label="Cerrar mensaje"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+</div>
+
+<button type="button" class="chat-fab" id="chat-fab" aria-expanded="false" aria-controls="chat-panel" aria-label="Abrir asistente virtual">
+  <svg class="icon i-chat" aria-hidden="true"><use href="#i-chat"/></svg>
+  <svg class="icon i-close" aria-hidden="true"><use href="#i-x"/></svg>
+  <span class="chat-badge" id="chat-badge" aria-hidden="true">1</span>
+  <span class="chat-ai" aria-hidden="true">IA</span>
+</button>
+
+<section class="chat-panel" id="chat-panel" role="dialog" aria-modal="false" aria-labelledby="chat-title" hidden>
+  <header class="chat-header">
+    <span class="chat-avatar"><svg class="icon" aria-hidden="true"><use href="#i-paw"/></svg></span>
+    <div class="chat-title">
+      <h2 id="chat-title"><span id="chat-bot-name">Pati</span> <span class="ai-tag">IA</span></h2>
+      <p>Asistente virtual · responde al instante</p>
+    </div>
+    <a class="chat-hbtn" data-wa="general" href="https://wa.me/56987654321" target="_blank" rel="noopener" aria-label="Continuar por WhatsApp"><svg class="icon" aria-hidden="true"><use href="#i-wa"/></svg></a>
+    <button type="button" class="chat-hbtn" id="chat-close" aria-label="Cerrar asistente"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </header>
+  <div class="chat-body" id="chat-body" role="log" aria-live="polite" aria-label="Conversación con el asistente"></div>
+  <div class="chat-chips" id="chat-chips" aria-label="Respuestas rápidas"></div>
+  <form class="chat-form" id="chat-form" autocomplete="off">
+    <label class="sr-only" for="chat-text">Escribe tu pregunta</label>
+    <input id="chat-text" type="text" placeholder="Escribe tu pregunta…" maxlength="300">
+    <button type="submit" class="chat-send" aria-label="Enviar mensaje"><svg class="icon" aria-hidden="true"><use href="#i-send"/></svg></button>
+  </form>
+  <p class="chat-foot">Asistente automático de demostración · Para urgencias usa WhatsApp</p>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span id="toast-text"></span></div>
+
+<script>
+(function () {
+  "use strict";
+  var C = CONFIG;
+
+  /* =================== Utilidades =================== */
+  var $ = function (s, c) { return (c || document).querySelector(s); };
+  var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+  var pad = function (n) { return String(n).padStart(2, "0"); };
+  var esc = function (s) { return String(s).replace(/[&<>"']/g, function (ch) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]; }); };
+  var miles = function (n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); };
+  var clp = function (n) { return "$" + miles(n); };
+  var ic = function (id, cls) { return '<svg class="icon ' + (cls || "") + '" aria-hidden="true"><use href="#i-' + id + '"/></svg>'; };
+  var slug = function (s) { return String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "mascota"; };
+  var getPath = function (obj, path) { return path.split(".").reduce(function (o, k) { return o == null ? undefined : o[k]; }, obj); };
+  var cap = function (s) { return s.charAt(0).toUpperCase() + s.slice(1); };
+  var wait = function (ms) { return new Promise(function (r) { setTimeout(r, ms); }); };
+  var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var isMobile = function () { return window.matchMedia("(max-width: 560px)").matches; };
+
+  var DIAS = ["domingo", "lunes", "martes", "miercoles", "jueves", "viernes", "sabado"];
+  var DIA_LABEL = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+  var SEMANA = [1, 2, 3, 4, 5, 6, 0];
+  var servicios = C.servicios.filter(function (s) { return s.activo !== false; });
+  var svc = function (id) { return servicios.find(function (s) { return s.id === id; }); };
+  var direccionCompleta = C.direccion + ", " + C.comuna + ", " + C.region;
+  var telHref = "tel:+" + (C.telefonoLlamadas || C.whatsapp);
+  var ratingTxt = Number(C.rating).toFixed(1).replace(".", ",");
+
+  /* =================== WhatsApp =================== */
+  var waLink = function (msg) { return "https://wa.me/" + C.whatsapp + "?text=" + encodeURIComponent(msg); };
+  var MSG = {
+    general: "¡Hola " + C.nombre + "! 🐾 Tengo una consulta sobre mi mascota.",
+    reserva: "¡Hola " + C.nombre + "! 🐾 Quiero reservar una hora para mi mascota.",
+    urgencia: "🚨 URGENCIA VETERINARIA 🚨\nHola " + C.nombre + ", necesito atención urgente para mi mascota.\n\n• Mascota (especie y nombre): \n• ¿Qué le pasa?: \n• ¿Desde cuándo?: \n\n¿Me pueden orientar ahora, por favor?",
+    domicilio: "¡Hola " + C.nombre + "! Quiero coordinar una visita a domicilio para mi mascota. Vivo en: "
+  };
+
+  /* =================== Hora de Chile =================== */
+  function nowChile() {
+    var d = new Date();
+    try {
+      var parts = new Intl.DateTimeFormat("en-US", { timeZone: C.zonaHoraria, year: "numeric", month: "2-digit", day: "2-digit", weekday: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).formatToParts(d);
+      var o = {};
+      parts.forEach(function (p) { o[p.type] = p.value; });
+      var dow = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(o.weekday);
+      return { y: +o.year, m: +o.month, d: +o.day, dow: dow, min: (parseInt(o.hour, 10) % 24) * 60 + parseInt(o.minute, 10) };
+    } catch (e) {
+      return { y: d.getFullYear(), m: d.getMonth() + 1, d: d.getDate(), dow: d.getDay(), min: d.getHours() * 60 + d.getMinutes() };
+    }
+  }
+  var toMin = function (hhmm) { var p = hhmm.split(":"); return (+p[0]) * 60 + (+p[1]); };
+  var toHHMM = function (min) { return pad(Math.floor(min / 60)) + ":" + pad(min % 60); };
+  function horarioDe(dow) {
+    var h = C.horarios[DIAS[dow]];
+    return h && h.length === 2 ? { abre: toMin(h[0]), cierra: toMin(h[1]), txt: h } : null;
+  }
+  function estadoActual() {
+    var n = nowChile(), hoy = horarioDe(n.dow);
+    if (hoy && n.min >= hoy.abre && n.min < hoy.cierra) {
+      return { abierto: true, texto: "Abierto ahora", sub: (hoy.cierra - n.min <= 60 ? "Cerramos pronto, a las " : "Atendemos hoy hasta las ") + hoy.txt[1] + " h" };
+    }
+    if (hoy && n.min < hoy.abre) return { abierto: false, texto: "Cerrado ahora", sub: "Abrimos hoy a las " + hoy.txt[0] + " h" };
+    for (var i = 1; i <= 7; i++) {
+      var dow = (n.dow + i) % 7, h = horarioDe(dow);
+      if (h) return { abierto: false, texto: "Cerrado ahora", sub: "Abrimos " + (i === 1 ? "mañana" : "el " + DIA_LABEL[dow].toLowerCase()) + " a las " + h.txt[0] + " h" };
+    }
+    return { abierto: false, texto: "Cerrado", sub: "" };
+  }
+  function proximaHora() {
+    var n = nowChile(), step = C.duracionBloqueMin || 30;
+    for (var i = 0; i < 8; i++) {
+      var dow = (n.dow + i) % 7, h = horarioDe(dow);
+      if (!h) continue;
+      var start = h.abre;
+      if (i === 0) start = Math.max(h.abre, Math.ceil((n.min + 45) / step) * step);
+      if (start + step <= h.cierra) return (i === 0 ? "Hoy" : i === 1 ? "Mañana" : DIA_LABEL[dow]) + ", " + toHHMM(start) + " h";
+    }
+    return "Escríbenos";
+  }
+  function gruposHorario() {
+    var out = [];
+    SEMANA.forEach(function (dow) {
+      var h = C.horarios[DIAS[dow]], txt = h ? h[0] + " – " + h[1] : "Cerrado", last = out[out.length - 1];
+      if (last && last.txt === txt) last.hasta = dow; else out.push({ desde: dow, hasta: dow, txt: txt });
+    });
+    return out.map(function (g) {
+      return { label: g.desde === g.hasta ? DIA_LABEL[g.desde] : DIA_LABEL[g.desde] + " a " + DIA_LABEL[g.hasta].toLowerCase(), txt: g.txt };
+    });
+  }
+  var ymd = function (d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); };
+  var parseYmd = function (s) { var p = s.split("-").map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+  var fechaLarga = function (d, conAnio) {
+    var o = { weekday: "long", day: "numeric", month: "long" };
+    if (conAnio) o.year = "numeric";
+    return d.toLocaleDateString("es-CL", o).replace(",", "");
+  };
+  var fechaCorta = function (d) { return pad(d.getDate()) + "-" + pad(d.getMonth() + 1) + "-" + d.getFullYear(); };
+  var HOY = nowChile();
+  var hoyStr = HOY.y + "-" + pad(HOY.m) + "-" + pad(HOY.d);
+  var hoyDate = new Date(HOY.y, HOY.m - 1, HOY.d);
+
+  /* =================== Estrellas =================== */
+  function starsHTML(rating, size) {
+    var five = "";
+    for (var i = 0; i < 5; i++) five += ic("star");
+    var pct = Math.max(0, Math.min(100, (rating / 5) * 100));
+    return '<span class="stars" role="img" aria-label="' + String(rating).replace(".", ",") + ' de 5 estrellas" style="font-size:' + (size || "1rem") + ";--pct:" + pct + '%"><span class="stars-base">' + five + '</span><span class="stars-fill">' + five + "</span></span>";
+  }
+
+  /* =================== Rellenar con CONFIG =================== */
+  var VALUES = Object.assign({}, C, {
+    ratingTxt: ratingTxt,
+    direccionCompleta: direccionCompleta,
+    mascotasTxt: "+" + miles(C.mascotasAtendidas),
+    anioActual: new Date().getFullYear(),
+    desdeAnio: new Date().getFullYear() - C.aniosExperiencia,
+    precioUrgenciaTxt: clp(C.precioUrgencia),
+    precioDomicilioTxt: clp(C.precioDomicilio),
+    precioMicrochipTxt: clp(C.precioMicrochip)
+  });
+  $$("[data-cfg]").forEach(function (el) {
+    var v = getPath(VALUES, el.getAttribute("data-cfg"));
+    if (v !== undefined && v !== null && typeof v !== "object") el.textContent = v;
+  });
+  $$("[data-wa]").forEach(function (a) { a.href = waLink(MSG[a.getAttribute("data-wa")] || MSG.general); });
+  $$("[data-tel]").forEach(function (a) { a.href = telHref; });
+  $$("[data-mail]").forEach(function (a) { a.href = "mailto:" + C.email; });
+  $$("[data-link]").forEach(function (a) {
+    var url = getPath(C, a.getAttribute("data-link"));
+    if (url) a.href = url; else if (a.closest(".socials")) a.remove();
+  });
+  $$(".js-stars").forEach(function (el) { el.outerHTML = starsHTML(C.rating, el.getAttribute("data-size")); });
+  var mapFrame = $("#map");
+  if (mapFrame && C.mapaEmbedUrl && mapFrame.getAttribute("src") !== C.mapaEmbedUrl) mapFrame.src = C.mapaEmbedUrl;
+  $("#chat-bot-name").textContent = C.nombreAsistente;
+  $("#chat-teaser-text").textContent = "¿Dudas con horarios o precios? Soy " + C.nombreAsistente + " y te respondo al tiro.";
+
+  /* Datos estructurados para Google (SEO local) */
+  try {
+    var ld = {
+      "@context": "https://schema.org", "@type": "VeterinaryCare", name: C.nombreCompleto,
+      telephone: "+" + C.telefonoLlamadas, email: C.email, priceRange: "$$",
+      address: { "@type": "PostalAddress", streetAddress: C.direccion, addressLocality: C.comuna, addressRegion: C.region, addressCountry: "CL" },
+      openingHoursSpecification: SEMANA.filter(function (d) { return C.horarios[DIAS[d]]; }).map(function (d) {
+        return { "@type": "OpeningHoursSpecification", dayOfWeek: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][d], opens: C.horarios[DIAS[d]][0], closes: C.horarios[DIAS[d]][1] };
+      })
+    };
+    var s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.textContent = JSON.stringify(ld);
+    document.head.appendChild(s);
+  } catch (e) { /* sin datos estructurados */ }
+
+  /* =================== Servicios =================== */
+  var ACCENTS = ["teal", "coral", "sun", "dark", "coral"];
+  $("#services-grid").innerHTML = servicios.map(function (s, i) {
+    return '<article class="svc reveal" style="--d:' + ((i % 3) * 0.08) + 's" data-accent="' + (s.color || ACCENTS[i % ACCENTS.length]) + '">' +
+      '<div class="svc-media"><img src="' + esc(s.imagen) + '" alt="' + esc(s.alt || s.nombre) + '" loading="lazy" width="800" height="500">' +
+      (s.etiqueta ? '<span class="svc-tag">' + esc(s.etiqueta) + "</span>" : "") + "</div>" +
+      '<div class="svc-body"><span class="svc-icon">' + ic(s.icono) + "</span>" +
+      "<h3>" + esc(s.nombre) + "</h3><p>" + esc(s.descripcion) + "</p>" +
+      '<ul class="svc-list">' + (s.incluye || []).map(function (t) { return "<li>" + ic("check") + esc(t) + "</li>"; }).join("") + "</ul>" +
+      '<div class="svc-foot"><div class="price"><span>Desde</span><strong>' + clp(s.desde) + "</strong>" + (s.sufijo ? "<small>" + esc(s.sufijo) + "</small>" : "") + "</div>" +
+      '<button type="button" class="btn btn-primary btn-sm" data-open-booking data-service="' + esc(s.id) + '" aria-label="Reservar ' + esc(s.nombre) + '">' + ic("cal") + " Reservar</button></div>" +
+      "</div></article>";
+  }).join("") + (C.urgencias24_7 ?
+    '<article class="svc svc--urgent reveal" style="--d:' + ((servicios.length % 3) * 0.08) + 's">' +
+      '<div class="urg-top"><span class="urg-siren">' + ic("siren") + '</span><span class="urg-247" aria-hidden="true">24/7</span></div>' +
+      '<div class="svc-body"><h3>Urgencias veterinarias</h3>' +
+      "<p>Atropellos, intoxicaciones, dificultad para respirar o partos complicados. Un veterinario de turno te responde a cualquier hora, incluso domingos y festivos.</p>" +
+      '<ul class="svc-list"><li>' + ic("check") + "Respuesta inmediata por WhatsApp</li><li>" + ic("check") + "Preparamos todo antes de que llegues</li></ul>" +
+      '<div class="svc-foot"><div class="price"><span>Consulta de urgencia desde</span><strong>' + clp(C.precioUrgencia) + "</strong></div></div>" +
+      '<div class="urg-actions"><a class="btn btn-white" href="' + esc(waLink(MSG.urgencia)) + '" target="_blank" rel="noopener">' + ic("wa") + ' Escribir ahora</a>' +
+      '<a class="btn btn-outline-white" href="' + telHref + '">' + ic("phone") + " Llamar</a></div></div></article>" : "");
+
+  $("#footer-services").innerHTML = servicios.map(function (s) {
+    return "<li>" + ic("paw") + '<a href="#servicios">' + esc(s.nombre) + "</a></li>";
+  }).join("") + (C.urgencias24_7 ? "<li>" + ic("paw") + '<a href="#servicios">Urgencias 24/7</a></li>' : "");
+
+  /* =================== Horarios (tabla + estado) =================== */
+  function renderHorarios() {
+    var n = nowChile(), st = estadoActual();
+    $("#hours-body").innerHTML = SEMANA.map(function (dow) {
+      var h = C.horarios[DIAS[dow]], today = dow === n.dow;
+      return '<tr class="' + (today ? "today " : "") + (h ? "" : "is-closed") + '"><th scope="row">' + DIA_LABEL[dow] +
+        (today ? '<span class="today-tag">Hoy</span>' : "") + "</th><td>" + (h ? h[0] + " – " + h[1] : "Cerrado") + "</td></tr>";
+    }).join("");
+    var pill = $("#status-pill");
+    pill.classList.toggle("closed", !st.abierto);
+    $("#status-text").textContent = st.texto;
+    $("#status-sub").textContent = st.sub + (C.urgencias24_7 ? " · Urgencias 24/7" : "");
+    $$("[data-status-mini]").forEach(function (el) {
+      el.textContent = st.abierto ? "Abierto ahora" : "Cerrado · urgencias 24/7";
+      el.classList.toggle("closed", !st.abierto);
+    });
+    $("#next-slot").textContent = proximaHora();
+  }
+  $("#footer-hours").innerHTML = gruposHorario().map(function (g) { return "<li><span>" + g.label + "</span><b>" + g.txt + "</b></li>"; }).join("");
+  renderHorarios();
+  setInterval(renderHorarios, 60000);
+
+  /* =================== Reseñas (carrusel) =================== */
+  var AV_COLORS = ["#0E7C74", "#E8603D", "#7C5CC4", "#C27C0E", "#1F7AB8", "#B4431F"];
+  var track = $("#reviews-track");
+  track.innerHTML = C.resenas.map(function (r, i) {
+    var ini = r.nombre.split(" ").map(function (p) { return p.charAt(0); }).slice(0, 2).join("");
+    return '<article class="review"><div class="rv-head"><span class="avatar" style="background:' + AV_COLORS[i % AV_COLORS.length] + '" aria-hidden="true">' + esc(ini) +
+      '<svg class="g-mini"><use href="#i-google"/></svg></span><div><div class="rv-name">' + esc(r.nombre) + '</div><div class="rv-date">' + esc(r.fecha) + " · Google</div></div></div>" +
+      starsHTML(r.estrellas, "1.05rem") + "<p>" + esc(r.texto) + "</p></article>";
+  }).join("");
+  var prevBtn = $("#rv-prev"), nextBtn = $("#rv-next");
+  function stepSize() { var card = track.querySelector(".review"); return card ? card.getBoundingClientRect().width + 20 : 300; }
+  function updateNav() {
+    prevBtn.disabled = track.scrollLeft < 8;
+    nextBtn.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 8;
+  }
+  prevBtn.addEventListener("click", function () { track.scrollBy({ left: -stepSize(), behavior: reduceMotion ? "auto" : "smooth" }); });
+  nextBtn.addEventListener("click", function () { track.scrollBy({ left: stepSize(), behavior: reduceMotion ? "auto" : "smooth" }); });
+  track.addEventListener("scroll", function () { window.requestAnimationFrame(updateNav); }, { passive: true });
+  track.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") { e.preventDefault(); nextBtn.click(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); prevBtn.click(); }
+  });
+  window.addEventListener("resize", updateNav);
+  updateNav();
+
+  /* =================== Navegación =================== */
+  var header = $(".site-header"), nav = $("#site-nav"), toggle = $(".nav-toggle");
+  function setNav(open) {
+    nav.classList.toggle("open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Cerrar menú" : "Abrir menú");
+  }
+  toggle.addEventListener("click", function () { setNav(!nav.classList.contains("open")); });
+  nav.addEventListener("click", function (e) { if (e.target.closest("a, button")) setNav(false); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && nav.classList.contains("open")) { setNav(false); toggle.focus(); } });
+  var onScroll = function () { header.classList.toggle("scrolled", window.scrollY > 8); };
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  var navLinks = $$('.nav-links a[href^="#"]');
+  if ("IntersectionObserver" in window) {
+    var secIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        navLinks.forEach(function (a) { a.classList.toggle("active", a.getAttribute("href") === "#" + en.target.id); });
+      });
+    }, { rootMargin: "-45% 0px -50% 0px" });
+    navLinks.forEach(function (a) { var sec = $(a.getAttribute("href")); if (sec) secIO.observe(sec); });
+  }
+
+  /* =================== Animaciones al hacer scroll + contadores =================== */
+  function animateCount(el) {
+    var key = el.getAttribute("data-count-key"), target = Number(C[key]);
+    if (!isFinite(target)) return;
+    var dec = +(el.getAttribute("data-dec") || 0), pre = el.getAttribute("data-prefix") || "";
+    var fmt = function (v) { return pre + (dec ? v.toFixed(dec).replace(".", ",") : miles(v)); };
+    if (reduceMotion) { el.textContent = fmt(target); return; }
+    var t0 = performance.now(), dur = 1600;
+    (function step(now) {
+      var p = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+      el.textContent = fmt(target * e);
+      if (p < 1) requestAnimationFrame(step);
+    })(t0);
+  }
+  var revealEls = $$(".reveal"), countEls = $$("[data-count-key]");
+  if ("IntersectionObserver" in window && !reduceMotion) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        en.target.classList.add("is-visible");
+        io.unobserve(en.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -40px 0px" });
+    revealEls.forEach(function (el) { io.observe(el); });
+    var cio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { if (en.isIntersecting) { animateCount(en.target); cio.unobserve(en.target); } });
+    }, { threshold: 0.6 });
+    countEls.forEach(function (el) { cio.observe(el); });
+    /* Respaldo: si el observer no alcanza a disparar (saltos con #ancla, navegadores antiguos),
+       revisa al hacer scroll para que ningún contenido quede invisible. */
+    var pending = revealEls.slice(), ticking = false;
+    var revealCheck = function () {
+      ticking = false;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      pending = pending.filter(function (el) {
+        if (el.classList.contains("is-visible")) return false;
+        var r = el.getBoundingClientRect();
+        if (r.top < vh * 0.9) { el.classList.add("is-visible"); return false; }
+        return true;
+      });
+      if (!pending.length) window.removeEventListener("scroll", onRevealScroll);
+    };
+    var onRevealScroll = function () { if (!ticking) { ticking = true; setTimeout(revealCheck, 120); } };
+    window.addEventListener("scroll", onRevealScroll, { passive: true });
+    window.addEventListener("load", revealCheck);
+  } else {
+    revealEls.forEach(function (el) { el.classList.add("is-visible"); });
+    countEls.forEach(animateCount);
+  }
+
+  /* =================== Pestañas perros / gatos =================== */
+  var tabs = $$('[role="tab"]');
+  function selectTab(tab, focus) {
+    tabs.forEach(function (t) {
+      var sel = t === tab;
+      t.setAttribute("aria-selected", String(sel));
+      t.tabIndex = sel ? 0 : -1;
+      $("#" + t.getAttribute("aria-controls")).hidden = !sel;
+    });
+    if (focus) tab.focus();
+  }
+  tabs.forEach(function (t, i) {
+    t.addEventListener("click", function () { selectTab(t); });
+    t.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+        e.preventDefault();
+        selectTab(tabs[(i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length], true);
+      }
+    });
+  });
+
+  /* =================== Toast =================== */
+  var toastTimer;
+  function toast(msg) {
+    var t = $("#toast");
+    $("#toast-text").textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, 3800);
+  }
+
+  /* =================== Validación de formularios =================== */
+  function runRules(formEl, rules, data) {
+    var first = null;
+    Object.keys(rules).forEach(function (name) {
+      var res = rules[name](data[name]), msg = res === true ? "" : res;
+      var err = formEl.querySelector('[data-err="' + name + '"]');
+      var inputs = formEl.querySelectorAll('[name="' + name + '"]');
+      Array.prototype.forEach.call(inputs, function (inp) { if (msg) inp.setAttribute("aria-invalid", "true"); else inp.removeAttribute("aria-invalid"); });
+      if (err) err.textContent = msg;
+      if (msg && !first) first = inputs[0];
+    });
+    if (first) { first.focus(); return false; }
+    return true;
+  }
+  function liveClear(formEl) {
+    ["input", "change"].forEach(function (evt) {
+      formEl.addEventListener(evt, function (e) {
+        var name = e.target.name;
+        if (!name) return;
+        Array.prototype.forEach.call(formEl.querySelectorAll('[name="' + name + '"]'), function (i) { i.removeAttribute("aria-invalid"); });
+        var err = formEl.querySelector('[data-err="' + name + '"]');
+        if (err) err.textContent = "";
+      });
+    });
+  }
+  var formData = function (formEl) {
+    var o = {};
+    new FormData(formEl).forEach(function (v, k) { o[k] = typeof v === "string" ? v.trim() : v; });
+    return o;
+  };
+
+  /* =================== Modal de reserva =================== */
+  var dlg = $("#booking"), bForm = $("#booking-form"), bWrap = $("#booking-form-wrap"), bSuccess = $("#booking-success");
+  var selServ = $("#b-servicio"), inFecha = $("#b-fecha"), selHora = $("#b-hora"), bHint = $("#b-hint");
+  var lastFocus = null;
+  selServ.innerHTML = '<option value="">Elige un servicio</option>' + servicios.map(function (s) {
+    return '<option value="' + esc(s.id) + '">' + esc(s.nombre) + " · desde " + clp(s.desde) + (s.sufijo ? esc(s.sufijo) : "") + "</option>";
+  }).join("") + '<option value="otro">Otro / no estoy seguro</option>';
+  inFecha.min = hoyStr;
+  inFecha.max = ymd(new Date(HOY.y, HOY.m - 1, HOY.d + 90));
+
+  function slotsPara(fechaStr) {
+    var f = parseYmd(fechaStr), h = horarioDe(f.getDay());
+    if (!h) return [];
+    var n = nowChile(), esHoy = fechaStr === (n.y + "-" + pad(n.m) + "-" + pad(n.d));
+    var step = C.duracionBloqueMin || 30, out = [];
+    for (var t = h.abre; t + step <= h.cierra; t += step) {
+      if (esHoy && t < n.min + 30) continue;
+      out.push(toHHMM(t));
+    }
+    return out;
+  }
+  function fillHoras() {
+    var v = inFecha.value;
+    if (!v) { selHora.innerHTML = '<option value="">Elige una fecha primero</option>'; selHora.disabled = true; bHint.textContent = ""; return; }
+    if (v < hoyStr) { selHora.innerHTML = '<option value="">Fecha no válida</option>'; selHora.disabled = true; bHint.textContent = "Elige una fecha desde hoy en adelante."; return; }
+    var slots = slotsPara(v), h = horarioDe(parseYmd(v).getDay());
+    if (!slots.length) {
+      selHora.innerHTML = '<option value="">Sin horas disponibles</option>';
+      selHora.disabled = true;
+      bHint.textContent = h ? "Ya no quedan horas para ese día. Prueba con otra fecha." : "Ese día estamos cerrados para consultas. Si es una urgencia, escríbenos por WhatsApp: atendemos 24/7.";
+      return;
+    }
+    var prev = selHora.value;
+    selHora.disabled = false;
+    selHora.innerHTML = '<option value="">Elige una hora</option>' + slots.map(function (t) { return '<option value="' + t + '">' + t + " h</option>"; }).join("");
+    if (slots.indexOf(prev) > -1) selHora.value = prev;
+    bHint.textContent = cap(fechaLarga(parseYmd(v))) + ": atendemos de " + h.txt[0] + " a " + h.txt[1] + " h.";
+  }
+  inFecha.addEventListener("change", fillHoras);
+  inFecha.addEventListener("input", fillHoras);
+  liveClear(bForm);
+
+  function resetBooking() {
+    bForm.reset();
+    $$("[aria-invalid]", bForm).forEach(function (i) { i.removeAttribute("aria-invalid"); });
+    $$(".field-error", bForm).forEach(function (e) { e.textContent = ""; });
+    fillHoras();
+    bWrap.hidden = false;
+    bSuccess.hidden = true;
+  }
+  function openBooking(opts) {
+    opts = opts || {};
+    if (!bSuccess.hidden) resetBooking();
+    if (opts.servicio && selServ.querySelector('option[value="' + opts.servicio + '"]')) selServ.value = opts.servicio;
+    if (opts.mascota) $("#b-mascota").value = opts.mascota;
+    if (opts.fecha && opts.fecha >= inFecha.min && opts.fecha <= inFecha.max) { inFecha.value = opts.fecha; fillHoras(); }
+    lastFocus = document.activeElement;
+    if (typeof dlg.showModal === "function") dlg.showModal(); else dlg.setAttribute("open", "");
+    document.body.classList.add("modal-open");
+    setNav(false);
+    var firstEmpty = ["#b-nombre", "#b-mascota"].map(function (s) { return $(s); }).find(function (i) { return !i.value; });
+    setTimeout(function () { (firstEmpty || selServ).focus(); }, 60);
+  }
+  function closeBooking() {
+    if (dlg.open) { if (typeof dlg.close === "function") dlg.close(); else dlg.removeAttribute("open"); }
+    onDialogClose();
+  }
+  function onDialogClose() {
+    if (!document.body.classList.contains("modal-open")) return; // ya se procesó el cierre
+    document.body.classList.remove("modal-open");
+    if (!bSuccess.hidden) resetBooking();
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  dlg.addEventListener("close", onDialogClose);
+  dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.closest("[data-close]")) closeBooking(); });
+
+  document.addEventListener("click", function (e) {
+    var t = e.target.closest("[data-open-booking]");
+    if (!t) return;
+    e.preventDefault();
+    openBooking({ servicio: t.getAttribute("data-service") });
+  });
+
+  var ESPECIE_EMOJI = { Perro: "🐶", Gato: "🐱", Otro: "🐾" };
+  bForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var d = formData(bForm);
+    var ok = runRules(bForm, {
+      nombre: function (v) { return (v || "").length >= 2 || "Escribe tu nombre para saber a quién confirmar."; },
+      mascota: function (v) { return (v || "").length >= 1 || "¿Cómo se llama tu mascota?"; },
+      especie: function (v) { return !!v || "Elige la especie de tu mascota."; },
+      servicio: function (v) { return !!v || "Elige el servicio que necesitas."; },
+      fecha: function (v) { return (!!v && v >= hoyStr) || "Elige una fecha desde hoy en adelante."; },
+      hora: function (v) { return !!v || (selHora.disabled && inFecha.value ? "No hay horas ese día; elige otra fecha." : "Elige una hora."); }
+    }, d);
+    if (!ok) return;
+    var s = svc(d.servicio), servTxt = s ? s.nombre : "Otro / por definir";
+    var fTxt = fechaLarga(parseYmd(d.fecha));
+    var msg = [
+      "¡Hola " + C.nombre + "! 🐾 Quiero reservar una hora:",
+      "",
+      "👤 Nombre: " + d.nombre,
+      (ESPECIE_EMOJI[d.especie] || "🐾") + " Mascota: " + d.mascota + " (" + d.especie + ")",
+      "🩺 Servicio: " + servTxt,
+      "📅 Fecha: " + fTxt,
+      "⏰ Hora: " + d.hora + " h"
+    ];
+    if (d.nota) msg.push("📝 Comentario: " + d.nota);
+    msg.push("", "¿Me confirman la disponibilidad? ¡Gracias!");
+    var url = waLink(msg.join("\n"));
+    $("#bs-name").textContent = d.nombre.split(" ")[0];
+    $("#bs-summary").textContent = d.mascota + " · " + servTxt + " · " + fTxt + ", " + d.hora + " h";
+    $("#bs-link").href = url;
+    bWrap.hidden = true;
+    bSuccess.hidden = false;
+    bSuccess.focus();
+    window.open(url, "_blank", "noopener");
+  });
+
+  /* =================== Recordatorio de vacunas (.ics + WhatsApp) =================== */
+  var rForm = $("#reminder-form"), rWrap = $("#reminder-form-wrap"), rRes = $("#rem-result"), rFecha = $("#r-fecha");
+  var lastRem = null;
+  rFecha.max = hoyStr;
+  liveClear(rForm);
+  function addInterval(date, meses, dias) {
+    var d = new Date(date.getTime());
+    if (meses) {
+      var day = d.getDate();
+      d.setDate(1);
+      d.setMonth(d.getMonth() + meses);
+      var dim = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+      d.setDate(Math.min(day, dim));
+    }
+    if (dias) d.setDate(d.getDate() + dias);
+    return d;
+  }
+  rForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var d = formData(rForm);
+    var ok = runRules(rForm, {
+      mascota: function (v) { return (v || "").length >= 1 || "Escribe el nombre de tu mascota."; },
+      vacuna: function (v) { return !!v || "Elige la vacuna o tratamiento."; },
+      fecha: function (v) { if (!v) return "Indica la fecha de la última dosis."; if (v > hoyStr) return "La fecha no puede ser futura."; return true; }
+    }, d);
+    if (!ok) return;
+    var opt = $("#r-vacuna").selectedOptions ? $("#r-vacuna").selectedOptions[0] : $("#r-vacuna").options[$("#r-vacuna").selectedIndex];
+    var ultima = parseYmd(d.fecha);
+    var proxima = addInterval(ultima, +(opt.getAttribute("data-meses") || 0), +(opt.getAttribute("data-dias") || 0));
+    var diff = Math.round((proxima - hoyDate) / 86400000);
+    lastRem = { mascota: d.mascota, vacuna: opt.textContent.trim(), corta: opt.getAttribute("data-short") || opt.textContent.trim(), ultima: ultima, proxima: proxima, diff: diff };
+
+    $("#rr-pet").textContent = lastRem.mascota;
+    $("#rr-vax").textContent = lastRem.corta;
+    $("#rr-date").textContent = cap(fechaLarga(proxima, true));
+    var when = $("#rr-when");
+    when.classList.toggle("late", diff < 0);
+    when.textContent = diff > 1 ? "Faltan " + diff + " días" : diff === 1 ? "¡Es mañana!" : diff === 0 ? "¡Es hoy!" : "¡Está atrasada por " + Math.abs(diff) + " día" + (Math.abs(diff) === 1 ? "" : "s") + "! Agenda lo antes posible";
+    $("#rr-wa").href = waLink([
+      "¡Hola " + C.nombre + "! 🐾 Quiero recibir un recordatorio para la próxima dosis de mi mascota:",
+      "",
+      "🐾 Mascota: " + lastRem.mascota,
+      "💉 Vacuna/tratamiento: " + lastRem.vacuna,
+      "📅 Última dosis: " + fechaCorta(ultima),
+      "🔔 Próxima dosis: " + fechaLarga(proxima, true),
+      "",
+      "¿Me pueden avisar unos días antes? ¡Gracias!"
+    ].join("\n"));
+    rWrap.hidden = true;
+    rRes.hidden = false;
+    rRes.focus({ preventScroll: true });
+    var top = rRes.getBoundingClientRect().top;
+    if (top < 80 || top > window.innerHeight - 120) rRes.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+  });
+
+  function icsText(s) { return String(s).replace(/\\/g, "\\\\").replace(/\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\;"); }
+  function foldLine(line) {
+    var out = [], s = line;
+    while (s.length > 70) { out.push(s.slice(0, 70)); s = " " + s.slice(70); }
+    out.push(s);
+    return out.join("\r\n");
+  }
+  function buildICS(r) {
+    var d8 = function (d) { return d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()); };
+    var end = new Date(r.proxima.getTime()); end.setDate(end.getDate() + 1);
+    var now = new Date();
+    var stamp = now.getUTCFullYear() + pad(now.getUTCMonth() + 1) + pad(now.getUTCDate()) + "T" + pad(now.getUTCHours()) + pad(now.getUTCMinutes()) + pad(now.getUTCSeconds()) + "Z";
+    var title = r.corta + " de " + r.mascota + " (" + C.nombre + ")";
+    var desc = "Hoy le toca a " + r.mascota + ": " + r.vacuna + ".\nÚltima dosis: " + fechaCorta(r.ultima) + ".\n\nReserva tu hora en " + C.nombreCompleto +
+      "\nWhatsApp: " + C.telefonoVisible + "\n" + direccionCompleta + "\nhttps://wa.me/" + C.whatsapp;
+    var lines = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//" + C.nombre + "//Recordatorio de vacunas//ES", "CALSCALE:GREGORIAN", "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      "UID:" + Date.now() + "-" + Math.random().toString(36).slice(2) + "@" + slug(C.nombre),
+      "DTSTAMP:" + stamp,
+      "DTSTART;VALUE=DATE:" + d8(r.proxima),
+      "DTEND;VALUE=DATE:" + d8(end),
+      "SUMMARY:" + icsText(title),
+      "DESCRIPTION:" + icsText(desc),
+      "LOCATION:" + icsText(C.nombreCompleto + ", " + direccionCompleta),
+      "TRANSP:TRANSPARENT",
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + icsText("En una semana: " + title), "TRIGGER:-P6DT15H", "END:VALARM",
+      "BEGIN:VALARM", "ACTION:DISPLAY", "DESCRIPTION:" + icsText("Mañana: " + title), "TRIGGER:-PT15H", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR"
+    ];
+    return lines.map(foldLine).join("\r\n") + "\r\n";
+  }
+  $("#rr-ics").addEventListener("click", function () {
+    if (!lastRem) return;
+    var blob = new Blob([buildICS(lastRem)], { type: "text/calendar;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "recordatorio-" + slug(lastRem.mascota) + "-" + slug(lastRem.corta) + ".ics";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+    toast("Listo: abre el archivo para agregarlo a tu calendario");
+  });
+  $("#rr-book").addEventListener("click", function () {
+    if (!lastRem) return;
+    openBooking({ servicio: "vacunas", mascota: lastRem.mascota, fecha: lastRem.diff > 0 ? ymd(lastRem.proxima) : null });
+  });
+  $("#rr-reset").addEventListener("click", function () {
+    rForm.reset();
+    rRes.hidden = true;
+    rWrap.hidden = false;
+    $("#r-mascota").focus();
+  });
+
+  /* =====================================================================
+     ASISTENTE VIRTUAL (bot por reglas / palabras clave)
+     ---------------------------------------------------------------------
+     >>> AQUÍ SE CONECTARÍA UNA IA REAL <<<
+     Esta demo no usa backend: getBotReply(texto) busca palabras clave y
+     arma respuestas con los datos de CONFIG. Para usar una IA real,
+     reemplaza getBotReply por una llamada a TU servidor, por ejemplo:
+
+       async function getBotReply(texto) {
+         const r = await fetch("/api/chat", {
+           method: "POST",
+           headers: { "Content-Type": "application/json" },
+           body: JSON.stringify({ mensaje: texto, historial, negocio: CONFIG })
+         });
+         const data = await r.json();
+         return { html: "<p>" + esc(data.respuesta) + "</p>" };
+       }
+
+     El servidor llama al modelo de IA con un "system prompt" que incluya
+     los datos de CONFIG (horarios, precios, dirección) y la regla de
+     derivar urgencias a WhatsApp. NUNCA pongas la API key en este archivo.
+     handleUser() ya usa "await", así que funciona igual con una respuesta
+     asíncrona.
+     ===================================================================== */
+  var chatFab = $("#chat-fab"), chatPanel = $("#chat-panel"), chatBody = $("#chat-body"), chatChips = $("#chat-chips");
+  var chatForm = $("#chat-form"), chatInput = $("#chat-text"), teaser = $("#chat-teaser");
+  var chatStarted = false, chatBusy = false;
+  var QUICK = [
+    { t: "Horarios" }, { t: "Precios" }, { t: "Vacunas" }, { t: "Urgencia", cls: "urgent" }, { t: "Reservar hora" }, { t: "¿Dónde están?" }
+  ];
+
+  var norm = function (s) {
+    return " " + String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9\s]/g, " ").replace(/\s+/g, " ").trim() + " ";
+  };
+  var btn = function (label, action, cls, extra) { return '<button type="button" class="chat-action ' + (cls || "") + '" data-action="' + action + '"' + (extra || "") + ">" + label + "</button>"; };
+  var lnk = function (label, href, cls) { return '<a class="chat-action ' + (cls || "") + '" href="' + esc(href) + '" target="_blank" rel="noopener">' + label + "</a>"; };
+  var waBtn = function (label, msg) { return lnk(ic("wa") + " " + (label || "Seguir por WhatsApp"), waLink(msg || MSG.general), "wa"); };
+  var bookBtn = function (label, servicio) { return btn(ic("cal") + " " + (label || "Reservar hora"), "booking", "", servicio ? ' data-service="' + servicio + '"' : ""); };
+  var actions = function () { return '<div class="msg-actions">' + Array.prototype.slice.call(arguments).join("") + "</div>"; };
+  var noOfrecido = function (nombre) {
+    return { html: "<p>Por ahora no ofrecemos " + nombre + ", pero con gusto te orientamos por WhatsApp.</p>" + actions(waBtn("Preguntar por WhatsApp")) };
+  };
+  var listaHorarios = function () {
+    return '<ul class="mini-list">' + gruposHorario().map(function (g) { return "<li><span>" + g.label + "</span><b>" + g.txt + "</b></li>"; }).join("") + "</ul>";
+  };
+
+  var R = {
+    saludo: function () {
+      return { html: "<p>¡Hola! 👋 ¿En qué te puedo ayudar? Puedo contarte <b>horarios</b>, <b>precios</b> y <b>vacunas</b>, o ayudarte a <b>reservar una hora</b> en segundos.</p>" };
+    },
+    urgencia: function () {
+      return { html: '<p><strong class="t-urgent">Si tu mascota está en peligro, no esperes.</strong> Tenemos veterinario de turno <b>24/7</b>. Escríbenos ahora o llama al <b>' + esc(C.telefonoVisible) + "</b> y preparamos todo antes de que llegues.</p>" +
+        '<p class="small">Mientras tanto: mantenla tranquila y abrigada, no le des remedios de uso humano y, si fue una intoxicación, trae el envase del producto.</p>' +
+        actions(lnk(ic("wa") + " Urgencia por WhatsApp", waLink(MSG.urgencia), "urgent"), lnk(ic("phone") + " Llamar ahora", telHref)) };
+    },
+    humano: function () {
+      return { html: "<p>¡Por supuesto! Te conecto con nuestro equipo por WhatsApp; en horario de atención respondemos en pocos minutos. También puedes llamarnos al <b>" + esc(C.telefonoVisible) + "</b>.</p>" +
+        actions(waBtn("Abrir WhatsApp"), lnk(ic("phone") + " Llamar", telHref)) };
+    },
+    reservar: function () {
+      return { html: "<p>¡Buenísimo! 🙌 Reservar toma menos de un minuto: eliges servicio, día y hora, y te confirmamos por WhatsApp.</p>" +
+        actions(bookBtn("Abrir formulario de reserva"), waBtn("Prefiero escribir", MSG.reserva)) };
+    },
+    horarios: function () {
+      var st = estadoActual();
+      return { html: '<p><span class="dot-inline' + (st.abierto ? "" : " off") + '"></span><b>' + st.texto + "</b>. " + st.sub + ".</p>" + listaHorarios() +
+        (C.urgencias24_7 ? "<p>🚨 <b>Urgencias 24/7</b>, todos los días del año.</p>" : "") +
+        actions(bookBtn(), btn(ic("pin") + " Ver mapa", "goto:#horarios")) };
+    },
+    precios: function () {
+      return { html: "<p>Estos son nuestros valores <b>desde</b> (referenciales):</p>" +
+        '<ul class="mini-list">' + servicios.map(function (s) { return "<li><span>" + esc(s.nombre) + "</span><b>" + clp(s.desde) + (s.sufijo ? esc(s.sufijo) : "") + "</b></li>"; }).join("") +
+        (C.urgencias24_7 ? "<li><span>Urgencia</span><b>" + clp(C.precioUrgencia) + "</b></li>" : "") + "</ul>" +
+        '<p class="small">El valor final depende de la especie, el peso y lo que necesite tu mascota. Siempre te cotizamos antes. 😉</p>' +
+        actions(bookBtn(), waBtn("Cotizar por WhatsApp", "¡Hola " + C.nombre + "! Quiero cotizar una atención para mi mascota.")) };
+    },
+    vacunas: function () {
+      var v = svc("vacunas");
+      return { html: "<p>Vacunamos a perros y gatos con certificado: <b>óctuple/séxtuple</b>, <b>antirrábica</b> (obligatoria y anual), <b>triple felina</b> y <b>leucemia felina</b>" + (v ? ", desde <b>" + clp(v.desde) + "</b>" : "") + ".</p>" +
+        "<p>¿Quieres que te recuerde la próxima dosis? Te armo un recordatorio para tu calendario en 10 segundos.</p>" +
+        actions(btn(ic("syringe") + " Ver calendario", "goto:#vacunas"), btn(ic("bell") + " Crear recordatorio", "reminder"), bookBtn("Reservar vacuna", "vacunas")) };
+    },
+    cirugia: function () {
+      var s = svc("cirugia");
+      if (!s) return noOfrecido("cirugías");
+      return { html: "<p>Hacemos <b>esterilizaciones</b>, cirugías de tejidos blandos y <b>limpiezas dentales</b> con anestesia inhalatoria y monitoreo constante. Desde <b>" + clp(s.desde) + "</b>, según especie y peso.</p>" +
+        "<p>Incluye evaluación prequirúrgica y control postoperatorio.</p>" +
+        actions(bookBtn("Agendar evaluación", "cirugia"), waBtn("Cotizar cirugía", "¡Hola " + C.nombre + "! Quiero cotizar una cirugía/esterilización para mi mascota.")) };
+    },
+    peluqueria: function () {
+      var s = svc("peluqueria");
+      if (!s) return noOfrecido("peluquería");
+      return { html: "<p>En peluquería hacemos <b>baño, corte de raza, corte de uñas y limpieza de oídos</b> con productos hipoalergénicos. Desde <b>" + clp(s.desde) + "</b> según tamaño y tipo de pelo. 🛁</p>" +
+        '<p class="small">Tip: los viernes y sábados se llenan rápido, ¡reserva con anticipación!</p>' + actions(bookBtn("Reservar peluquería", "peluqueria")) };
+    },
+    hotel: function () {
+      var s = svc("hotel");
+      if (!s) return noOfrecido("hotel para mascotas");
+      return { html: "<p>Nuestro <b>hotel</b> tiene paseos diarios, comida a su hora y supervisión veterinaria. Te mandamos <b>fotos y videos por WhatsApp</b> todos los días. Desde <b>" + clp(s.desde) + (s.sufijo || "") + "</b>.</p>" +
+        '<p class="small">Pedimos vacunas al día y desparasitación vigente para cuidar a todos los huéspedes.</p>' +
+        actions(bookBtn("Reservar hotel", "hotel"), waBtn("Consultar disponibilidad", "¡Hola " + C.nombre + "! Quiero consultar disponibilidad en el hotel para mi mascota. Fechas: ")) };
+    },
+    consulta: function () {
+      var s = svc("consulta");
+      return { html: "<p>En la <b>consulta general</b> revisamos a tu mascota de pies a cabeza y te explicamos todo con palabras simples" + (s ? ". Desde <b>" + clp(s.desde) + "</b>" : "") + ".</p>" +
+        '<p class="small">Si notas algo grave (le cuesta respirar, sangra, convulsiona o no se levanta) trátalo como <b>urgencia</b> y escríbenos de inmediato.</p>' +
+        actions(bookBtn("Reservar consulta", "consulta"), lnk(ic("wa") + " Es una urgencia", waLink(MSG.urgencia), "urgent")) };
+    },
+    especies: function () {
+      return { html: "<p>¡Claro! Atendemos <b>perros, gatos y exóticos pequeños</b> (conejos, hurones y cuyes). Los gatos tienen una sala de espera separada, más tranquila y sin ladridos. 🐱</p>" + actions(bookBtn()) };
+    },
+    ubicacion: function () {
+      return { html: "<p>📍 Estamos en <b>" + esc(direccionCompleta) + "</b>" + (C.referencia ? ", " + esc(C.referencia) : "") + ".</p>" +
+        "<p>Atendemos a familias de " + esc(C.comuna) + " y de " + esc(C.comunasCercanas) + ". ¡Hay estacionamiento frente a la clínica!</p>" +
+        actions(lnk(ic("nav") + " Cómo llegar", C.mapaComoLlegarUrl), btn(ic("pin") + " Ver mapa", "goto:#horarios")) };
+    },
+    domicilio: function () {
+      return { html: "<p>Sí, hacemos <b>visitas a domicilio</b> en " + esc(C.comuna) + " y alrededores (" + esc(C.comunasCercanas) + "). El traslado parte desde <b>" + clp(C.precioDomicilio) + "</b> más el valor de la atención.</p>" +
+        actions(waBtn("Coordinar visita", MSG.domicilio)) };
+    },
+    pagos: function () {
+      return { html: "<p>Aceptamos <b>" + esc(C.mediosPago) + "</b>. En cirugías puedes pagar en cuotas con tu tarjeta de crédito. 💳</p>" };
+    },
+    microchip: function () {
+      return { html: "<p>Implantamos <b>microchip</b> (desde " + clp(C.precioMicrochip) + ") y te ayudamos a inscribir a tu mascota en el <b>Registro Nacional de Mascotas</b>, como pide la Ley de Tenencia Responsable (Ley Cholito).</p>" + actions(bookBtn()) };
+    },
+    gracias: function () { return { html: "<p>¡De nada! 🐾 Dale un cariño a tu regalón de nuestra parte. ¿Te ayudo con algo más?</p>" }; },
+    despedida: function () { return { html: "<p>¡Que estés muy bien! Aquí estaremos cuando tú y tu mascota nos necesiten. 🐶🐱</p>" }; },
+    fallback: function (raw) {
+      return { html: "<p>Mmm, esa todavía no me la sé 🙈, pero nuestro equipo te responde por WhatsApp en minutos.</p>" +
+        '<p class="small">También puedes preguntarme por horarios, precios, vacunas, urgencias o reservar una hora.</p>' +
+        actions(waBtn("Preguntar por WhatsApp", "¡Hola " + C.nombre + "! Tengo esta consulta: " + raw)) };
+    }
+  };
+
+  var INTENTS = [
+    ["urgencia", /\b(urgen\w*|emergen\w*|sangr\w*|atropell\w*|envenen\w*|veneno\w*|intoxic\w*|convuls\w*|ahog\w*|vomit\w*|desmay\w*|accident\w*|fractur\w*|mordi\w*|grave|herid\w*|no respira|respira mal|no se mueve|no se levanta|muy mal|se muere|muriendo)\b/],
+    ["humano", /\b(humano|persona|alguien|ejecutiv\w*|whatsapp|wsp|wasap|llamar|llamo|telefono|numero|contactar\w*)\b/],
+    ["reservar", /\b(reserv\w*|agend\w*|cita|citas|turno\w*|pedir hora|tomar hora|sacar hora|una hora|hora disponible|horas disponibles)\b/],
+    ["vacunas", /\b(vacun\w*|octuple|sextuple|antirrabic\w*|rabia|triple|leucemia|refuerzo\w*|desparasit\w*|parasit\w*|pulga\w*|garrapata\w*|lombri\w*)\b/],
+    ["microchip", /\b(chip|microchip|registro|cholito|inscrib\w*)\b/],
+    ["cirugia", /\b(cirug\w*|operac\w*|operar\w*|esteriliz\w*|castra\w*|pabellon|anestesi\w*|dental|destartraje|tumor\w*)\b/],
+    ["peluqueria", /\b(pelu\w*|bano|banar\w*|corte|cortar|grooming|unas|estetica|shampoo)\b/],
+    ["hotel", /\b(hotel\w*|guarderi\w*|hosped\w*|vacaciones|viaj\w*|estadia\w*|pension)\b/],
+    ["domicilio", /\b(domicilio|a casa|mi casa|visita\w*)\b/],
+    ["especies", /\b(gato\w*|gata\w*|gatit\w*|felin\w*|conej\w*|huron\w*|cuy\w*|hamster\w*|exotic\w*|aves?|pajar\w*|tortug\w*|erizo\w*)\b/],
+    ["pagos", /\b(pago\w*|pagar|tarjeta\w*|debito|credito|transferencia\w*|efectivo|cuotas|redcompra)\b/],
+    ["precios", /\b(precio\w*|valor\w*|cuanto\w*|cuesta\w*|costo\w*|cobran|tarifa\w*|barato|caro)\b/],
+    ["consulta", /\b(consulta\w*|control\w*|chequeo\w*|revis\w*|enferm\w*|tos|diarrea|decaid\w*|no come|cojea\w*|picazon|rasca\w*|alergi\w*)\b/],
+    ["horarios", /\b(horari\w*|hora|abiert\w*|abren|abre|cierran|cierra|cerrad\w*|atienden|domingo\w*|sabado\w*|festivo\w*|feriado\w*|hoy|manana|noche)\b/],
+    ["ubicacion", /\b(donde|direccion|ubica\w*|llegar|mapa|queda\w*|estacionamiento|talagante|penaflor|monte|maipo|hurtado|calle)\b/],
+    ["gracias", /\b(gracias|genial|buenisimo|perfecto|excelente|bacan|super)\b/],
+    ["despedida", /\b(chao|adios|nos vemos|hasta luego)\b/],
+    ["saludo", /\b(hola|holi|holaa+|buenas|buenos dias|alo|hey|que tal)\b/]
+  ];
+
+  function getBotReply(raw) {
+    var t = norm(raw).replace(/ tengo una (consulta|pregunta|duda) /g, " ");
+    for (var i = 0; i < INTENTS.length; i++) {
+      if (INTENTS[i][1].test(t)) return R[INTENTS[i][0]](raw);
+    }
+    return R.fallback(raw);
+  }
+
+  function scrollChat() { chatBody.scrollTop = chatBody.scrollHeight; }
+  function addMsg(content, who) {
+    var div = document.createElement("div");
+    div.className = "msg " + who;
+    if (who === "user") div.textContent = content; else div.innerHTML = content;
+    chatBody.appendChild(div);
+    scrollChat();
+    return div;
+  }
+  function renderChips(list) {
+    chatChips.innerHTML = (list || QUICK).map(function (c) {
+      return '<button type="button" class="chip ' + (c.cls || "") + '" data-say="' + esc(c.t) + '">' + esc(c.t) + "</button>";
+    }).join("");
+  }
+  function botSay(html) {
+    var typing = document.createElement("div");
+    typing.className = "msg bot typing";
+    typing.setAttribute("aria-hidden", "true");
+    typing.innerHTML = "<span></span><span></span><span></span>";
+    chatBody.appendChild(typing);
+    scrollChat();
+    var delay = reduceMotion ? 150 : 550 + Math.min(1100, html.replace(/<[^>]+>/g, "").length * 5);
+    return wait(delay).then(function () { typing.remove(); addMsg(html, "bot"); });
+  }
+  async function handleUser(text) {
+    text = String(text || "").trim();
+    if (!text || chatBusy) return;
+    chatBusy = true;
+    addMsg(text, "user");
+    try {
+      var reply = await getBotReply(text);
+      await botSay(reply.html);
+    } catch (err) {
+      await botSay(R.fallback(text).html);
+    }
+    renderChips();
+    chatBusy = false;
+  }
+  function greet() {
+    chatStarted = true;
+    var st = estadoActual();
+    botSay("<p>¡Hola! 👋 Soy <b>" + esc(C.nombreAsistente) + "</b>, la asistente virtual de <b>" + esc(C.nombreCompleto) + "</b>.</p><p>Te ayudo con horarios, precios, vacunas o a reservar una hora en segundos. ¿Qué necesitas?</p>")
+      .then(function () {
+        renderChips();
+        if (!st.abierto && C.urgencias24_7) return botSay('<p class="small"><span class="dot-inline off"></span>Ahora estamos cerrados (' + esc(st.sub.toLowerCase()) + "), pero las <b>urgencias</b> se atienden 24/7 por WhatsApp.</p>");
+      });
+  }
+  function openChat() {
+    hideTeaser(true);
+    chatPanel.hidden = false;
+    chatFab.setAttribute("aria-expanded", "true");
+    chatFab.setAttribute("aria-label", "Cerrar asistente virtual");
+    document.body.classList.add("chat-is-open");
+    var badge = $("#chat-badge"); if (badge) badge.remove();
+    if (!chatStarted) greet();
+    if (!isMobile()) setTimeout(function () { chatInput.focus(); }, 80); else $("#chat-close").focus();
+  }
+  function closeChat(returnFocus) {
+    chatPanel.hidden = true;
+    chatFab.setAttribute("aria-expanded", "false");
+    chatFab.setAttribute("aria-label", "Abrir asistente virtual");
+    document.body.classList.remove("chat-is-open");
+    if (returnFocus) chatFab.focus();
+  }
+  chatFab.addEventListener("click", function () { chatPanel.hidden ? openChat() : closeChat(true); });
+  $("#chat-close").addEventListener("click", function () { closeChat(true); });
+  chatPanel.addEventListener("keydown", function (e) { if (e.key === "Escape") closeChat(true); });
+  chatForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var v = chatInput.value;
+    chatInput.value = "";
+    handleUser(v);
+  });
+  chatChips.addEventListener("click", function (e) {
+    var c = e.target.closest("[data-say]");
+    if (c) handleUser(c.getAttribute("data-say"));
+  });
+  chatBody.addEventListener("click", function (e) {
+    var b = e.target.closest("[data-action]");
+    if (!b) return;
+    var a = b.getAttribute("data-action");
+    if (a === "booking") {
+      if (isMobile()) closeChat();
+      openBooking({ servicio: b.getAttribute("data-service") });
+    } else if (a.indexOf("goto:") === 0) {
+      if (isMobile()) closeChat();
+      var target = $(a.slice(5));
+      if (target) target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth" });
+    } else if (a === "reminder") {
+      if (isMobile()) closeChat();
+      $("#recordatorio").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+      if (!rRes.hidden) $("#rr-reset").click();
+      setTimeout(function () { $("#r-mascota").focus({ preventScroll: true }); }, 700);
+    }
+  });
+
+  /* Burbuja de invitación (una vez por sesión) */
+  function storage(k, v) {
+    try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) { return null; }
+  }
+  function hideTeaser(remember) { teaser.hidden = true; if (remember) storage("vet_teaser", "1"); }
+  $("#chat-teaser-close").addEventListener("click", function (e) { e.stopPropagation(); hideTeaser(true); });
+  teaser.addEventListener("click", openChat);
+  if (!storage("vet_teaser")) {
+    setTimeout(function () { if (chatPanel.hidden && !storage("vet_teaser")) teaser.hidden = false; }, 6000);
+    setTimeout(function () { hideTeaser(false); }, 22000);
+  }
+})();
+</script>
+</body>
+</html>

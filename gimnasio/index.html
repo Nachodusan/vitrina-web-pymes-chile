@@ -1,0 +1,2608 @@
+<!DOCTYPE html>
+<!--
+  ==================================================================
+  CONFIGURACIÓN RÁPIDA — Plantilla landing para gimnasios
+  ==================================================================
+  1) DATOS DEL NEGOCIO: edita el objeto `CONFIG` (primer bloque script del
+     head): nombre, WhatsApp, dirección, planes y precios, horario
+     de sala de máquinas, horario semanal de clases, coaches de clases,
+     datos de la app demo. Todo el sitio (planes, horarios, modal,
+     chatbot, links de WhatsApp) se genera desde ahí.
+  2) COLORES Y FUENTES: variables CSS en `:root` (inicio del <style>).
+     Cambia --volt (acento) y --fire (acento secundario) para otra marca.
+  3) FOTOS: URLs de Unsplash en CONFIG.fotos y en el HTML (sección
+     Instalaciones, Coaches, Testimonios). Reemplázalas por fotos reales.
+  4) ASISTENTE IA: busca "CONECTAR IA REAL AQUÍ" en el JS.
+  Negocio ficticio, solo para demostración.
+  ==================================================================
+-->
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voltio Gym Talagante · Tu mejor versión empieza hoy</title>
+<meta name="description" content="Voltio Gym Talagante: sala de máquinas, funcional, spinning, yoga, zumba y boxeo. Coaches certificados, matrícula $0 y clase de prueba gratis. Abierto de 6:00 a 23:00.">
+<meta name="theme-color" content="#0a0a0b">
+<meta property="og:title" content="Voltio Gym Talagante · Tu mejor versión empieza hoy">
+<meta property="og:description" content="Clase de prueba gratis, matrícula $0 y planes desde $18.000. En pleno centro de Talagante.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23d4ff00'/%3E%3Cpath d='M18 4 7 18h8l-2 10 11-14h-8z' fill='%230a0a0b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=1600&q=80&auto=format&fit=crop">
+
+<script>
+/* ==================================================================
+   CONFIGURACIÓN RÁPIDA (objeto CONFIG)
+   Cambia estos datos y todo el sitio se actualiza solo.
+   ================================================================== */
+const CONFIG = {
+  nombre: "Voltio Gym",
+  nombreCompleto: "Voltio Gym Talagante",
+  slogan: "Tu mejor versión empieza hoy",
+  whatsapp: "56987654321",                 // Solo números, con 56 (ficticio)
+  whatsappVisible: "+56 9 8765 4321",
+  email: "hola@voltiogym.cl",
+  instagram: "@voltiogym.talagante",
+  direccion: "Av. Bernardo O'Higgins 1287, Talagante",
+  referencia: "A 3 cuadras de la Plaza de Armas · Región Metropolitana",
+  zonaHoraria: "America/Santiago",
+  mapaEmbed: "https://www.google.com/maps?q=Talagante,+Chile&output=embed",
+  mapaLink: "https://www.google.com/maps?q=Talagante,+Chile",
+
+  // Cifras animadas de la portada
+  stats: { socios: 850, m2: 1200, coaches: 12, horas: 17 },
+
+  // Promo de matrícula (termina el último día del mes en curso)
+  matricula: { promo: 0, normal: 15000 },
+
+  // Planes. meses = duración; el ahorro se calcula contra el plan mensual.
+  planes: [
+    { id: "mensual", nombre: "Mensual", precio: 25000, meses: 1, periodo: "/mes",
+      desc: "Para partir sin amarrarte.",
+      beneficios: ["Sala de máquinas ilimitada", "8 clases grupales al mes", "Evaluación física inicial", "Acceso a la app de socios"] },
+    { id: "trimestral", nombre: "Trimestral", precio: 66000, meses: 3, periodo: "/3 meses", destacado: true, etiqueta: "Más elegido",
+      desc: "El que eligen los que van en serio.",
+      beneficios: ["Sala de máquinas ilimitada", "Clases grupales ilimitadas", "Evaluación física cada mes", "Rutina personalizada en la app", "Congela tu plan hasta 15 días"] },
+    { id: "estudiante", nombre: "Estudiante", precio: 18000, meses: 1, periodo: "/mes",
+      desc: "Entrena sin romper el bolsillo.",
+      requisito: "Requiere credencial estudiantil vigente (TNE, credencial de tu casa de estudios o certificado de alumno regular).",
+      beneficios: ["Sala de máquinas ilimitada", "8 clases grupales al mes", "Evaluación física inicial", "Acceso a la app de socios"] },
+    { id: "anual", nombre: "Anual", precio: 228000, meses: 12, periodo: "/año",
+      desc: "Máximo ahorro, cero excusas.",
+      beneficios: ["Todo lo del plan Trimestral", "2 sesiones con personal trainer", "Congela tu plan hasta 30 días", "Polera oficial Voltio de regalo", "Hasta 3 cuotas precio contado"] }
+  ],
+  planDuo: { nombre: "Plan Dúo", precio: 44000, periodo: "/mes", detalle: "Entrena con tu pareja, amig@ o herman@. Dos personas, un solo pago: $22.000 cada uno." },
+
+  // Sala de máquinas (dows: 0=domingo ... 6=sábado)
+  salaMaquinas: [
+    { dias: "Lunes a viernes", dows: [1, 2, 3, 4, 5], abre: "06:00", cierra: "23:00" },
+    { dias: "Sábado", dows: [6], abre: "08:00", cierra: "20:00" },
+    { dias: "Domingo y festivos", dows: [0], abre: "09:00", cierra: "14:00" }
+  ],
+
+  // Disciplinas (id se usa en el horario y en los colores CSS --c-<id>)
+  disciplinas: [
+    { id: "musculacion", nombre: "Musculación", clase: "Técnica de musculación", icono: "dumbbell", sala: "Sala de máquinas", duracion: "Libre / 60 min", intensidad: 3, cupos: 10,
+      img: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=900&q=80&auto=format&fit=crop", alt: "Hombre entrenando bíceps con barra en la sala de máquinas",
+      desc: "Pesos libres, máquinas guiadas y una rutina armada para ti desde el primer día." },
+    { id: "funcional", nombre: "Funcional / Cross", clase: "Funcional Cross", icono: "flame", sala: "Box Funcional", duracion: "50 min", intensidad: 5, cupos: 16,
+      img: "https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=900&q=80&auto=format&fit=crop", alt: "Mujer entrenando con cuerdas de batalla",
+      desc: "Kettlebells, cuerdas, cajón y circuitos que te dejan en el piso (en el buen sentido)." },
+    { id: "spinning", nombre: "Spinning", clase: "Spinning", icono: "bike", sala: "Sala Ciclo", duracion: "45 min", intensidad: 4, cupos: 24,
+      img: "https://images.unsplash.com/photo-1520877880798-5ee004e3f11e?w=900&q=80&auto=format&fit=crop", alt: "Clase de spinning con varias personas pedaleando",
+      desc: "Luces, música a todo volumen y 45 minutos de cardio que se pasan volando." },
+    { id: "yoga", nombre: "Yoga", clase: "Yoga Flow", icono: "yoga", sala: "Sala Zen", duracion: "60 min", intensidad: 2, cupos: 18,
+      img: "https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=900&q=80&auto=format&fit=crop", alt: "Mujer haciendo una postura de yoga",
+      desc: "Movilidad, respiración y fuerza profunda. El complemento que tu espalda te va a agradecer." },
+    { id: "zumba", nombre: "Zumba & Baile", clase: "Zumba", icono: "music", sala: "Sala Ritmo", duracion: "55 min", intensidad: 3, cupos: 30,
+      img: "https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=900&q=80&auto=format&fit=crop", alt: "Grupo bailando en una clase de baile",
+      desc: "Reggaetón, cumbia y ritmos latinos. Sudas bailando y ni te das cuenta." },
+    { id: "boxeo", nombre: "Boxeo & HIIT", clase: "Boxeo & HIIT", icono: "glove", sala: "Ring", duracion: "50 min", intensidad: 5, cupos: 14,
+      img: "https://images.unsplash.com/photo-1622599511051-16f55a1234d0?w=900&q=80&auto=format&fit=crop", alt: "Boxeadora con guantes en guardia",
+      desc: "Técnica real de boxeo, saco y tabatas. El mejor antiestrés de Talagante." }
+  ],
+
+  // Horario semanal: día (1=lunes ... 6=sábado) → [inicio, fin, disciplina, coach]
+  horario: {
+    1: [["07:00","07:45","spinning","Seba"],["08:00","08:50","funcional","Vale"],["10:00","11:00","yoga","Fran"],["13:15","14:05","boxeo","Diego"],["18:00","18:50","funcional","Nico"],["19:00","19:45","spinning","Seba"],["19:30","20:30","musculacion","Matías"],["20:00","20:55","zumba","Cata"],["21:00","21:50","boxeo","Diego"]],
+    2: [["06:30","07:20","funcional","Nico"],["08:00","09:00","yoga","Fran"],["09:30","10:25","zumba","Cata"],["13:15","14:00","spinning","Seba"],["18:30","19:20","boxeo","Diego"],["19:00","20:00","yoga","Fran"],["19:45","20:30","spinning","Seba"],["20:30","21:20","funcional","Vale"]],
+    3: [["07:00","07:45","spinning","Seba"],["08:00","08:50","funcional","Vale"],["10:00","11:00","musculacion","Matías"],["13:15","14:05","boxeo","Diego"],["18:00","18:50","funcional","Nico"],["19:00","19:45","spinning","Seba"],["20:00","20:55","zumba","Cata"],["21:00","21:50","boxeo","Diego"]],
+    4: [["06:30","07:20","funcional","Nico"],["08:00","09:00","yoga","Fran"],["09:30","10:25","zumba","Cata"],["13:15","14:05","funcional","Vale"],["18:30","19:20","boxeo","Diego"],["19:00","20:00","musculacion","Matías"],["19:45","20:30","spinning","Seba"],["20:30","21:30","yoga","Fran"]],
+    5: [["07:00","07:45","spinning","Seba"],["08:00","08:50","funcional","Vale"],["10:00","11:00","yoga","Fran"],["13:15","14:05","boxeo","Diego"],["18:00","18:50","funcional","Nico"],["19:00","19:55","zumba","Cata"],["20:00","20:45","spinning","Seba"]],
+    6: [["09:00","09:50","funcional","Vale"],["10:00","10:45","spinning","Seba"],["10:30","11:30","yoga","Fran"],["11:00","11:55","zumba","Cata"],["12:00","12:50","boxeo","Diego"],["13:00","14:00","musculacion","Matías"]]
+  },
+
+  // Fotos de la portada (slideshow)
+  fotos: {
+    hero: [
+      { src: "https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=1600&q=80&auto=format&fit=crop", label: "Zona de peso libre" },
+      { src: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=1600&q=80&auto=format&fit=crop", label: "Entrenamiento de fuerza" },
+      { src: "https://images.unsplash.com/photo-1623874514711-0f321325f318?w=1600&q=80&auto=format&fit=crop", label: "1.200 m² de instalaciones" }
+    ]
+  },
+
+  // Datos de la app demo (maqueta)
+  appDemo: {
+    socio: "Javiera", apellido: "Pizarro", nSocio: "00482", plan: "Mensual", monto: 25000, tarjeta: "Débito •••• 4821",
+    rutina: {
+      titulo: "Día de pierna", coach: "Matías", duracion: "55 min aprox.",
+      ejercicios: [
+        { nombre: "Sentadilla libre", series: "4 × 10", carga: "50 kg" },
+        { nombre: "Prensa 45°", series: "4 × 12", carga: "120 kg" },
+        { nombre: "Peso muerto rumano", series: "3 × 10", carga: "40 kg" },
+        { nombre: "Zancadas caminando", series: "3 × 12 c/p", carga: "2 × 10 kg" },
+        { nombre: "Extensión de cuádriceps", series: "3 × 15", carga: "35 kg" },
+        { nombre: "Pantorrillas de pie", series: "4 × 20", carga: "60 kg" }
+      ]
+    }
+  }
+};
+</script>
+
+<style>
+/* ==================================================================
+   VARIABLES DE MARCA (cambia aquí la paleta y las fuentes)
+   ================================================================== */
+:root{
+  --bg:#0a0a0b;
+  --bg-2:#111113;
+  --surface:#161619;
+  --surface-2:#1f1f23;
+  --line:#2c2c32;
+  --text:#f5f5ef;
+  --muted:#a9a9b0;
+  --volt:#d4ff00;          /* acento principal: lima eléctrico */
+  --volt-hover:#e3ff4f;
+  --volt-ink:#0a0a0b;      /* texto sobre el acento */
+  --volt-soft:rgba(212,255,0,.12);
+  --fire:#ff5a1f;          /* acento secundario: naranja fuego */
+  --fire-soft:rgba(255,90,31,.15);
+  --ok:#43e08a;
+  /* colores por disciplina */
+  --c-musculacion:#d4ff00;
+  --c-funcional:#ff5a1f;
+  --c-spinning:#3ddcff;
+  --c-yoga:#b79cff;
+  --c-zumba:#ff5fa8;
+  --c-boxeo:#ff4a4a;
+  /* tipografía */
+  --font-display:"Anton","Impact","Arial Narrow Bold",sans-serif;
+  --font-body:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:14px;
+  --radius-lg:22px;
+  --maxw:1220px;
+  --nav-h:72px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+
+/* ---------- Base ---------- */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 12px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+@supports (overflow:clip){body{overflow-x:clip}}
+img{max-width:100%;display:block}
+a{color:inherit}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+[hidden]{display:none !important}
+h1,h2,h3,h4{margin:0}
+.container{width:100%;max-width:var(--maxw);margin-inline:auto;padding-inline:clamp(16px,4vw,32px)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+:focus-visible{outline:3px solid var(--volt);outline-offset:3px;border-radius:4px}
+.skip-link{position:absolute;left:12px;top:-60px;z-index:200;background:var(--volt);color:var(--volt-ink);padding:10px 16px;font-weight:800;border-radius:8px;text-decoration:none}
+.skip-link:focus{top:12px}
+::selection{background:var(--volt);color:var(--volt-ink)}
+.i{width:1em;height:1em;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-.125em}
+.i-fill{fill:currentColor;stroke:none}
+
+/* ---------- Tipos de texto ---------- */
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:.78rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--volt);margin:0 0 14px}
+.eyebrow::before{content:"";width:26px;height:2px;background:currentColor}
+.h2{font-family:var(--font-display);font-weight:400;text-transform:uppercase;font-size:clamp(2.5rem,6.2vw,4.8rem);line-height:1;letter-spacing:.005em;margin:0 0 18px}
+.hl{color:var(--volt)}
+.stroke{color:transparent;-webkit-text-stroke:1.5px var(--text)}
+.lead{color:var(--muted);font-size:clamp(1rem,1.3vw,1.125rem);max-width:640px;margin:0}
+.section{position:relative;padding-block:clamp(80px,11vw,140px)}
+.section-head{max-width:780px;margin-bottom:clamp(36px,5vw,56px)}
+.section-head.center{margin-inline:auto;text-align:center}
+.section-head.center .lead{margin-inline:auto}
+.section-head.center .eyebrow::after{content:"";width:26px;height:2px;background:currentColor}
+.slant{background:var(--bg-2);clip-path:polygon(0 0,100% 44px,100% 100%,0 calc(100% - 44px));padding-block:clamp(110px,13vw,170px)}
+
+/* ---------- Botones (fondo inclinado) ---------- */
+.btn{position:relative;isolation:isolate;display:inline-flex;align-items:center;justify-content:center;gap:.6em;padding:1rem 1.7rem;border:0;background:none;font-weight:800;font-size:.95rem;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;color:var(--text);transition:transform .25s var(--ease),color .25s;white-space:nowrap;line-height:1.2}
+.btn::before{content:"";position:absolute;inset:0;z-index:-1;transform:skewX(-12deg);border-radius:5px;transition:background .25s,box-shadow .25s,transform .25s var(--ease)}
+.btn .i{transition:transform .25s var(--ease)}
+.btn:hover .i{transform:translateX(3px)}
+.btn-primary{color:var(--volt-ink)}
+.btn-primary::before{background:var(--volt);box-shadow:0 10px 30px -10px rgba(212,255,0,.55)}
+.btn-primary:hover::before{background:var(--volt-hover);box-shadow:0 14px 44px -8px rgba(212,255,0,.75)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-ghost::before{background:rgba(10,10,11,.35);box-shadow:inset 0 0 0 2px var(--text)}
+.btn-ghost:hover::before{background:var(--text)}
+.btn-ghost:hover{color:var(--bg)}
+.btn-dark{color:var(--text)}
+.btn-dark::before{background:var(--bg)}
+.btn-dark:hover::before{background:#000}
+.btn-block{width:100%}
+.btn-sm{padding:.7rem 1.1rem;font-size:.8rem}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+
+/* ---------- Barra de progreso de scroll ---------- */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;z-index:70;pointer-events:none}
+.progress i{display:block;height:100%;width:100%;background:var(--volt);transform-origin:left;transform:scaleX(0);box-shadow:0 0 12px var(--volt)}
+
+/* ---------- Navbar ---------- */
+.nav{position:fixed;top:0;left:0;right:0;z-index:60;height:var(--nav-h);display:flex;align-items:center;border-bottom:1px solid transparent;transition:background .3s,border-color .3s}
+.nav.is-scrolled,.nav.menu-open{background:rgba(10,10,11,.88);-webkit-backdrop-filter:saturate(1.4) blur(14px);backdrop-filter:saturate(1.4) blur(14px);border-bottom-color:var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:inline-flex;align-items:center;gap:12px;text-decoration:none}
+.logo-mark{width:38px;height:38px;display:grid;place-items:center;background:var(--volt);color:var(--volt-ink);transform:skewX(-10deg);border-radius:6px;font-size:1.25rem;box-shadow:0 0 24px -4px rgba(212,255,0,.6)}
+.logo-mark .i{transform:skewX(10deg)}
+.logo-text{font-family:var(--font-display);font-size:1.6rem;letter-spacing:.06em;line-height:1;text-transform:uppercase}
+.logo-text small{display:block;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.24em;color:var(--muted);margin-top:4px}
+.nav-links{display:flex;gap:2px;list-style:none;margin:0;padding:0}
+.nav-links a{position:relative;display:block;text-decoration:none;font-weight:600;font-size:.9rem;padding:10px 12px;color:var(--text);opacity:.86;transition:opacity .2s}
+.nav-links a::after{content:"";position:absolute;left:12px;right:12px;bottom:4px;height:2px;background:var(--volt);transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}
+.nav-links a:hover,.nav-links a.is-active{opacity:1}
+.nav-links a:hover::after,.nav-links a.is-active::after{transform:scaleX(1)}
+.nav-actions{display:flex;align-items:center;gap:8px}
+.burger{display:none;width:46px;height:46px;border:1px solid var(--line);border-radius:12px;background:rgba(10,10,11,.5);align-items:center;justify-content:center;flex-direction:column;gap:5px}
+.burger span{display:block;width:20px;height:2px;background:var(--text);transition:transform .3s var(--ease),opacity .2s}
+.burger[aria-expanded="true"] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.burger[aria-expanded="true"] span:nth-child(2){opacity:0}
+.burger[aria-expanded="true"] span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.mobile-menu{position:fixed;inset:0;z-index:55;background:var(--bg);padding:calc(var(--nav-h) + 20px) clamp(16px,5vw,32px) 28px;display:flex;flex-direction:column;overflow-y:auto;transform:translateY(-100%);visibility:hidden;transition:transform .45s var(--ease),visibility 0s linear .45s}
+.mobile-menu.is-open{transform:none;visibility:visible;transition:transform .45s var(--ease),visibility 0s}
+.mobile-menu nav{display:flex;flex-direction:column}
+.mm-link{display:flex;justify-content:space-between;align-items:center;font-family:var(--font-display);font-size:clamp(2rem,9vw,2.8rem);text-transform:uppercase;text-decoration:none;line-height:1.2;padding:6px 0;border-bottom:1px solid var(--line)}
+.mm-link span{font-family:var(--font-mono);font-size:.8rem;color:var(--volt)}
+.mm-foot{margin-top:auto;padding-top:28px;display:grid;gap:12px}
+.mm-foot p{margin:0;color:var(--muted);font-size:.9rem}
+html.menu-lock .chat-fab,html.menu-lock .chat-teaser{display:none !important}
+@media (max-width:1060px){.nav-links{display:none}.burger{display:inline-flex}}
+@media (max-width:520px){.nav-cta{display:none}}
+
+/* ---------- Hero ---------- */
+.hero{position:relative;isolation:isolate;min-height:100vh;min-height:100svh;display:flex;align-items:center;padding:calc(var(--nav-h) + 48px) 0 180px;overflow:hidden;background:#0d0d0f}
+.hero-slides{position:absolute;inset:0;z-index:-3}
+.hero-slide{position:absolute;inset:0;background:#141416 center/cover no-repeat;opacity:0;transform:scale(1.12);transition:opacity 1.4s ease;filter:grayscale(.25) contrast(1.08)}
+.hero-slide.is-active{opacity:1;animation:kenburns 8s ease-out forwards}
+@keyframes kenburns{from{transform:scale(1.12)}to{transform:scale(1)}}
+.hero::before{content:"";position:absolute;inset:0;z-index:-2;background:linear-gradient(90deg,rgba(10,10,11,.96) 0%,rgba(10,10,11,.8) 40%,rgba(10,10,11,.35) 72%,rgba(10,10,11,.55) 100%),linear-gradient(0deg,var(--bg) 0%,rgba(10,10,11,0) 38%)}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 1px,transparent 1px 3px)}
+.hero-stripes{position:absolute;right:-8%;top:-10%;height:130%;width:46%;z-index:-1;display:flex;gap:22px;transform:skewX(-20deg);pointer-events:none}
+.hero-stripes i{display:block;height:100%}
+.hero-stripes i:nth-child(1){width:16px;background:linear-gradient(180deg,transparent 10%,rgba(212,255,0,.35) 70%,transparent)}
+.hero-stripes i:nth-child(2){width:80px;background:linear-gradient(180deg,transparent 20%,rgba(212,255,0,.12) 60%,transparent)}
+.hero-stripes i:nth-child(3){width:4px;background:linear-gradient(180deg,transparent,rgba(212,255,0,.7) 50%,transparent)}
+.hero-content{position:relative;max-width:var(--maxw)}
+.live-pill{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border:1px solid rgba(212,255,0,.35);background:rgba(10,10,11,.6);border-radius:999px;font-family:var(--font-mono);font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin:0}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);flex:0 0 auto;box-shadow:0 0 0 0 rgba(67,224,138,.6);animation:ping 1.8s infinite}
+.dot.off{background:var(--fire);box-shadow:none;animation:none}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(67,224,138,.55)}70%{box-shadow:0 0 0 9px rgba(67,224,138,0)}100%{box-shadow:0 0 0 0 rgba(67,224,138,0)}}
+.hero-title{font-family:var(--font-display);font-weight:400;text-transform:uppercase;font-size:clamp(3.3rem,10.5vw,9.2rem);line-height:.98;letter-spacing:.005em;margin:.3em 0 .28em}
+.hero-title .l{display:block}
+.hero-title .l>span{display:inline-block;animation:rise .9s var(--ease) both}
+.hero-title .l:nth-child(2)>span{animation-delay:.12s}
+.hero-title .l:nth-child(3)>span{animation-delay:.24s}
+.hero-title .hl{text-shadow:0 0 42px rgba(212,255,0,.35)}
+.hero-title .stroke{-webkit-text-stroke:2px var(--text)}
+@keyframes rise{from{opacity:0;transform:translateY(40px) skewY(3deg)}to{opacity:1;transform:none}}
+.hero-sub{max-width:560px;font-size:clamp(1.02rem,1.5vw,1.2rem);color:#d6d6db;margin:0 0 30px}
+.hero-sub b{color:var(--text)}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:14px 18px;align-items:center}
+.hero-proof{display:flex;flex-wrap:wrap;gap:10px 22px;list-style:none;padding:0;margin:28px 0 0;font-size:.9rem;color:#d6d6db}
+.hero-proof li{display:inline-flex;align-items:center;gap:8px}
+.hero-proof .i{color:var(--volt)}
+.hero-ind{display:flex;align-items:center;gap:14px;margin-top:34px}
+.hero-ind-btns{display:flex;gap:8px}
+.hero-ind button{width:44px;height:24px;background:none;border:0;padding:10px 0;position:relative}
+.hero-ind button::before{content:"";position:absolute;left:0;right:0;top:10px;height:4px;background:rgba(255,255,255,.22);border-radius:2px}
+.hero-ind button span{position:absolute;left:0;top:10px;height:4px;width:0;background:var(--volt);border-radius:2px}
+.hero-ind button.is-active span{animation:fillbar 6s linear forwards}
+@keyframes fillbar{to{width:100%}}
+.hero-ind-label{font-family:var(--font-mono);font-size:.74rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+@media (max-width:520px){.hero-ind-label,.pl-city{display:none}}
+@media (max-width:760px){
+  .hero::before{background:linear-gradient(180deg,rgba(10,10,11,.7) 0%,rgba(10,10,11,.72) 45%,rgba(10,10,11,.92) 80%,var(--bg) 100%)}
+  .hero-stripes{width:70%;right:-30%;opacity:.6}
+  .hero{padding-bottom:210px}
+}
+
+/* ---------- Stats ---------- */
+.stats{position:relative;z-index:5;margin-top:-120px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);background:rgba(22,22,25,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid var(--line);border-top:3px solid var(--volt);border-radius:0 0 var(--radius-lg) var(--radius-lg)}
+.stat{padding:26px clamp(16px,2.4vw,28px);border-left:1px solid var(--line)}
+.stat:first-child{border-left:0}
+.stat-num{font-family:var(--font-display);font-size:clamp(2.3rem,5vw,3.8rem);line-height:1;letter-spacing:.01em}
+.stat-num .u{color:var(--volt);font-size:.55em;margin-left:.08em}
+.stat-num .p{color:var(--volt)}
+.stat-label{color:var(--muted);font-size:.88rem;margin-top:8px;line-height:1.35}
+@media (max-width:760px){
+  .stats{margin-top:-150px}
+  .stats-grid{grid-template-columns:1fr 1fr}
+  .stat:nth-child(3){border-left:0}
+  .stat:nth-child(n+3){border-top:1px solid var(--line)}
+}
+
+/* ---------- Marquee (cintas) ---------- */
+.tapes{position:relative;overflow:hidden;padding:64px 0 40px}
+.tape{display:flex;white-space:nowrap;overflow:hidden;margin-inline:-6%;user-select:none}
+.tape-a{background:var(--volt);color:var(--volt-ink);transform:rotate(-2.5deg);padding:14px 0;position:relative;z-index:2;box-shadow:0 20px 40px -20px rgba(212,255,0,.5)}
+.tape-b{background:var(--surface);color:var(--text);transform:rotate(1.6deg);padding:12px 0;margin-top:2px;border-block:1px solid var(--line)}
+.tape-track{display:flex;flex:0 0 auto;align-items:center;animation:marquee 32s linear infinite}
+.tape-b .tape-track{animation-direction:reverse;animation-duration:40s}
+.tape-track span{display:inline-flex;align-items:center;gap:26px;padding-right:26px;font-family:var(--font-display);font-size:clamp(1.5rem,3.2vw,2.4rem);text-transform:uppercase;letter-spacing:.04em;line-height:1}
+.tape-b .tape-track span{font-size:clamp(1.2rem,2.4vw,1.7rem)}
+.tape-b .tape-track em{font-style:normal;color:transparent;-webkit-text-stroke:1px var(--text)}
+.tape .i{font-size:.8em}
+.tape-b .i{color:var(--volt)}
+@keyframes marquee{to{transform:translateX(-50%)}}
+
+/* ---------- Planes ---------- */
+.promo{position:relative;overflow:hidden;display:grid;grid-template-columns:auto 1fr auto;gap:20px 30px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:22px 26px 22px 40px;margin-bottom:44px}
+.promo::before{content:"";position:absolute;inset:0 auto 0 0;width:14px;background:repeating-linear-gradient(-45deg,var(--volt) 0 8px,var(--bg) 8px 16px)}
+.promo-big{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);line-height:1;text-transform:uppercase;white-space:nowrap}
+.promo-big s{color:var(--muted);font-size:.5em;margin-left:6px;text-decoration-thickness:2px}
+.promo-txt{margin:0;color:var(--muted);font-size:.95rem}
+.promo-txt b{color:var(--text)}
+.countdown{display:flex;gap:8px}
+.cd{min-width:60px;text-align:center;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 6px}
+.cd b{display:block;font-family:var(--font-mono);font-size:1.45rem;line-height:1.1;color:var(--volt)}
+.cd span{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+@media (max-width:900px){.promo{grid-template-columns:1fr}}
+.plans-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;align-items:stretch}
+@media (max-width:1100px){.plans-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.plans-grid{grid-template-columns:1fr}}
+.plan{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:30px 26px 24px;transition:transform .35s var(--ease),border-color .3s,box-shadow .3s}
+.plan:hover{transform:translateY(-6px);border-color:rgba(212,255,0,.45)}
+.plan.featured{background:linear-gradient(180deg,#1a1f08 0%,var(--surface) 55%);border:2px solid var(--volt);box-shadow:0 30px 70px -30px rgba(212,255,0,.45)}
+.plan-flag{position:absolute;top:-14px;left:22px;display:inline-flex;align-items:center;gap:6px;background:var(--volt);color:var(--volt-ink);font-weight:800;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;padding:6px 12px;border-radius:4px;transform:skewX(-10deg)}
+.plan-name{font-family:var(--font-display);font-weight:400;font-size:1.9rem;text-transform:uppercase;letter-spacing:.02em;line-height:1}
+.plan-desc{color:var(--muted);font-size:.92rem;margin:6px 0 18px}
+.plan-price{font-family:var(--font-display);font-size:clamp(2.7rem,3.6vw,3.3rem);line-height:1;letter-spacing:.01em;display:flex;align-items:baseline;flex-wrap:wrap;gap:0 4px}
+.plan-price .cur{font-size:.55em;color:var(--volt)}
+.plan-price .per{font-family:var(--font-body);font-size:.9rem;color:var(--muted);font-weight:600;letter-spacing:0;margin-left:4px}
+.plan-eq{margin:10px 0 0;font-size:.9rem;color:#d6d6db}
+.plan-save{display:inline-flex;align-self:flex-start;margin-top:8px;background:var(--fire);color:#0a0a0b;font-weight:800;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.plan-req{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;padding:10px 12px;background:var(--volt-soft);border:1px dashed rgba(212,255,0,.5);border-radius:10px;font-size:.82rem;line-height:1.45;color:#e8f5b0}
+.plan-req .i{color:var(--volt);margin-top:2px}
+.plan-list{list-style:none;padding:0;margin:20px 0 24px;display:grid;gap:10px;font-size:.93rem}
+.plan-list li{display:flex;gap:10px;align-items:flex-start;line-height:1.4}
+.plan-list .i{color:var(--volt);margin-top:.15em}
+.plan .btn{margin-top:auto}
+.plan-mat{text-align:center;font-size:.8rem;color:var(--muted);margin:12px 0 0}
+.plan-mat b{color:var(--volt)}
+.duo{margin-top:24px;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:center;justify-content:space-between;padding:24px 28px;border-radius:var(--radius-lg);background:linear-gradient(100deg,var(--volt) 0%,#b9f000 100%);color:var(--volt-ink);position:relative;overflow:hidden}
+.duo::after{content:"";position:absolute;right:-40px;top:-30px;width:220px;height:200%;background:repeating-linear-gradient(90deg,rgba(0,0,0,.08) 0 10px,transparent 10px 22px);transform:skewX(-20deg);pointer-events:none}
+.duo h3{font-family:var(--font-display);font-weight:400;font-size:clamp(1.8rem,3vw,2.4rem);text-transform:uppercase;line-height:1}
+.duo p{margin:6px 0 0;max-width:520px;font-weight:500}
+.duo-price{font-family:var(--font-display);font-size:clamp(2.2rem,4vw,3rem);line-height:1;white-space:nowrap}
+.duo-price small{font-family:var(--font-body);font-size:.9rem;font-weight:700}
+.duo-right{display:flex;align-items:center;gap:22px;flex-wrap:wrap;position:relative;z-index:1}
+.plans-note{margin:26px 0 0;text-align:center;color:var(--muted);font-size:.9rem}
+
+/* ---------- Disciplinas ---------- */
+.disc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:980px){.disc-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.disc-grid{grid-template-columns:1fr}}
+.disc{position:relative;isolation:isolate;min-height:440px;border-radius:var(--radius-lg);overflow:hidden;background:var(--surface);display:flex;flex-direction:column;justify-content:flex-end;padding:24px;border:1px solid var(--line)}
+.disc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:grayscale(.4) contrast(1.05);transition:transform .9s var(--ease),filter .5s}
+.disc::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,10,11,.05) 0%,rgba(10,10,11,.55) 42%,rgba(10,10,11,.97) 100%)}
+.disc::after{content:"";position:absolute;left:0;top:0;height:5px;width:100%;background:var(--c);transform:scaleX(.22);transform-origin:left;transition:transform .5s var(--ease)}
+.disc:hover img{transform:scale(1.07);filter:none}
+.disc:hover::after,.disc:focus-within::after{transform:scaleX(1)}
+.disc-num{position:absolute;top:16px;right:20px;font-family:var(--font-display);font-size:3.6rem;line-height:1;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.55)}
+.disc-icon{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:var(--c);color:#0a0a0b;margin-bottom:14px;font-size:1.45rem}
+.disc h3{font-family:var(--font-display);font-weight:400;font-size:2.2rem;text-transform:uppercase;line-height:1;margin:0 0 8px}
+.disc p{color:#d8d8dd;margin:0 0 14px;font-size:.95rem}
+.disc-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-family:var(--font-mono);font-size:.74rem;color:#c9c9cf;text-transform:uppercase;letter-spacing:.06em;margin-bottom:16px}
+.disc-meta span{display:inline-flex;align-items:center;gap:6px}
+.intensity{display:inline-flex;gap:3px}
+.intensity i{width:14px;height:7px;background:rgba(255,255,255,.22);transform:skewX(-20deg)}
+.intensity i.on{background:var(--c)}
+.disc-link{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;background:none;border:0;border-bottom:2px solid var(--c);color:var(--text);font-weight:800;font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;padding:4px 0}
+.disc-link:hover .i{transform:translateX(4px)}
+.disc-link .i{transition:transform .25s var(--ease)}
+
+/* ---------- Horario ---------- */
+.sched{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:28px;align-items:start}
+@media (max-width:1020px){.sched{grid-template-columns:1fr}}
+.day-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-bottom:14px;padding-top:10px}
+.day-tab{position:relative;background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px 2px 10px;display:flex;flex-direction:column;align-items:center;gap:3px;transition:background .2s,border-color .2s,color .2s}
+.day-tab:hover{border-color:rgba(212,255,0,.5)}
+.day-tab b{font-family:var(--font-display);font-weight:400;font-size:clamp(1.1rem,2.4vw,1.4rem);letter-spacing:.05em;line-height:1;text-transform:uppercase}
+.day-tab small{font-family:var(--font-mono);font-size:.68rem;color:var(--muted);white-space:nowrap}
+.day-tab[aria-selected="true"]{background:var(--volt);color:var(--volt-ink);border-color:var(--volt)}
+.day-tab[aria-selected="true"] small{color:rgba(10,10,11,.78)}
+.day-tab .today{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--fire);color:#0a0a0b;font-size:.6rem;font-weight:800;padding:2px 7px;border-radius:999px;letter-spacing:.08em}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:999px;background:transparent;border:1px solid var(--line);color:var(--text);font-size:.84rem;font-weight:600;transition:background .2s,border-color .2s,color .2s}
+.chip:hover{border-color:var(--c,var(--volt))}
+.chip .sw{width:9px;height:9px;border-radius:50%;background:var(--c,var(--text))}
+.chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.sched-note{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--fire-soft);border:1px solid rgba(255,90,31,.4);font-size:.9rem;margin-bottom:14px}
+.sched-note .i{color:var(--fire);margin-top:3px}
+.class-list{display:flex;flex-direction:column;gap:10px;min-height:120px}
+.class-row{display:grid;grid-template-columns:104px minmax(0,1fr) auto;align-items:center;gap:14px 18px;padding:16px 18px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;transition:border-color .3s,background .3s,opacity .3s;animation:fadeUp .45s var(--ease) both}
+.class-row:hover{background:var(--surface-2)}
+.cr-time{font-family:var(--font-mono);line-height:1.2}
+.cr-time strong{display:block;font-size:1.3rem;font-weight:700}
+.cr-time span{font-size:.8rem;color:var(--muted)}
+.cr-top{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:4px}
+.tag{display:inline-flex;align-items:center;gap:6px;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--c)}
+.tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.cr-info h4{font-size:1.05rem;font-weight:800;line-height:1.25}
+.cr-info p{margin:2px 0 0;color:var(--muted);font-size:.86rem}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:.68rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 9px;border-radius:999px}
+.badge-live{background:var(--fire);color:#0a0a0b}
+.badge-live::before{content:"";width:7px;height:7px;border-radius:50%;background:#0a0a0b;animation:blink 1s infinite}
+.badge-next{background:var(--volt);color:var(--volt-ink)}
+.badge-past{background:var(--surface-2);color:var(--muted)}
+@keyframes blink{50%{opacity:.2}}
+.class-row.is-live{border-color:var(--fire);border-left-color:var(--fire);background:linear-gradient(90deg,rgba(255,90,31,.16),var(--surface) 70%);box-shadow:0 0 0 1px var(--fire),0 16px 40px -20px rgba(255,90,31,.6)}
+.class-row.is-next{border-color:rgba(212,255,0,.6);border-left-color:var(--volt);background:linear-gradient(90deg,rgba(212,255,0,.1),var(--surface) 70%)}
+.class-row.is-past{opacity:.5}
+.cr-btn{background:transparent;border:1.5px solid var(--line);color:var(--text);border-radius:999px;padding:9px 16px;font-weight:700;font-size:.82rem;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
+.cr-btn:hover{background:var(--volt);color:var(--volt-ink);border-color:var(--volt)}
+.is-next .cr-btn,.is-live .cr-btn{background:var(--volt);color:var(--volt-ink);border-color:var(--volt)}
+.empty{padding:28px;border:1px dashed var(--line);border-radius:12px;text-align:center;color:var(--muted)}
+.empty b{color:var(--text)}
+@media (max-width:640px){
+  .class-row{grid-template-columns:62px minmax(0,1fr);padding:14px}
+  .cr-time strong{font-size:1.08rem}
+  .cr-cta{grid-column:1 / -1}
+  .cr-btn{width:100%}
+}
+.now-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;position:sticky;top:calc(var(--nav-h) + 20px)}
+@media (max-width:1020px){.now-card{position:static}}
+.now-card .eyebrow{margin-bottom:10px}
+.now-clock{font-family:var(--font-mono);font-size:3rem;font-weight:700;line-height:1;color:var(--volt);letter-spacing:-.02em}
+.now-date{margin:6px 0 16px;color:var(--muted);font-size:.9rem}
+.now-status{display:flex;align-items:center;gap:10px;font-weight:700;font-size:.92rem;padding:10px 12px;border-radius:10px;background:var(--bg);border:1px solid var(--line)}
+.now-next{margin:12px 0 20px;padding:14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);font-size:.9rem;line-height:1.5}
+.now-next .k{display:block;font-family:var(--font-mono);font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.now-next .k.live{color:var(--fire)}
+.now-next .k.next{color:var(--volt)}
+.now-next b{font-size:1.05rem}
+.now-card h3{font-family:var(--font-display);font-weight:400;font-size:1.5rem;text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px}
+.sala-hours{list-style:none;padding:0;margin:0 0 22px;display:grid;gap:4px}
+.sala-hours li{display:flex;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:10px;font-size:.9rem}
+.sala-hours li span:last-child{font-family:var(--font-mono);font-weight:700}
+.sala-hours li.is-today{background:var(--volt-soft);outline:1px solid rgba(212,255,0,.45)}
+.sala-hours li.is-today span:first-child::after{content:" · hoy";color:var(--volt);font-weight:700}
+
+/* ---------- App de socios ---------- */
+.app-sec{overflow:hidden}
+.app-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(40px,6vw,80px);align-items:center}
+@media (max-width:960px){.app-grid{grid-template-columns:1fr}}
+.app-points{list-style:none;padding:0;margin:30px 0;display:grid;gap:18px}
+.app-points li{display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start}
+.app-points .ic{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:var(--volt-soft);border:1px solid rgba(212,255,0,.35);color:var(--volt);font-size:1.3rem}
+.app-points b{display:block;font-size:1.05rem;margin-bottom:2px}
+.app-points span{color:var(--muted);font-size:.95rem}
+.try-hint{display:inline-flex;align-items:center;gap:10px;font-family:var(--font-mono);font-size:.8rem;color:var(--volt);letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;border:1px dashed rgba(212,255,0,.5);border-radius:10px}
+.try-hint .i{animation:nudge 1.4s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateX(5px)}}
+@media (max-width:960px){.try-hint .i{transform:rotate(90deg);animation:none}}
+.phone-wrap{position:relative;display:flex;justify-content:center;padding:24px 0}
+.phone-wrap::before{content:"";position:absolute;width:440px;height:440px;max-width:100%;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(212,255,0,.26),transparent 65%);filter:blur(10px);pointer-events:none}
+.phone{position:relative;z-index:1;width:300px;max-width:100%;height:620px;border-radius:50px;background:#050506;padding:11px;box-shadow:0 0 0 2px #34343a,0 0 0 8px #151518,0 0 0 9px #2c2c32,0 50px 90px -30px rgba(0,0,0,.9)}
+.phone::before{content:"";position:absolute;right:-12px;top:170px;width:3px;height:74px;border-radius:2px;background:#2c2c32}
+.phone::after{content:"";position:absolute;left:-12px;top:140px;width:3px;height:110px;border-radius:2px;background:linear-gradient(#2c2c32 0 45%,transparent 45% 55%,#2c2c32 55%)}
+.phone-screen{position:relative;height:100%;border-radius:40px;overflow:hidden;background:#0c0c0e;display:flex;flex-direction:column;font-size:13px;line-height:1.4}
+.phone-island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:96px;height:28px;border-radius:20px;background:#000;z-index:8}
+.phone-status{flex:0 0 auto;height:46px;display:flex;align-items:center;justify-content:space-between;padding:4px 24px 0 30px;font-weight:700;font-size:13px;font-family:var(--font-body)}
+.ps-icons{display:flex;align-items:center;gap:5px}
+.ps-bars{display:flex;align-items:flex-end;gap:1.5px;height:10px}
+.ps-bars i{width:3px;background:var(--text);border-radius:1px}
+.ps-bars i:nth-child(1){height:4px}.ps-bars i:nth-child(2){height:6px}.ps-bars i:nth-child(3){height:8px}.ps-bars i:nth-child(4){height:10px}
+.ps-bat{width:22px;height:11px;border:1.5px solid rgba(245,245,239,.7);border-radius:3px;padding:1px;position:relative}
+.ps-bat::after{content:"";position:absolute;right:-4px;top:3px;width:2px;height:4px;background:rgba(245,245,239,.7);border-radius:0 1px 1px 0}
+.ps-bat i{display:block;height:100%;width:78%;background:var(--volt);border-radius:1px}
+.app-top{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;padding:4px 18px 12px}
+.app-top small{display:block;color:var(--muted);font-size:11px;font-weight:600}
+.app-top b{font-family:var(--font-display);font-weight:400;font-size:22px;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.app-ava{width:38px;height:38px;border-radius:50%;background:var(--volt);color:var(--volt-ink);display:grid;place-items:center;font-weight:900;font-size:12px;box-shadow:0 0 0 3px rgba(212,255,0,.2)}
+.app-body{position:relative;flex:1;overflow-y:auto;padding:0 14px 90px;scrollbar-width:none;overscroll-behavior:contain}
+.app-body::-webkit-scrollbar{display:none}
+.app-screen{display:none}
+.app-screen.is-active{display:block;animation:fadeUp .35s var(--ease)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.a-h{display:flex;justify-content:space-between;align-items:center;margin:4px 2px 10px}
+.a-h h4{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.a-pill{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:999px;background:var(--volt-soft);color:var(--volt);border:1px solid rgba(212,255,0,.35)}
+.a-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;margin-bottom:9px}
+.a-class{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:10px;align-items:center}
+.a-time{font-family:var(--font-mono);font-weight:700;font-size:13.5px;text-align:center;line-height:1.15}
+.a-time small{display:block;font-size:9.5px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.04em;font-family:var(--font-body)}
+.a-name{font-weight:800;font-size:13px;line-height:1.2;display:flex;align-items:center;gap:6px}
+.a-name::before{content:"";flex:0 0 auto;width:7px;height:7px;border-radius:50%;background:var(--c)}
+.a-sub{color:var(--muted);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.a-bar{height:4px;background:#26262b;border-radius:4px;margin-top:6px;overflow:hidden}
+.a-bar i{display:block;height:100%;background:var(--c);transition:width .45s var(--ease)}
+.a-cupos{font-size:10.5px;color:var(--muted);margin-top:3px}
+.a-cupos.low{color:var(--fire);font-weight:700}
+.a-btn{border:1.5px solid var(--volt);border-radius:999px;padding:7px 10px;font-weight:800;font-size:11px;background:transparent;color:var(--volt);white-space:nowrap;transition:background .2s,color .2s,transform .15s}
+.a-btn:active{transform:scale(.95)}
+.a-btn.is-on{background:var(--volt);color:var(--volt-ink)}
+.a-btn.wait{border-color:#4a4a52;color:var(--text)}
+.a-btn.wait.is-on{background:#2c2c32;border-color:#2c2c32}
+.r-hero{position:relative;overflow:hidden;border-radius:18px;padding:16px;margin-bottom:10px;background:linear-gradient(135deg,#1f2608 0%,#141417 70%);border:1px solid rgba(212,255,0,.3)}
+.r-hero small{font-family:var(--font-mono);font-size:10px;color:var(--volt);letter-spacing:.12em;text-transform:uppercase;font-weight:700}
+.r-hero h5{font-family:var(--font-display);font-weight:400;font-size:28px;text-transform:uppercase;line-height:1;margin:4px 0}
+.r-hero p{margin:0;color:var(--muted);font-size:11px}
+.r-prog{margin-top:12px}
+.r-prog-top{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:5px}
+.r-prog-top b{color:var(--volt)}
+.r-bar{height:8px;border-radius:8px;background:#26262b;overflow:hidden}
+.r-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--volt),#9fe000);border-radius:8px;transition:width .5s var(--ease);box-shadow:0 0 12px rgba(212,255,0,.6)}
+.r-timer{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;padding:9px;border-radius:12px;border:1px dashed #3a3a42;background:transparent;color:var(--text);font-weight:700;font-size:12px}
+.r-timer.run{border-color:var(--fire);color:var(--fire)}
+.r-ex{display:flex;align-items:center;gap:10px;padding:10px 12px;cursor:pointer;transition:border-color .2s,background .2s}
+.r-ex input{position:absolute;opacity:0;width:1px;height:1px}
+.r-check{flex:0 0 auto;width:22px;height:22px;border-radius:7px;border:2px solid #4a4a52;display:grid;place-items:center;color:transparent;transition:.2s;font-size:13px}
+.r-ex input:checked + .r-check{background:var(--volt);border-color:var(--volt);color:var(--volt-ink)}
+.r-ex input:focus-visible + .r-check{outline:2px solid var(--volt);outline-offset:2px}
+.r-ex .r-txt{flex:1;min-width:0}
+.r-ex b{display:block;font-size:12.5px}
+.r-ex span{font-size:11px;color:var(--muted)}
+.r-ex.done{border-color:rgba(212,255,0,.4)}
+.r-ex.done b{text-decoration:line-through;text-decoration-color:var(--volt);opacity:.75}
+.r-done{text-align:center;padding:14px;border-radius:14px;background:var(--volt);color:var(--volt-ink);font-weight:800;margin-top:6px;animation:fadeUp .4s var(--ease)}
+.r-done small{display:block;font-weight:600;font-size:11px}
+.p-plan{position:relative;overflow:hidden;border-radius:18px;padding:16px;background:linear-gradient(135deg,var(--volt),#a8e000);color:var(--volt-ink);margin-bottom:10px}
+.p-plan::after{content:"";position:absolute;right:-20px;top:-20px;width:120px;height:160px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.07) 0 8px,transparent 8px 16px);transform:skewX(-20deg)}
+.p-plan small{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;opacity:.75}
+.p-plan h5{font-family:var(--font-display);font-weight:400;font-size:26px;text-transform:uppercase;line-height:1.05;margin:2px 0 8px}
+.p-status{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:999px;background:#0a0a0b;color:var(--fire);position:relative;z-index:1}
+.p-status.ok{color:var(--ok)}
+.p-rows{display:grid;gap:0}
+.p-row{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:12px}
+.p-row:last-child{border-bottom:0}
+.p-row span{color:var(--muted)}
+.p-row b{text-align:right}
+.p-amount{font-family:var(--font-display);font-size:20px;font-weight:400}
+.webpay{width:100%;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border:0;border-radius:14px;background:var(--text);color:var(--bg);font-weight:900;font-size:13px;letter-spacing:.02em;transition:transform .15s,opacity .2s}
+.webpay:active{transform:scale(.98)}
+.webpay:disabled{background:#2c2c32;color:var(--ok);cursor:default}
+.demo-note{text-align:center;font-size:10.5px;color:var(--muted);margin:8px 0 12px}
+.p-hist{list-style:none;margin:0;padding:0}
+.p-hist li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:11.5px}
+.p-hist li:last-child{border-bottom:0}
+.p-hist .ok{color:var(--ok);font-weight:800;font-size:10.5px}
+.linkish{background:none;border:0;color:var(--volt);font-weight:700;font-size:11px;text-decoration:underline;padding:4px}
+.pay-overlay{position:absolute;inset:0;z-index:9;background:rgba(12,12,14,.97);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 18px 24px;text-align:center;animation:fadeUp .3s var(--ease)}
+.spinner{width:52px;height:52px;border-radius:50%;border:4px solid #26262b;border-top-color:var(--volt);animation:spin .8s linear infinite;margin-bottom:18px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.pay-overlay h5{font-size:15px;font-weight:800;margin:0 0 4px}
+.pay-overlay p{margin:0;color:var(--muted);font-size:11.5px}
+.pay-ok-ic{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#0a0a0b;display:grid;place-items:center;font-size:30px;margin-bottom:12px;animation:pop .5s var(--ease)}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+.receipt{width:100%;margin:14px 0;text-align:left;background:var(--surface);border:1px dashed #3a3a42;border-radius:14px;padding:12px 14px;font-family:var(--font-mono);font-size:10.5px}
+.receipt h6{font-family:var(--font-body);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;margin:0 0 6px;color:var(--volt)}
+.receipt div{display:flex;justify-content:space-between;gap:8px;padding:3px 0}
+.receipt div span{color:var(--muted)}
+.demo-flag{display:inline-block;margin-top:6px;font-size:10.5px;font-weight:800;color:var(--fire);background:var(--fire-soft);padding:4px 10px;border-radius:999px}
+.app-toast{position:absolute;left:14px;right:14px;top:50px;z-index:10;background:var(--volt);color:var(--volt-ink);font-weight:800;font-size:12px;padding:10px 12px;border-radius:12px;display:flex;gap:8px;align-items:center;transform:translateY(-16px);opacity:0;transition:transform .3s var(--ease),opacity .3s;pointer-events:none;box-shadow:0 10px 30px -10px rgba(212,255,0,.6)}
+.app-toast.show{transform:none;opacity:1}
+.app-nav{position:absolute;left:0;right:0;bottom:0;z-index:6;height:76px;padding:6px 10px 20px;background:rgba(12,12,14,.96);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr)}
+.app-nav button{background:none;border:0;color:#8f8f97;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;border-radius:12px;transition:color .2s}
+.app-nav button .i{font-size:20px}
+.app-nav button[aria-selected="true"]{color:var(--volt)}
+.app-nav button[aria-selected="true"] .i{filter:drop-shadow(0 0 8px rgba(212,255,0,.6))}
+.home-bar{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:110px;height:4px;border-radius:4px;background:var(--text);opacity:.8;z-index:7}
+@media (max-width:360px){.phone{height:590px}}
+
+/* ---------- Instalaciones ---------- */
+.gallery{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:220px;gap:12px;grid-template-areas:"a a b c" "a a d d" "e e f f"}
+.g-item{position:relative;overflow:hidden;border-radius:16px;border:0;padding:0;background:var(--surface);cursor:zoom-in;text-align:left}
+.g-item:nth-child(1){grid-area:a}.g-item:nth-child(2){grid-area:b}.g-item:nth-child(3){grid-area:c}.g-item:nth-child(4){grid-area:d}.g-item:nth-child(5){grid-area:e}.g-item:nth-child(6){grid-area:f}
+.g-item img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease),filter .5s;filter:grayscale(.3)}
+.g-item:hover img{transform:scale(1.06);filter:none}
+.g-item::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,11,.85),transparent 55%)}
+.g-cap{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;color:var(--text)}
+.g-cap b{display:block;font-family:var(--font-display);font-weight:400;font-size:1.4rem;text-transform:uppercase;letter-spacing:.02em;line-height:1.1}
+.g-cap span{font-size:.82rem;color:#d0d0d6}
+@media (max-width:760px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:170px;grid-template-areas:"a a" "a a" "b c" "d d" "e f"}}
+.amen{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px;list-style:none;padding:0}
+@media (max-width:900px){.amen{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.amen li{display:flex;align-items:center;gap:12px;padding:16px;background:var(--surface);border:1px solid var(--line);border-radius:14px;font-weight:600;font-size:.92rem;line-height:1.3}
+.amen .i{font-size:1.4rem;color:var(--volt)}
+@media (max-width:420px){.amen li{flex-direction:column;align-items:flex-start;gap:8px;font-size:.86rem}}
+
+/* ---------- Coaches ---------- */
+.coach-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:960px){.coach-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.coach-grid{grid-template-columns:1fr}}
+.coach{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;transition:transform .35s var(--ease),border-color .3s}
+.coach:hover{transform:translateY(-6px);border-color:rgba(212,255,0,.45)}
+.coach-photo{position:relative;aspect-ratio:4/4.3;overflow:hidden;background:#1a1a1d}
+.coach-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.1);transition:filter .6s,transform .8s var(--ease)}
+.coach:hover .coach-photo img{filter:grayscale(0);transform:scale(1.04)}
+.coach-photo::after{content:"";position:absolute;inset:auto 0 0 0;height:50%;background:linear-gradient(0deg,var(--surface),transparent)}
+.coach-spec{position:absolute;left:18px;top:18px;z-index:1;background:var(--volt);color:var(--volt-ink);font-weight:800;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 12px;transform:skewX(-10deg);border-radius:4px}
+.coach-body{padding:0 24px 24px;margin-top:-30px;position:relative;z-index:1}
+.coach-body h3{font-family:var(--font-display);font-weight:400;font-size:2rem;text-transform:uppercase;line-height:1}
+.coach-body .role{color:var(--volt);font-weight:700;font-size:.9rem;margin:6px 0 12px}
+.coach-body ul{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:6px;font-size:.88rem;color:var(--muted)}
+.coach-body ul li{display:flex;gap:8px;align-items:flex-start}
+.coach-body ul .i{color:var(--volt);margin-top:.2em}
+.coach-body blockquote{margin:0;padding:12px 14px;border-left:3px solid var(--volt);background:var(--bg);border-radius:0 10px 10px 0;font-style:italic;font-size:.92rem}
+.coach-ig{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:.85rem;color:var(--muted);text-decoration:none}
+.coach-ig:hover{color:var(--volt)}
+
+/* ---------- Testimonios ---------- */
+.testi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:960px){.testi-grid{grid-template-columns:1fr}}
+.testi{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:28px;overflow:hidden}
+.testi::before{content:"\201C";position:absolute;right:18px;top:-18px;font-family:var(--font-display);font-size:9rem;line-height:1;color:rgba(212,255,0,.08)}
+.testi-metric{font-family:var(--font-display);font-size:clamp(3rem,5vw,4rem);line-height:.95;color:var(--volt);text-transform:uppercase}
+.testi-metric small{display:block;font-family:var(--font-mono);font-size:.78rem;color:var(--muted);letter-spacing:.1em;margin-top:6px}
+.testi p{margin:18px 0 22px;font-size:1rem;color:#dcdce0}
+.testi-who{margin-top:auto;display:flex;align-items:center;gap:12px}
+.testi-who img{width:50px;height:50px;border-radius:50%;object-fit:cover;border:2px solid var(--volt);background:#222}
+.testi-who b{display:block}
+.testi-who span{font-size:.85rem;color:var(--muted)}
+.stars{color:var(--volt);letter-spacing:2px;font-size:.9rem;margin-top:14px}
+.rating-row{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 40px;margin-top:40px;color:var(--muted);font-size:.95rem;text-align:center}
+.rating-row b{font-family:var(--font-display);font-size:2rem;color:var(--text);font-weight:400;display:block;line-height:1}
+
+/* ---------- IMC ---------- */
+.imc-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,64px);align-items:center}
+@media (max-width:900px){.imc-grid{grid-template-columns:1fr}}
+.imc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(20px,3vw,32px)}
+.imc-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+@media (max-width:420px){.imc-form{grid-template-columns:1fr}}
+.imc-out{display:grid;gap:14px}
+.imc-val{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.imc-val b{font-family:var(--font-display);font-size:4rem;line-height:1;font-weight:400}
+.imc-cat{font-weight:800;padding:5px 12px;border-radius:999px;font-size:.85rem;background:var(--surface-2)}
+.gauge{position:relative;height:14px;border-radius:14px;background:linear-gradient(90deg,#3ddcff 0 14%,#43e08a 14% 40%,#ffd23f 40% 60%,#ff5a1f 60%)}
+.gauge-marker{position:absolute;top:-6px;width:4px;height:26px;background:var(--text);border-radius:4px;left:0;transform:translateX(-50%);transition:left .6s var(--ease);box-shadow:0 0 0 3px var(--bg)}
+.gauge-lbl{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:.7rem;color:var(--muted);margin-top:4px}
+.imc-reco{margin:0;color:#dcdce0;font-size:.95rem}
+.fine{font-size:.78rem;color:var(--muted);margin:10px 0 0}
+
+/* ---------- Formularios ---------- */
+.field{display:flex;flex-direction:column;gap:6px;margin:0 0 14px;border:0;padding:0;min-width:0}
+.field label,.field legend{font-size:.82rem;font-weight:700;letter-spacing:.02em;color:#dcdce0;padding:0}
+.field legend{margin-bottom:8px}
+.input,.select{width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;padding:13px 14px;color:var(--text);font-size:1rem;transition:border-color .2s,box-shadow .2s;min-width:0}
+.select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23d4ff00' stroke-width='2' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px}
+.input:focus,.select:focus{outline:none;border-color:var(--volt);box-shadow:0 0 0 3px rgba(212,255,0,.2)}
+.input[aria-invalid="true"],.select[aria-invalid="true"]{border-color:var(--fire)}
+.input::placeholder{color:#75757d}
+.phone-in{display:flex;align-items:stretch}
+.phone-in span{display:grid;place-items:center;padding:0 12px;background:var(--surface-2);border:1.5px solid var(--line);border-right:0;border-radius:12px 0 0 12px;font-weight:700;font-size:.95rem;color:var(--muted)}
+.phone-in .input{border-radius:0 12px 12px 0}
+.err{min-height:0;margin:0;color:#ff8a5c;font-size:.8rem;font-weight:600}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:520px){.field-row{grid-template-columns:1fr}}
+.slots{display:flex;flex-wrap:wrap;gap:8px}
+.slot{position:relative}
+.slot input{position:absolute;opacity:0;width:1px;height:1px}
+.slot span{display:flex;flex-direction:column;align-items:flex-start;padding:9px 13px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);cursor:pointer;transition:border-color .2s,background .2s;line-height:1.25}
+.slot span b{font-family:var(--font-mono);font-size:.95rem}
+.slot span small{font-size:.72rem;color:var(--muted)}
+.slot input:checked + span{border-color:var(--volt);background:var(--volt-soft);box-shadow:0 0 0 1px var(--volt)}
+.slot input:focus-visible + span{outline:3px solid var(--volt);outline-offset:2px}
+.slot-empty{font-size:.88rem;color:var(--muted);padding:12px;border:1px dashed var(--line);border-radius:12px;width:100%}
+
+/* ---------- Modal ---------- */
+.modal{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px}
+.modal-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:0;transition:opacity .3s}
+.modal-card{position:relative;width:min(580px,100%);max-height:calc(100vh - 32px);max-height:calc(100dvh - 32px);overflow-y:auto;overscroll-behavior:contain;background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--volt);border-radius:20px;padding:clamp(22px,4vw,34px);opacity:0;transform:translateY(24px) scale(.98);transition:opacity .3s,transform .35s var(--ease)}
+.modal.is-open .modal-backdrop{opacity:1}
+.modal.is-open .modal-card{opacity:1;transform:none}
+.modal-close{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--bg);display:grid;place-items:center;font-size:1.1rem;color:var(--text)}
+.modal-close:hover{border-color:var(--volt);color:var(--volt)}
+.modal-title{font-family:var(--font-display);font-weight:400;font-size:clamp(2rem,5vw,2.7rem);text-transform:uppercase;line-height:1;margin:0 0 10px;padding-right:40px}
+.modal-lead{color:var(--muted);margin:0 0 22px;font-size:.95rem}
+#trialStepForm .eyebrow{padding-right:48px}
+.success{text-align:center}
+.success-ic{width:84px;height:84px;margin:6px auto 16px;border-radius:50%;background:var(--volt);color:var(--volt-ink);display:grid;place-items:center;font-size:2.4rem;animation:pop .6s var(--ease);box-shadow:0 0 0 10px var(--volt-soft)}
+.summary{text-align:left;margin:20px 0;padding:16px;border-radius:14px;background:var(--bg);border:1px solid var(--line);display:grid;gap:8px;font-size:.92rem}
+.summary div{display:flex;justify-content:space-between;gap:12px}
+.summary dt{color:var(--muted)}
+.summary dd{margin:0;font-weight:700;text-align:right}
+.bring{text-align:left;margin-bottom:20px}
+.bring h3{font-size:.82rem;font-family:var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--volt);margin-bottom:8px}
+.bring ul{list-style:none;padding:0;margin:0;display:flex;flex-wrap:wrap;gap:8px}
+.bring li{font-size:.85rem;padding:6px 12px;border-radius:999px;background:var(--surface-2)}
+.btn-text{background:none;border:0;color:var(--muted);text-decoration:underline;margin-top:12px;padding:8px;font-size:.9rem}
+.btn-text:hover{color:var(--text)}
+
+/* ---------- FAQ ---------- */
+.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,64px);align-items:start}
+@media (max-width:900px){.faq-grid{grid-template-columns:1fr}}
+.faq-side{position:sticky;top:calc(var(--nav-h) + 24px)}
+@media (max-width:900px){.faq-side{position:static}}
+.faq-item{border-bottom:1px solid var(--line)}
+.faq-q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;background:none;border:0;padding:22px 0;text-align:left;font-weight:700;font-size:1.05rem;color:var(--text)}
+.faq-q:hover{color:var(--volt)}
+.faq-ic{flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:transform .35s var(--ease),background .2s,color .2s}
+.faq-q[aria-expanded="true"] .faq-ic{transform:rotate(45deg);background:var(--volt);color:var(--volt-ink);border-color:var(--volt)}
+.faq-a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .35s var(--ease)}
+.faq-a>div{overflow:hidden}
+.faq-a p{margin:0 0 22px;color:var(--muted);max-width:640px}
+.faq-q[aria-expanded="true"] + .faq-a{grid-template-rows:1fr}
+
+/* ---------- CTA banda ---------- */
+.cta-band{position:relative;isolation:isolate;overflow:hidden;padding-block:clamp(90px,12vw,150px);text-align:center;background:#111}
+.cta-band img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;filter:grayscale(1) contrast(1.2)}
+.cta-band::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(10,10,11,.88),rgba(10,10,11,.7) 50%,rgba(10,10,11,.92)),linear-gradient(90deg,rgba(212,255,0,.18),transparent 60%)}
+.cta-band h2{font-family:var(--font-display);font-weight:400;text-transform:uppercase;font-size:clamp(2.8rem,8vw,6.5rem);line-height:1.04;margin:0 0 20px}
+.cta-band p{color:#d6d6db;max-width:560px;margin:0 auto 32px;font-size:1.1rem}
+.cta-band .hero-ctas{justify-content:center}
+
+/* ---------- Contacto ---------- */
+.contact-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:20px;align-items:stretch}
+@media (max-width:900px){.contact-grid{grid-template-columns:1fr}}
+.contact-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:clamp(22px,3vw,34px);display:flex;flex-direction:column;gap:18px}
+.c-row{display:grid;grid-template-columns:46px 1fr;gap:14px;align-items:start}
+.c-row .ic{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;background:var(--volt-soft);color:var(--volt);font-size:1.2rem}
+.c-row small{display:block;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.c-row b,.c-row a{font-weight:700;font-size:1rem;text-decoration:none;word-break:break-word}
+.c-row a:hover{color:var(--volt)}
+.c-row p{margin:2px 0 0;color:var(--muted);font-size:.88rem}
+.contact-btns{display:flex;flex-wrap:wrap;gap:12px 16px;margin-top:auto;padding-top:8px}
+.map{position:relative;border-radius:var(--radius-lg);overflow:hidden;border:1px solid var(--line);min-height:420px;background:var(--surface)}
+.map iframe{position:absolute;inset:0;width:100%;height:100%;border:0;filter:grayscale(1) invert(.92) contrast(.88) brightness(.95)}
+.map-pin{position:absolute;left:16px;top:16px;z-index:1;background:var(--volt);color:var(--volt-ink);font-weight:800;font-size:.8rem;padding:8px 12px;border-radius:10px;display:flex;align-items:center;gap:6px;pointer-events:none;box-shadow:0 10px 30px -10px rgba(0,0,0,.6)}
+
+/* ---------- Footer ---------- */
+.footer{position:relative;overflow:hidden;background:#060607;border-top:1px solid var(--line);padding:70px 0 0}
+.foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1.2fr;gap:36px}
+@media (max-width:900px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.foot-grid{grid-template-columns:1fr}}
+.footer h4{font-family:var(--font-mono);font-size:.76rem;letter-spacing:.16em;text-transform:uppercase;color:var(--volt);margin-bottom:14px}
+.footer ul{list-style:none;padding:0;margin:0;display:grid;gap:8px}
+.footer a{text-decoration:none;color:#cfcfd4}
+.footer a:hover{color:var(--volt)}
+.footer p{color:var(--muted);font-size:.92rem;margin:14px 0 0}
+.foot-hours li{display:flex;justify-content:space-between;gap:12px;font-size:.9rem;color:#cfcfd4}
+.foot-hours li span:last-child{font-family:var(--font-mono);white-space:nowrap}
+.socials{display:flex;gap:10px;margin-top:18px}
+.socials a{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);display:grid;place-items:center;font-size:1.1rem;transition:background .2s,color .2s,border-color .2s}
+.socials a:hover{background:var(--volt);color:var(--volt-ink);border-color:var(--volt)}
+.foot-big{font-family:var(--font-display);font-size:clamp(4.5rem,21vw,18rem);line-height:.8;text-transform:uppercase;color:transparent;-webkit-text-stroke:1.5px #26262b;text-align:center;margin:50px 0 -0.08em;white-space:nowrap;user-select:none;letter-spacing:.02em}
+.foot-bottom{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:22px 0 30px;border-top:1px solid var(--line);font-size:.82rem;color:var(--muted);position:relative;background:#060607}
+
+/* ---------- Chat IA ---------- */
+.chat-fab{position:fixed;right:20px;bottom:20px;z-index:80;width:64px;height:64px;border-radius:50%;border:0;background:var(--volt);color:var(--volt-ink);display:grid;place-items:center;font-size:1.7rem;box-shadow:0 14px 40px -10px rgba(212,255,0,.7),0 0 0 0 rgba(212,255,0,.5);animation:fabPulse 2.6s infinite;transition:transform .25s var(--ease)}
+.chat-fab:hover{transform:scale(1.07)}
+.chat-fab[aria-expanded="true"]{animation:none}
+@keyframes fabPulse{0%{box-shadow:0 14px 40px -10px rgba(212,255,0,.7),0 0 0 0 rgba(212,255,0,.45)}70%{box-shadow:0 14px 40px -10px rgba(212,255,0,.7),0 0 0 16px rgba(212,255,0,0)}100%{box-shadow:0 14px 40px -10px rgba(212,255,0,.7),0 0 0 0 rgba(212,255,0,0)}}
+.fab-badge{position:absolute;top:-2px;right:-2px;min-width:22px;height:22px;border-radius:999px;background:var(--fire);color:#0a0a0b;font-size:.72rem;font-weight:900;display:grid;place-items:center;border:2px solid var(--bg)}
+.chat-teaser{position:fixed;right:20px;bottom:96px;z-index:79;max-width:min(270px,calc(100% - 40px));background:var(--text);color:var(--bg);padding:14px 38px 14px 16px;border-radius:16px 16px 4px 16px;font-size:.9rem;font-weight:600;box-shadow:0 20px 40px -10px rgba(0,0,0,.6);animation:fadeUp .4s var(--ease);cursor:pointer}
+.chat-teaser p{margin:0;line-height:1.4}
+.teaser-close{position:absolute;top:6px;right:6px;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:var(--bg);font-size:1rem;display:grid;place-items:center}
+.chat-panel{position:fixed;right:20px;bottom:96px;z-index:81;width:min(390px,calc(100% - 40px));height:min(620px,calc(100vh - 130px));height:min(620px,calc(100dvh - 130px));display:flex;flex-direction:column;background:var(--bg-2);border:1px solid var(--line);border-radius:22px;overflow:hidden;box-shadow:0 30px 80px -20px rgba(0,0,0,.85);opacity:0;transform:translateY(16px) scale(.97);transform-origin:bottom right;transition:opacity .25s,transform .3s var(--ease)}
+.chat-panel.is-open{opacity:1;transform:none}
+@media (max-width:520px){.chat-panel{right:10px;left:10px;width:auto;bottom:92px;height:calc(100dvh - 110px)}.chat-fab{right:14px;bottom:14px;width:60px;height:60px}.chat-teaser{right:14px;bottom:86px}}
+.chat-head{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.chat-ava{width:42px;height:42px;border-radius:12px;background:var(--volt);color:var(--volt-ink);display:grid;place-items:center;font-size:1.3rem;transform:skewX(-8deg);flex:0 0 auto}
+.chat-ava .i{transform:skewX(8deg)}
+.chat-head b{display:block;font-size:1rem}
+.chat-head small{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:.76rem}
+.chat-head small .dot{width:7px;height:7px}
+.chat-x{margin-left:auto;width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--bg);display:grid;place-items:center;color:var(--text)}
+.chat-x:hover{border-color:var(--volt);color:var(--volt)}
+.chat-log{flex:1;overflow-y:auto;padding:16px 14px;display:flex;flex-direction:column;gap:10px;overscroll-behavior:contain}
+.msg{max-width:86%;padding:11px 14px;border-radius:16px;font-size:.9rem;line-height:1.5;animation:fadeUp .3s var(--ease);word-wrap:break-word}
+.msg.bot{align-self:flex-start;background:var(--surface-2);border:1px solid var(--line);border-bottom-left-radius:4px}
+.msg.user{align-self:flex-end;background:var(--volt);color:var(--volt-ink);font-weight:600;border-bottom-right-radius:4px}
+.msg b{color:inherit}
+.msg.bot b{color:var(--volt)}
+.msg-acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chat-act{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--volt);background:transparent;color:var(--volt);border-radius:999px;padding:6px 12px;font-size:.8rem;font-weight:700;text-decoration:none}
+.chat-act:hover,.chat-act.primary{background:var(--volt);color:var(--volt-ink)}
+.typing{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:.82rem}
+.typing i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--volt);animation:bounce 1.1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0);opacity:.5}30%{transform:translateY(-5px);opacity:1}}
+.chat-chips{display:flex;gap:6px;overflow-x:auto;padding:8px 12px;border-top:1px solid var(--line);scrollbar-width:none}
+.chat-chips::-webkit-scrollbar{display:none}
+.chat-chips button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 12px;font-size:.8rem;font-weight:600;white-space:nowrap}
+.chat-chips button:hover{border-color:var(--volt);color:var(--volt)}
+.chat-form{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--line);background:var(--surface)}
+.chat-form input{flex:1;min-width:0;background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:11px 16px;font-size:.95rem;color:var(--text)}
+.chat-form input:focus{outline:none;border-color:var(--volt)}
+.chat-form button{width:44px;height:44px;flex:0 0 auto;border-radius:50%;border:0;background:var(--volt);color:var(--volt-ink);display:grid;place-items:center;font-size:1.1rem}
+.chat-foot{margin:0;padding:6px 12px 10px;font-size:.72rem;color:var(--muted);text-align:center;background:var(--surface)}
+.chat-foot a{color:var(--volt)}
+
+/* ---------- Lightbox ---------- */
+.lightbox{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.94);display:flex;align-items:center;justify-content:center;padding:60px 16px}
+.lightbox figure{margin:0;max-width:1100px;width:100%;text-align:center}
+.lightbox img{max-height:calc(100vh - 170px);width:auto;max-width:100%;margin:0 auto;border-radius:12px}
+.lightbox figcaption{margin-top:14px;color:#d6d6db}
+.lightbox figcaption b{font-family:var(--font-display);font-weight:400;font-size:1.5rem;text-transform:uppercase;color:var(--text);display:block}
+.lb-btn{position:absolute;width:48px;height:48px;border-radius:50%;border:1px solid #3a3a42;background:rgba(20,20,22,.8);color:var(--text);display:grid;place-items:center;font-size:1.3rem}
+.lb-btn:hover{border-color:var(--volt);color:var(--volt)}
+.lb-close{top:14px;right:14px}
+.lb-prev{left:14px;top:50%;transform:translateY(-50%)}
+.lb-next{right:14px;top:50%;transform:translateY(-50%)}
+@media (max-width:640px){.lb-prev,.lb-next{top:auto;bottom:14px;transform:none}}
+
+/* ---------- Toast global ---------- */
+.toast{position:fixed;left:50%;bottom:24px;z-index:120;transform:translate(-50%,30px);opacity:0;background:var(--text);color:var(--bg);padding:12px 18px;border-radius:12px;font-weight:700;font-size:.9rem;transition:.3s var(--ease);pointer-events:none;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);opacity:1}
+
+/* ---------- Animaciones al scroll ---------- */
+.js [data-reveal]{opacity:0;transform:translateY(30px);transition:opacity .8s var(--ease),transform .8s var(--ease);transition-delay:var(--d,0ms)}
+.js [data-reveal].in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;scroll-behavior:auto !important}
+  .js [data-reveal]{opacity:1;transform:none}
+  .tape-track{animation:none !important}
+}
+</style>
+</head>
+<body>
+<script>document.documentElement.classList.add('js');</script>
+
+<!-- Íconos SVG reutilizables -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 10-12h-7l1-8z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></symbol>
+    <symbol id="i-dumbbell" viewBox="0 0 24 24"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24"><path d="M12 2c1 3.5 5 6 5 11a5 5 0 0 1-10 0c0-2.2 1-3.8 2.2-5 .1 1.8 1 3 2.3 3.2C11 8 10.5 5 12 2z"/></symbol>
+    <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17 9 9h6l3.5 8M9 9 12 17h1M15 9l-1-3h-2"/></symbol>
+    <symbol id="i-yoga" viewBox="0 0 24 24"><circle cx="12" cy="4.5" r="2"/><path d="M12 7v6M6 10l6 3 6-3M4 19c2.5-2 5-3 8-3s5.5 1 8 3M9 16l-2 3M15 16l2 3"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></symbol>
+    <symbol id="i-glove" viewBox="0 0 24 24"><path d="M8 20h8v-3.5c2-1 3-3 3-5.5V7a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v2.5"/><path d="M7 9.5a2.5 2.5 0 0 0 0 5h3"/><path d="M8 17h8"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M21 12a8.5 8.5 0 0 1-12.4 7.6L3 21l1.5-5.2A8.5 8.5 0 1 1 21 12z"/><path d="M8 11h.01M12 11h.01M16 11h.01"/></symbol>
+    <symbol id="i-wa" viewBox="0 0 24 24"><path d="M3.5 20.5l1.3-4.3A8.6 8.6 0 1 1 8 19.4l-4.5 1.1z"/><path d="M9 8.3c.3-.6.6-.6.9-.6h.6c.2 0 .4 0 .6.5l.8 1.8c.1.2.1.4-.1.6l-.5.6c-.1.2-.2.3 0 .6.4.7 1.6 2 3 2.5.3.1.4.1.6-.1l.7-.8c.2-.2.3-.2.6-.1l1.8.8c.3.1.4.2.4.4 0 .6-.3 1.3-1 1.6-.7.4-1.6.5-3.3-.2-2-.8-3.6-2.9-4.1-3.8-.6-1-.8-2-.1-3.8z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-insta" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></symbol>
+    <symbol id="i-fb" viewBox="0 0 24 24"><path d="M17 2h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></symbol>
+    <symbol id="i-tiktok" viewBox="0 0 24 24"><path d="M15.5 3c.4 2.4 2 4.1 4.5 4.4v3.3a8 8 0 0 1-4.5-1.4V15a6 6 0 1 1-6-6v3.4a2.6 2.6 0 1 0 2.6 2.6V3z"/></symbol>
+    <symbol id="i-parking" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9.5 17V7h3.5a3 3 0 0 1 0 6H9.5"/></symbol>
+    <symbol id="i-shower" viewBox="0 0 24 24"><path d="M4 21V7a4 4 0 0 1 8 0"/><path d="M9 10h6a3 3 0 0 0-6 0zM10 14v1M14 14v1M12 17v1M10 20v1M14 20v1"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0M12 20h.01"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.7 6.3 8.4a8 8 0 1 0 11.4 0z"/></symbol>
+    <symbol id="i-snow" viewBox="0 0 24 24"><path d="M12 2v20M4.9 4.9l14.2 14.2M2 12h20M4.9 19.1 19.1 4.9"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M5 8l7 1 7-1M12 9v5l-3 7M12 14l3 7"/></symbol>
+    <symbol id="i-timer" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2M9 2h6"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-id" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2.2"/><path d="M5 16.5a3.2 3.2 0 0 1 6 0M14 10h5M14 14h3"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.9 1.9 0 0 0 3.4 0"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v18h18M7 15l4-4 3 3 6-6"/></symbol>
+  </defs>
+</svg>
+
+<a href="#contenido" class="skip-link">Saltar al contenido</a>
+<div class="progress" aria-hidden="true"><i id="progressBar"></i></div>
+
+<!-- ================= NAVBAR ================= -->
+<header class="nav" id="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="#inicio" aria-label="Voltio Gym, ir al inicio">
+      <span class="logo-mark"><svg class="i i-fill" aria-hidden="true"><use href="#i-bolt"/></svg></span>
+      <span class="logo-text">Voltio<small>GYM · TALAGANTE</small></span>
+    </a>
+    <nav aria-label="Navegación principal">
+      <ul class="nav-links">
+        <li><a href="#planes">Planes</a></li>
+        <li><a href="#clases">Clases</a></li>
+        <li><a href="#horarios">Horarios</a></li>
+        <li><a href="#app">App</a></li>
+        <li><a href="#coaches">Coaches</a></li>
+        <li><a href="#faq">Preguntas</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="nav-actions">
+      <button class="btn btn-primary btn-sm nav-cta" data-open-trial>Clase gratis <svg class="i" aria-hidden="true"><use href="#i-bolt"/></svg></button>
+      <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobileMenu"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <nav aria-label="Menú móvil">
+    <a class="mm-link" href="#planes">Planes <span>01</span></a>
+    <a class="mm-link" href="#clases">Clases <span>02</span></a>
+    <a class="mm-link" href="#horarios">Horarios <span>03</span></a>
+    <a class="mm-link" href="#app">App socios <span>04</span></a>
+    <a class="mm-link" href="#coaches">Coaches <span>05</span></a>
+    <a class="mm-link" href="#faq">Preguntas <span>06</span></a>
+    <a class="mm-link" href="#contacto">Contacto <span>07</span></a>
+  </nav>
+  <div class="mm-foot">
+    <button class="btn btn-primary btn-block" data-open-trial>Clase de prueba gratis <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+    <a class="btn btn-ghost btn-block" data-wa="Hola Voltio Gym, quiero más información." href="#" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg> WhatsApp</a>
+    <p data-cfg="direccion"></p>
+  </div>
+</div>
+
+<main id="contenido">
+
+<!-- ================= 1. PORTADA ================= -->
+<section class="hero" id="inicio" aria-labelledby="heroTitle">
+  <div class="hero-slides" id="heroSlides" aria-hidden="true"></div>
+  <div class="hero-stripes" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="container hero-content">
+    <p class="live-pill"><span class="dot" id="heroDot"></span><span id="heroStatus">Talagante · abierto de 6:00 a 23:00</span></p>
+    <h1 class="hero-title" id="heroTitle">
+      <span class="l"><span>Tu mejor</span></span>
+      <span class="l"><span class="stroke">versión</span></span>
+      <span class="l"><span class="hl">empieza hoy</span></span>
+    </h1>
+    <p class="hero-sub">Pesas, clases que te prenden y coaches que te empujan de verdad. <b>1.200 m² en pleno centro de Talagante</b>, para que entrenes a la hora que te acomode.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary" data-open-trial>Clase de prueba gratis <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <a class="btn btn-ghost" href="#planes">Ver planes</a>
+    </div>
+    <ul class="hero-proof">
+      <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Matrícula $0 este mes</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Sin permanencia mínima</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Estacionamiento gratis</li>
+    </ul>
+    <div class="hero-ind">
+      <div class="hero-ind-btns" id="heroInd" role="group" aria-label="Fotos de la portada"></div>
+      <span class="hero-ind-label" id="heroIndLabel" aria-live="polite"></span>
+    </div>
+  </div>
+</section>
+
+<!-- Cifras animadas -->
+<section class="stats" aria-label="Voltio en números">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat"><div class="stat-num"><span class="p">+</span><span data-count="socios">0</span></div><div class="stat-label">socios entrenando</div></div>
+      <div class="stat"><div class="stat-num"><span data-count="m2">0</span><span class="u">m²</span></div><div class="stat-label">de sala y boxes</div></div>
+      <div class="stat"><div class="stat-num"><span data-count="coaches">0</span></div><div class="stat-label">coaches certificados</div></div>
+      <div class="stat"><div class="stat-num"><span data-count="horas">0</span><span class="u">h</span></div><div class="stat-label">abierto cada día hábil</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Cintas / marquee -->
+<div class="tapes" aria-hidden="true">
+  <div class="tape tape-a"><div class="tape-track" id="tapeA"></div></div>
+  <div class="tape tape-b"><div class="tape-track" id="tapeB"></div></div>
+</div>
+
+<!-- ================= 2. PLANES ================= -->
+<section class="section" id="planes" aria-labelledby="planesTitle">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Planes y precios</p>
+      <h2 class="h2" id="planesTitle">Elige tu plan. <span class="hl">Sin letra chica.</span></h2>
+      <p class="lead">Todos incluyen sala de máquinas, evaluación física y acceso a la app de socios. Paga con Webpay, transferencia o efectivo. Sin contratos de permanencia.</p>
+    </div>
+
+    <div class="promo" data-reveal>
+      <div class="promo-big"><span class="hl">Matrícula $0</span><s id="matNormal">$15.000</s></div>
+      <p class="promo-txt">Inscríbete antes del <b id="promoEnd">fin de mes</b> y no pagas matrícula. Válido para todos los planes.</p>
+      <div class="countdown" id="countdown" aria-label="Tiempo restante de la promoción">
+        <div class="cd"><b data-cd="d">0</b><span>días</span></div>
+        <div class="cd"><b data-cd="h">00</b><span>horas</span></div>
+        <div class="cd"><b data-cd="m">00</b><span>min</span></div>
+        <div class="cd"><b data-cd="s">00</b><span>seg</span></div>
+      </div>
+    </div>
+
+    <div class="plans-grid" id="plansGrid"></div>
+
+    <div class="duo" data-reveal>
+      <div>
+        <h3 id="duoName">Plan Dúo</h3>
+        <p id="duoDetail"></p>
+      </div>
+      <div class="duo-right">
+        <div class="duo-price" id="duoPrice"></div>
+        <a class="btn btn-dark" id="duoBtn" href="#" target="_blank" rel="noopener">Lo queremos <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+      </div>
+    </div>
+    <p class="plans-note">Precios en pesos chilenos, IVA incluido. ¿Dudas? <a href="#" data-wa="Hola Voltio Gym, tengo una duda sobre los planes." target="_blank" rel="noopener" style="color:var(--volt)">Escríbenos por WhatsApp</a>.</p>
+  </div>
+</section>
+
+<!-- ================= 3. DISCIPLINAS ================= -->
+<section class="section" id="clases" aria-labelledby="clasesTitle" style="padding-top:0">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Disciplinas</p>
+      <h2 class="h2" id="clasesTitle">6 formas de <span class="stroke">sudar</span> <span class="hl">la camiseta</span></h2>
+      <p class="lead">Desde tu primera sentadilla hasta tu primer round. Adaptamos cada clase a tu nivel: nadie se queda atrás.</p>
+    </div>
+    <div class="disc-grid" id="discGrid"></div>
+  </div>
+</section>
+
+<!-- ================= 3b. HORARIO SEMANAL ================= -->
+<section class="section slant" id="horarios" aria-labelledby="horTitle">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Horario semanal</p>
+      <h2 class="h2" id="horTitle">Encuentra <span class="hl">tu clase</span></h2>
+      <p class="lead">Elige el día, filtra por disciplina y mira qué está pasando ahora mismo en la sala (hora de Talagante).</p>
+    </div>
+    <div class="sched">
+      <div>
+        <div class="day-tabs" id="dayTabs" role="tablist" aria-label="Días de la semana"></div>
+        <div class="filters" id="filters" role="group" aria-label="Filtrar por disciplina"></div>
+        <div class="sched-note" id="schedNote" hidden></div>
+        <div class="class-list" id="classList" role="tabpanel" aria-live="polite"></div>
+      </div>
+      <aside class="now-card" aria-label="Estado en vivo del gimnasio">
+        <p class="eyebrow">Ahora en Voltio</p>
+        <div class="now-clock" id="nowClock">--:--</div>
+        <p class="now-date" id="nowDate">&nbsp;</p>
+        <div class="now-status"><span class="dot" id="nowDot"></span><span id="nowStatus">Cargando…</span></div>
+        <div class="now-next" id="nowNext"></div>
+        <h3>Sala de máquinas</h3>
+        <ul class="sala-hours" id="salaHours"></ul>
+        <button class="btn btn-primary btn-block" data-open-trial>Clase de prueba gratis</button>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. APP DE SOCIOS ================= -->
+<section class="section app-sec" id="app" aria-labelledby="appTitle">
+  <div class="container app-grid">
+    <div data-reveal>
+      <p class="eyebrow">App de socios · demo interactiva</p>
+      <h2 class="h2" id="appTitle">Tus socios reservan, entrenan y pagan <span class="hl">desde el celular</span></h2>
+      <p class="lead">Una app con la marca del gimnasio: cada socio reserva su cupo, sigue la rutina que le arma su coach y paga la mensualidad con Webpay sin pasar por recepción. Tú te olvidas de la planilla y de responder WhatsApp a las 11 de la noche.</p>
+      <ul class="app-points">
+        <li><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg></span><div><b>Reservas con cupos en tiempo real</b><span>Se acabaron las clases sobrevendidas y las bicis dobles en spinning.</span></div></li>
+        <li><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-dumbbell"/></svg></span><div><b>Rutinas asignadas por el coach</b><span>Series, repeticiones, cargas y check por ejercicio. El socio ve su progreso.</span></div></li>
+        <li><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-card"/></svg></span><div><b>Pago de mensualidad con Webpay</b><span>Comprobante automático y recordatorio antes del vencimiento: menos morosidad.</span></div></li>
+        <li><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-bell"/></svg></span><div><b>Avisos al instante</b><span>Cambios de horario, promociones y clases especiales directo al celular.</span></div></li>
+      </ul>
+      <p class="try-hint"><svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg> Pruébala: toca, reserva y paga (demo, no se cobra nada)</p>
+    </div>
+
+    <div class="phone-wrap" data-reveal style="--d:120ms">
+      <div class="phone" role="region" aria-label="Maqueta interactiva de la app de socios">
+        <div class="phone-screen">
+          <div class="phone-island" aria-hidden="true"></div>
+          <div class="phone-status" aria-hidden="true">
+            <span id="phoneTime">9:41</span>
+            <span class="ps-icons"><span class="ps-bars"><i></i><i></i><i></i><i></i></span><svg class="i" style="font-size:13px"><use href="#i-wifi"/></svg><span class="ps-bat"><i></i></span></span>
+          </div>
+          <div class="app-top">
+            <div><small id="appGreet">Hola, Javiera</small><b id="appTitleTxt">Reservar clase</b></div>
+            <div class="app-ava" id="appAva" aria-hidden="true">JP</div>
+          </div>
+          <div class="app-body" id="appBody">
+            <!-- (a) Reservar -->
+            <section class="app-screen is-active" id="scr-reservar" role="tabpanel" aria-labelledby="tab-reservar">
+              <div class="a-h"><h4>Próximas clases</h4><span class="a-pill" id="resCount">0 reservas</span></div>
+              <div id="appClasses"></div>
+            </section>
+            <!-- (b) Mi rutina -->
+            <section class="app-screen" id="scr-rutina" role="tabpanel" aria-labelledby="tab-rutina">
+              <div class="r-hero">
+                <small id="rDay">Hoy</small>
+                <h5 id="rTitle">Día de pierna</h5>
+                <p id="rMeta">Asignada por Coach Matías</p>
+                <div class="r-prog">
+                  <div class="r-prog-top"><span id="rCount">0 de 6 ejercicios</span><b id="rPct">0%</b></div>
+                  <div class="r-bar" role="progressbar" aria-label="Progreso de la rutina" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="rBarWrap"><i id="rBar"></i></div>
+                </div>
+              </div>
+              <button class="r-timer" id="rTimer" type="button"><svg class="i" aria-hidden="true"><use href="#i-timer"/></svg><span>Iniciar descanso 1:30</span></button>
+              <div id="rList"></div>
+              <div id="rDone" hidden></div>
+            </section>
+            <!-- (c) Pagar mensualidad -->
+            <section class="app-screen" id="scr-pagar" role="tabpanel" aria-labelledby="tab-pagar">
+              <div class="p-plan">
+                <small>Tu plan</small>
+                <h5 id="pPlan">Plan Mensual</h5>
+                <span class="p-status" id="pStatus">● Vence en 3 días</span>
+              </div>
+              <div class="a-card p-rows">
+                <div class="p-row"><span>Socio</span><b id="pSocio">—</b></div>
+                <div class="p-row"><span>Vencimiento</span><b id="pDue">—</b></div>
+                <div class="p-row"><span>Monto a pagar</span><b class="p-amount" id="pAmount">$0</b></div>
+              </div>
+              <button class="webpay" id="payBtn" type="button"><svg class="i" aria-hidden="true"><use href="#i-card"/></svg> <span>Pagar con Webpay</span></button>
+              <p class="demo-note">Demo: no se cobra nada ni se piden datos reales.</p>
+              <div class="a-h"><h4>Pagos anteriores</h4><button class="linkish" id="payReset" type="button" hidden>Reiniciar demo</button></div>
+              <ul class="a-card p-hist" id="pHist"></ul>
+            </section>
+          </div>
+          <div class="app-toast" id="appToast" role="status" aria-live="polite"></div>
+          <div class="pay-overlay" id="payOverlay" hidden>
+            <div id="payLoading">
+              <div class="spinner" style="margin-inline:auto" aria-hidden="true"></div>
+              <h5 id="payMsg">Conectando con Webpay…</h5>
+              <p id="paySub">No cierres la app</p>
+              <span class="demo-flag">Demo, no se cobra nada</span>
+            </div>
+            <div id="payOk" hidden style="width:100%;display:flex;flex-direction:column;align-items:center">
+              <div class="pay-ok-ic"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></div>
+              <h5>Pago aprobado ✓</h5>
+              <p>Tu mensualidad quedó al día</p>
+              <span class="demo-flag">Demo, no se cobró nada</span>
+              <div class="receipt" id="receipt"></div>
+              <button class="webpay" id="payDone" type="button" style="background:var(--volt);color:var(--volt-ink)">Listo</button>
+            </div>
+          </div>
+          <nav class="app-nav" role="tablist" aria-label="Secciones de la app">
+            <button role="tab" id="tab-reservar" aria-controls="scr-reservar" aria-selected="true" data-screen="reservar" data-title="Reservar clase"><svg class="i" aria-hidden="true"><use href="#i-calendar"/></svg>Reservar</button>
+            <button role="tab" id="tab-rutina" aria-controls="scr-rutina" aria-selected="false" data-screen="rutina" data-title="Mi rutina" tabindex="-1"><svg class="i" aria-hidden="true"><use href="#i-dumbbell"/></svg>Mi rutina</button>
+            <button role="tab" id="tab-pagar" aria-controls="scr-pagar" aria-selected="false" data-screen="pagar" data-title="Mi plan" tabindex="-1"><svg class="i" aria-hidden="true"><use href="#i-card"/></svg>Pagar</button>
+          </nav>
+          <div class="home-bar" aria-hidden="true"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INSTALACIONES ================= -->
+<section class="section" id="instalaciones" aria-labelledby="instTitle" style="padding-top:0">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Instalaciones</p>
+      <h2 class="h2" id="instTitle">1.200 m² hechos <span class="hl">para entrenar</span></h2>
+      <p class="lead">Equipamiento nuevo, zonas separadas para que nunca esperes una máquina, y todo lo que necesitas antes y después de entrenar.</p>
+    </div>
+    <div class="gallery" id="gallery" data-reveal>
+      <button class="g-item" data-full="https://images.unsplash.com/photo-1623874514711-0f321325f318?w=1600&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1623874514711-0f321325f318?w=1000&q=80&auto=format&fit=crop" alt="Sala de máquinas amplia con equipos de fuerza" loading="lazy"><span class="g-cap"><b>Sala de máquinas</b><span>600 m² · más de 60 equipos</span></span></button>
+      <button class="g-item" data-full="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1600&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=700&q=80&auto=format&fit=crop" alt="Rack de mancuernas ordenadas" loading="lazy"><span class="g-cap"><b>Peso libre</b><span>Mancuernas de 2 a 50 kg</span></span></button>
+      <button class="g-item" data-full="https://images.unsplash.com/photo-1637666062717-1c6bcfa4a4df?w=1600&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1637666062717-1c6bcfa4a4df?w=700&q=80&auto=format&fit=crop" alt="Zona de fuerza con bancas y barras" loading="lazy"><span class="g-cap"><b>Zona de fuerza</b><span>Racks, bancas y discos olímpicos</span></span></button>
+      <button class="g-item" data-full="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=1600&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=1000&q=80&auto=format&fit=crop" alt="Fila de trotadoras en la zona de cardio" loading="lazy"><span class="g-cap"><b>Zona cardio</b><span>Trotadoras, elípticas y remos</span></span></button>
+      <button class="g-item" data-full="https://images.unsplash.com/photo-1616279969856-759f316a5ac1?w=1600&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1616279969856-759f316a5ac1?w=1000&q=80&auto=format&fit=crop" alt="Coach guiando un ejercicio con TRX" loading="lazy"><span class="g-cap"><b>Box funcional</b><span>TRX, kettlebells y cuerdas</span></span></button>
+      <button class="g-item" data-full="https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=1600&q=80&auto=format&fit=crop"><img src="https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=1000&q=80&auto=format&fit=crop" alt="Máquinas guiadas junto a ventanales" loading="lazy"><span class="g-cap"><b>Máquinas guiadas</b><span>Ideales si vas partiendo</span></span></button>
+    </div>
+    <ul class="amen" data-reveal>
+      <li><svg class="i" aria-hidden="true"><use href="#i-parking"/></svg> Estacionamiento gratis (20 autos)</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-shower"/></svg> Camarines con agua caliente</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-lock"/></svg> Lockers con candado</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-drop"/></svg> Agua purificada gratis</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-snow"/></svg> Climatización todo el año</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-wifi"/></svg> Wifi para socios</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-speaker"/></svg> Música y luces en salas</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-access"/></svg> Acceso universal</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= COACHES ================= -->
+<section class="section slant" id="coaches" aria-labelledby="coachTitle">
+  <div class="container">
+    <div class="section-head center" data-reveal>
+      <p class="eyebrow">El equipo</p>
+      <h2 class="h2" id="coachTitle">Coaches que <span class="hl">te empujan</span></h2>
+      <p class="lead">Certificados, con años en sala y cero ego. Están para corregirte la técnica, motivarte y celebrar cada kilo contigo.</p>
+    </div>
+    <div class="coach-grid">
+      <article class="coach" data-reveal>
+        <div class="coach-photo"><img src="https://images.unsplash.com/photo-1611672585731-fa10603fb9e0?w=700&q=80&auto=format&fit=crop" alt="Coach Matías Rojas en la sala de pesas" loading="lazy"><span class="coach-spec">Fuerza</span></div>
+        <div class="coach-body">
+          <h3>Matías Rojas</h3>
+          <p class="role">Musculación e hipertrofia</p>
+          <ul>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Preparador físico · 9 años de experiencia</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Especialista en técnica de levantamiento</li>
+          </ul>
+          <blockquote>“La técnica primero. El peso llega solo.”</blockquote>
+          <a class="coach-ig" href="#" aria-label="Instagram de Matías (demo)"><svg class="i" aria-hidden="true"><use href="#i-insta"/></svg> @matias.fuerza</a>
+        </div>
+      </article>
+      <article class="coach" data-reveal style="--d:100ms">
+        <div class="coach-photo"><img src="https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=700&q=80&auto=format&fit=crop" alt="Coach Valentina Soto con cuerda de entrenamiento" loading="lazy"><span class="coach-spec">Funcional</span></div>
+        <div class="coach-body">
+          <h3>Valentina Soto</h3>
+          <p class="role">Funcional, cross y HIIT</p>
+          <ul>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Profesora de Educación Física</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Certificada en entrenamiento funcional</li>
+          </ul>
+          <blockquote>“Llegas cansada, te vas con energía. Esa es la idea.”</blockquote>
+          <a class="coach-ig" href="#" aria-label="Instagram de Valentina (demo)"><svg class="i" aria-hidden="true"><use href="#i-insta"/></svg> @vale.funcional</a>
+        </div>
+      </article>
+      <article class="coach" data-reveal style="--d:200ms">
+        <div class="coach-photo"><img src="https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=700&q=80&auto=format&fit=crop" alt="Coach Diego Fuentes sentado en el gimnasio" loading="lazy"><span class="coach-spec">Boxeo</span></div>
+        <div class="coach-body">
+          <h3>Diego Fuentes</h3>
+          <p class="role">Boxeo y acondicionamiento</p>
+          <ul>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Ex seleccionado regional de boxeo</li>
+            <li><svg class="i" aria-hidden="true"><use href="#i-check"/></svg> Entrenador certificado de boxeo recreativo</li>
+          </ul>
+          <blockquote>“Guantes arriba, cabeza fría y corazón a mil.”</blockquote>
+          <a class="coach-ig" href="#" aria-label="Instagram de Diego (demo)"><svg class="i" aria-hidden="true"><use href="#i-insta"/></svg> @diego.box</a>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRANSFORMACIONES ================= -->
+<section class="section" id="testimonios" aria-labelledby="testiTitle">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Transformaciones</p>
+      <h2 class="h2" id="testiTitle">Gente de acá, <span class="hl">resultados reales</span></h2>
+      <p class="lead">Vecinos de Talagante, Peñaflor y El Monte que un día decidieron partir. Esto es lo que lograron.</p>
+    </div>
+    <div class="testi-grid">
+      <article class="testi" data-reveal>
+        <div class="testi-metric">−14 kg<small>en 5 meses</small></div>
+        <p>“Llegué sin saber usar ni una máquina. Con el spinning de la mañana y las clases de la Vale bajé 14 kilos y, lo mejor, ahora me encanta venir.”</p>
+        <div class="testi-who"><img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=120&q=80&auto=format&fit=crop" alt="" loading="lazy"><div><b>Carolina Muñoz, 34</b><span>Talagante · socia desde 2025</span></div></div>
+        <div class="stars" aria-label="5 de 5 estrellas">★★★★★</div>
+      </article>
+      <article class="testi" data-reveal style="--d:100ms">
+        <div class="testi-metric">+40 kg<small>en sentadilla · 6 meses</small></div>
+        <p>“El Matías me corrigió la técnica desde el día uno. En seis meses subí 40 kilos en sentadilla y sin una sola lesión. El ambiente es bacán.”</p>
+        <div class="testi-who"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&q=80&auto=format&fit=crop" alt="" loading="lazy"><div><b>Felipe Araya, 27</b><span>Peñaflor · socio desde 2024</span></div></div>
+        <div class="stars" aria-label="5 de 5 estrellas">★★★★★</div>
+      </article>
+      <article class="testi" data-reveal style="--d:200ms">
+        <div class="testi-metric">−9 cm<small>de cintura en 12 semanas</small></div>
+        <p>“Entre la pega y los niños pensé que no tenía tiempo. Voy al funcional de las 7 y salgo lista para el día. Mi espalda nunca había estado mejor.”</p>
+        <div class="testi-who"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=120&q=80&auto=format&fit=crop" alt="" loading="lazy"><div><b>Javiera Pizarro, 41</b><span>El Monte · socia desde 2025</span></div></div>
+        <div class="stars" aria-label="5 de 5 estrellas">★★★★★</div>
+      </article>
+    </div>
+    <div class="rating-row" data-reveal>
+      <div><b>4,9/5</b>valoración de socios</div>
+      <div><b>92%</b>renueva su plan</div>
+      <div><b>+3.000</b>clases al año</div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CALCULADORA IMC ================= -->
+<section class="section" id="imc" aria-labelledby="imcTitle" style="padding-top:0">
+  <div class="container imc-grid">
+    <div data-reveal>
+      <p class="eyebrow">Calculadora rápida</p>
+      <h2 class="h2" id="imcTitle">¿Dónde estás <span class="hl">hoy?</span></h2>
+      <p class="lead">Calcula tu índice de masa corporal en 5 segundos y te sugerimos por dónde partir. En tu clase de prueba te hacemos una evaluación física completa, gratis.</p>
+    </div>
+    <div class="imc-card" data-reveal style="--d:100ms">
+      <form class="imc-form" id="imcForm" novalidate>
+        <div class="field"><label for="imcPeso">Peso (kg)</label><input class="input" id="imcPeso" type="number" inputmode="decimal" min="30" max="250" step="0.1" placeholder="Ej: 72"></div>
+        <div class="field"><label for="imcAlt">Estatura (cm)</label><input class="input" id="imcAlt" type="number" inputmode="numeric" min="120" max="230" placeholder="Ej: 168"></div>
+        <button class="btn btn-primary btn-block" type="submit" style="grid-column:1 / -1">Calcular mi IMC</button>
+      </form>
+      <div class="imc-out" id="imcOut" aria-live="polite">
+        <div class="imc-val"><b id="imcVal">--</b><span class="imc-cat" id="imcCat">Ingresa tus datos</span></div>
+        <div>
+          <div class="gauge" aria-hidden="true"><span class="gauge-marker" id="imcMarker" style="left:0"></span></div>
+          <div class="gauge-lbl" aria-hidden="true"><span>15</span><span>18,5</span><span>25</span><span>30</span><span>40</span></div>
+        </div>
+        <p class="imc-reco" id="imcReco">El IMC es solo una referencia: no distingue músculo de grasa. Por eso en Voltio medimos también tu composición corporal.</p>
+        <button class="btn btn-ghost btn-sm" data-open-trial id="imcCta" hidden>Agendar evaluación gratis</button>
+      </div>
+      <p class="fine">Referencial, no reemplaza una evaluación profesional.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="section slant" id="faq" aria-labelledby="faqTitle">
+  <div class="container faq-grid">
+    <div class="faq-side" data-reveal>
+      <p class="eyebrow">Preguntas frecuentes</p>
+      <h2 class="h2" id="faqTitle">Lo que todos <span class="hl">preguntan</span></h2>
+      <p class="lead" style="margin-bottom:24px">¿No encuentras tu respuesta? Pregúntale a Volti, nuestro asistente, o escríbenos directo.</p>
+      <a class="btn btn-ghost" href="#" data-wa="Hola Voltio Gym, tengo una consulta." target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg> Escribir por WhatsApp</a>
+    </div>
+    <div class="faq-list" id="faqList" data-reveal style="--d:100ms">
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">¿La clase de prueba es realmente gratis?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Sí, 100%. Puedes tomar una clase grupal o usar la sala de máquinas por un día, sin costo y sin compromiso. Solo trae tu carnet, ropa deportiva, toalla y ganas.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">Nunca he ido a un gimnasio, ¿me van a ayudar?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Para eso estamos. Tu primera visita incluye evaluación física y una rutina de inicio. Los coaches recorren la sala todo el día para corregir técnica y resolver dudas. Nadie nace sabiendo.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">¿Qué necesito para el plan estudiante?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Presentar tu credencial estudiantil vigente (TNE, credencial de tu universidad, instituto o CFT) o un certificado de alumno regular del semestre en curso. El plan se renueva mes a mes mientras sigas estudiando.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">¿Puedo congelar mi plan?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Sí. El plan Trimestral se puede congelar hasta 15 días y el Anual hasta 30 días, por viaje, lesión o licencia médica. Lo solicitas en recepción o desde la app.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">¿Qué medios de pago aceptan?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Webpay (débito y crédito), transferencia bancaria y efectivo en recepción. El plan Anual se puede pagar hasta en 3 cuotas precio contado con tarjeta de crédito.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">¿Hay estacionamiento?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Sí, tenemos 20 estacionamientos gratuitos para socios y un bicicletero techado con cámaras.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">¿Desde qué edad se puede entrenar?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>Desde los 14 años con autorización de un adulto responsable. Y los adultos mayores son más que bienvenidos: el yoga y la musculación guiada son ideales para ganar fuerza y movilidad.</p></div></div></div>
+      <div class="faq-item"><button class="faq-q" aria-expanded="false">¿Hay permanencia mínima o multa por salir?<span class="faq-ic"><svg class="i" aria-hidden="true"><use href="#i-plus"/></svg></span></button><div class="faq-a"><div><p>No. Pagas por el periodo que eliges y listo. Si no renuevas, no pasa nada. Preferimos que te quedes porque te gusta, no por un contrato.</p></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CTA ================= -->
+<section class="cta-band" aria-labelledby="ctaTitle">
+  <img src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1600&q=80&auto=format&fit=crop" alt="" loading="lazy">
+  <div class="container" data-reveal>
+    <h2 id="ctaTitle">Entrena hoy.<br><span class="hl">Agradécetelo mañana.</span></h2>
+    <p>Tu primera clase va por nuestra cuenta. Sin matrícula, sin permanencia, sin excusas.</p>
+    <div class="hero-ctas">
+      <button class="btn btn-primary" data-open-trial>Clase de prueba gratis <svg class="i" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+      <a class="btn btn-ghost" href="#" data-wa="Hola Voltio Gym, quiero inscribirme." target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg> Hablar por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTACTO ================= -->
+<section class="section" id="contacto" aria-labelledby="contactTitle">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <p class="eyebrow">Contacto</p>
+      <h2 class="h2" id="contactTitle">Ven a <span class="hl">conocernos</span></h2>
+      <p class="lead">En pleno centro de Talagante, con estacionamiento gratis. También llegas fácil desde Peñaflor, El Monte e Isla de Maipo.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-card" data-reveal>
+        <div class="c-row"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg></span><div><small>Dirección</small><b data-cfg="direccion"></b><p data-cfg="referencia"></p></div></div>
+        <div class="c-row"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg></span><div><small>WhatsApp</small><a href="#" data-wa="Hola Voltio Gym, quiero más información." target="_blank" rel="noopener" data-cfg="whatsappVisible"></a><p>Respondemos en minutos en horario de atención</p></div></div>
+        <div class="c-row"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-mail"/></svg></span><div><small>Correo</small><a href="#" id="mailLink" data-cfg="email"></a></div></div>
+        <div class="c-row"><span class="ic"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg></span><div><small>Horario sala de máquinas</small><b id="contactHours"></b></div></div>
+        <div class="contact-btns">
+          <a class="btn btn-primary btn-sm" id="mapsBtn" href="#" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-pin"/></svg> Cómo llegar</a>
+          <a class="btn btn-ghost btn-sm" href="#" data-wa="Hola Voltio Gym, quiero más información." target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg> WhatsApp</a>
+        </div>
+      </div>
+      <div class="map" data-reveal style="--d:100ms">
+        <span class="map-pin"><svg class="i" aria-hidden="true"><use href="#i-bolt"/></svg> Voltio Gym</span>
+        <iframe id="mapFrame" title="Mapa de ubicación de Voltio Gym en Talagante" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=Talagante,+Chile&output=embed"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="foot-grid">
+      <div>
+        <a class="logo" href="#inicio" aria-label="Voltio Gym, volver al inicio">
+          <span class="logo-mark"><svg class="i i-fill" aria-hidden="true"><use href="#i-bolt"/></svg></span>
+          <span class="logo-text">Voltio<small>GYM · TALAGANTE</small></span>
+        </a>
+        <p>Gimnasio de barrio con energía de estadio. Sala de máquinas, clases grupales y coaches que te conocen por tu nombre.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram (demo)"><svg class="i" aria-hidden="true"><use href="#i-insta"/></svg></a>
+          <a href="#" aria-label="Facebook (demo)"><svg class="i" aria-hidden="true"><use href="#i-fb"/></svg></a>
+          <a href="#" aria-label="TikTok (demo)"><svg class="i" aria-hidden="true"><use href="#i-tiktok"/></svg></a>
+          <a href="#" data-wa="Hola Voltio Gym!" target="_blank" rel="noopener" aria-label="WhatsApp"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4>Explora</h4>
+        <ul>
+          <li><a href="#planes">Planes y precios</a></li>
+          <li><a href="#clases">Disciplinas</a></li>
+          <li><a href="#horarios">Horario de clases</a></li>
+          <li><a href="#app">App de socios</a></li>
+          <li><a href="#coaches">Coaches</a></li>
+          <li><a href="#faq">Preguntas frecuentes</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Sala de máquinas</h4>
+        <ul class="foot-hours" id="footHours"></ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li data-cfg="direccion"></li>
+          <li><a href="#" data-wa="Hola Voltio Gym!" target="_blank" rel="noopener" data-cfg="whatsappVisible"></a></li>
+          <li><a href="#" class="js-mail" data-cfg="email"></a></li>
+          <li data-cfg="instagram"></li>
+        </ul>
+        <button class="btn btn-primary btn-sm" data-open-trial style="margin-top:18px">Clase de prueba gratis</button>
+      </div>
+    </div>
+    <div class="foot-big" aria-hidden="true">Voltio</div>
+  </div>
+  <div class="foot-bottom container">
+    <span>© <span id="year">2026</span> Voltio Gym Talagante. Todos los derechos reservados.</span>
+    <span>Sitio de demostración · negocio ficticio · Región Metropolitana, Chile</span>
+  </div>
+</footer>
+
+<!-- ================= MODAL CLASE DE PRUEBA ================= -->
+<div class="modal" id="trialModal" hidden>
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="trialTitle">
+    <button class="modal-close" data-close aria-label="Cerrar"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+    <div id="trialStepForm">
+      <p class="eyebrow">100% gratis · sin compromiso</p>
+      <h2 class="modal-title" id="trialTitle">Agenda tu clase de prueba</h2>
+      <p class="modal-lead">Déjanos tus datos y te confirmamos por WhatsApp. Trae ropa cómoda, agua y ganas.</p>
+      <form id="trialForm" novalidate>
+        <div class="field">
+          <label for="tName">Nombre</label>
+          <input class="input" id="tName" name="nombre" type="text" autocomplete="given-name" placeholder="Ej: Camila" maxlength="60" aria-describedby="tNameErr">
+          <p class="err" id="tNameErr" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="tPhone">Teléfono (WhatsApp)</label>
+          <div class="phone-in"><span aria-hidden="true">+56</span><input class="input" id="tPhone" name="telefono" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="9 1234 5678" maxlength="16" aria-describedby="tPhoneErr"></div>
+          <p class="err" id="tPhoneErr" role="alert"></p>
+        </div>
+        <div class="field-row">
+          <div class="field"><label for="tDisc">Disciplina de interés</label><select class="select" id="tDisc" name="disciplina"></select></div>
+          <div class="field"><label for="tDay">Día preferido</label><select class="select" id="tDay" name="dia"></select></div>
+        </div>
+        <fieldset class="field">
+          <legend>Horario preferido</legend>
+          <div class="slots" id="tSlots"></div>
+          <p class="err" id="tSlotErr" role="alert"></p>
+        </fieldset>
+        <button type="submit" class="btn btn-primary btn-block"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg> Agendar por WhatsApp</button>
+        <p class="fine" style="text-align:center">Se abrirá WhatsApp con tu mensaje listo. No compartimos tus datos con nadie.</p>
+      </form>
+    </div>
+    <div id="trialStepOk" class="success" hidden>
+      <div class="success-ic"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg></div>
+      <h2 class="modal-title" style="padding:0" tabindex="-1" id="okTitle">¡Listo!</h2>
+      <p class="modal-lead" style="margin:0">Tu clase quedó pre-agendada. Solo falta presionar <b>Enviar</b> en WhatsApp y te confirmamos en minutos.</p>
+      <dl class="summary" id="okSummary"></dl>
+      <div class="bring">
+        <h3>Qué traer</h3>
+        <ul><li>Carnet</li><li>Ropa deportiva</li><li>Zapatillas</li><li>Toalla</li><li>Botella de agua</li><li>Candado (opcional)</li></ul>
+      </div>
+      <a class="btn btn-primary btn-block" id="okWa" href="#" target="_blank" rel="noopener"><svg class="i" aria-hidden="true"><use href="#i-wa"/></svg> Abrir WhatsApp</a>
+      <button class="btn-text" data-close>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LIGHTBOX ================= -->
+<div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Galería de fotos">
+  <button class="lb-btn lb-close" id="lbClose" aria-label="Cerrar galería"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+  <button class="lb-btn lb-prev" id="lbPrev" aria-label="Foto anterior"><svg class="i" aria-hidden="true"><use href="#i-left"/></svg></button>
+  <figure><img id="lbImg" alt=""><figcaption id="lbCap"></figcaption></figure>
+  <button class="lb-btn lb-next" id="lbNext" aria-label="Foto siguiente"><svg class="i" aria-hidden="true"><use href="#i-right"/></svg></button>
+</div>
+
+<!-- ================= 5. ASISTENTE IA (chat) ================= -->
+<div class="chat-teaser" id="chatTeaser" hidden>
+  <button class="teaser-close" id="teaserClose" aria-label="Cerrar aviso"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+  <p>¿Primera vez? Tu clase de prueba es <b>gratis</b>. ¿Te ayudo a agendarla?</p>
+</div>
+<button class="chat-fab" id="chatFab" aria-expanded="false" aria-controls="chatPanel" aria-label="Abrir asistente virtual">
+  <svg class="i" aria-hidden="true"><use href="#i-chat"/></svg>
+  <span class="fab-badge" id="fabBadge">1</span>
+</button>
+<section class="chat-panel" id="chatPanel" role="dialog" aria-label="Asistente virtual de Voltio Gym" hidden>
+  <header class="chat-head">
+    <div class="chat-ava"><svg class="i i-fill" aria-hidden="true"><use href="#i-bolt"/></svg></div>
+    <div><b>Volti</b><small><span class="dot"></span> Asistente virtual · responde al instante</small></div>
+    <button class="chat-x" id="chatClose" aria-label="Cerrar chat"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg></button>
+  </header>
+  <div class="chat-log" id="chatLog" role="log" aria-live="polite"></div>
+  <div class="chat-chips" id="chatChips" aria-label="Preguntas sugeridas"></div>
+  <form class="chat-form" id="chatForm">
+    <input id="chatInput" type="text" placeholder="Escribe tu pregunta…" aria-label="Escribe tu pregunta" autocomplete="off" maxlength="300">
+    <button type="submit" aria-label="Enviar mensaje"><svg class="i" aria-hidden="true"><use href="#i-send"/></svg></button>
+  </form>
+  <p class="chat-foot">Asistente automático (demo) · <a href="#" data-wa="Hola Voltio Gym, quiero hablar con alguien del equipo." target="_blank" rel="noopener">Hablar con una persona</a></p>
+</section>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ================================================================
+     UTILIDADES
+     ================================================================ */
+  const $ = (s, c) => (c || document).querySelector(s);
+  const $$ = (s, c) => Array.from((c || document).querySelectorAll(s));
+  const DAY_SHORT = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+  const DAY_LONG = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const MONTHS = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const MONTHS_SHORT = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const pad = n => String(n).padStart(2, '0');
+  const fmtNum = n => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+  const fmtCLP = n => '$' + fmtNum(n);
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const toMin = t => { const p = t.split(':'); return (+p[0]) * 60 + (+p[1]); };
+  const fmtHM = m => Math.floor(m / 60) + ':' + pad(m % 60);
+  const icon = (n, c) => '<svg class="i ' + (c || '') + '" aria-hidden="true"><use href="#i-' + n + '"></use></svg>';
+  const waLink = msg => 'https://wa.me/' + CONFIG.whatsapp + '?text=' + encodeURIComponent(msg);
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const discById = id => CONFIG.disciplinas.find(d => d.id === id);
+
+  // Hora actual en Talagante (America/Santiago), independiente de la zona del visitante
+  function santiagoNow() {
+    const d = new Date();
+    try {
+      const p = {};
+      new Intl.DateTimeFormat('en-US', {
+        timeZone: CONFIG.zonaHoraria, year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric', weekday: 'short', hourCycle: 'h23'
+      }).formatToParts(d).forEach(x => { p[x.type] = x.value; });
+      const dow = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }[p.weekday];
+      const h = (+p.hour) % 24, mi = +p.minute;
+      return { y: +p.year, mo: +p.month, d: +p.day, dow: dow, h: h, mi: mi, s: +p.second, mins: h * 60 + mi };
+    } catch (e) {
+      return { y: d.getFullYear(), mo: d.getMonth() + 1, d: d.getDate(), dow: d.getDay(), h: d.getHours(), mi: d.getMinutes(), s: d.getSeconds(), mins: d.getHours() * 60 + d.getMinutes() };
+    }
+  }
+  // Información de un día a partir de hoy (offset en días), calculada en hora de Santiago
+  function dayInfo(off) {
+    const n = santiagoNow();
+    const date = new Date(Date.UTC(n.y, n.mo - 1, n.d + off, 12));
+    const dow = date.getUTCDay();
+    return {
+      off: off, dow: dow, date: date, dd: date.getUTCDate(), mm: date.getUTCMonth(),
+      short: date.getUTCDate() + ' ' + MONTHS_SHORT[date.getUTCMonth()],
+      long: DAY_LONG[dow] + ' ' + date.getUTCDate() + ' de ' + MONTHS[date.getUTCMonth()]
+    };
+  }
+  const fmtDate = dt => dt.getUTCDate() + ' de ' + MONTHS[dt.getUTCMonth()] + ' de ' + dt.getUTCFullYear();
+  const fmtDateShort = dt => pad(dt.getUTCDate()) + '-' + pad(dt.getUTCMonth() + 1) + '-' + dt.getUTCFullYear();
+  const addMonths = (dt, k) => new Date(Date.UTC(dt.getUTCFullYear(), dt.getUTCMonth() + k, dt.getUTCDate(), 12));
+  const whenLabel = (off, dow) => off === 0 ? 'hoy' : off === 1 ? 'mañana' : 'el ' + DAY_LONG[dow];
+
+  function classesFor(dow) {
+    return (CONFIG.horario[dow] || []).map(a => ({
+      inicio: a[0], fin: a[1], disc: a[2], coach: a[3], start: toMin(a[0]), end: toMin(a[1]), dow: dow
+    })).sort((x, y) => x.start - y.start);
+  }
+  const salaFor = dow => CONFIG.salaMaquinas.find(s => s.dows.indexOf(dow) > -1);
+  function salaStatus() {
+    const n = santiagoNow(), s = salaFor(n.dow);
+    const a = toMin(s.abre), c = toMin(s.cierra);
+    if (n.mins >= a && n.mins < c) return { open: true, text: 'Abierto ahora · cierra a las ' + fmtHM(c) };
+    if (n.mins < a) return { open: false, text: 'Cerrado · abre hoy a las ' + fmtHM(a) };
+    return { open: false, text: 'Cerrado · abre mañana a las ' + fmtHM(toMin(salaFor((n.dow + 1) % 7).abre)) };
+  }
+  // Clases en curso ahora y próxima clase (buscando hasta 7 días adelante)
+  function liveAndNext() {
+    const n = santiagoNow();
+    const live = classesFor(n.dow).filter(c => n.mins >= c.start && n.mins < c.end);
+    let next = null;
+    for (let off = 0; off < 8 && !next; off++) {
+      const di = dayInfo(off);
+      const list = classesFor(di.dow).filter(c => off > 0 || c.start > n.mins);
+      if (list.length) next = Object.assign({}, list[0], { off: off });
+    }
+    return { live: live, next: next, n: n };
+  }
+  function daysWith(discId) {
+    return [1, 2, 3, 4, 5, 6].filter(d => classesFor(d).some(c => c.disc === discId)).map(d => DAY_SHORT[d]);
+  }
+
+  let toastT;
+  function toast(msg) {
+    const t = $('#toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastT);
+    toastT = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  /* ================================================================
+     DATOS DE CONFIG EN EL HTML
+     ================================================================ */
+  function fillConfig() {
+    $$('[data-cfg]').forEach(el => { const v = CONFIG[el.dataset.cfg]; if (v) el.textContent = v; });
+    $$('[data-wa]').forEach(el => { el.href = waLink(el.dataset.wa); });
+    $$('#mailLink, .js-mail').forEach(el => { el.href = 'mailto:' + CONFIG.email; });
+    $('#mapsBtn').href = CONFIG.mapaLink;
+    $('#mapFrame').src = CONFIG.mapaEmbed;
+    $('#year').textContent = santiagoNow().y;
+    const hoursTxt = CONFIG.salaMaquinas.map(s => s.dias + ' ' + fmtHM(toMin(s.abre)) + '–' + fmtHM(toMin(s.cierra))).join(' · ');
+    $('#contactHours').textContent = hoursTxt;
+    $('#footHours').innerHTML = CONFIG.salaMaquinas.map(s => '<li><span>' + esc(s.dias) + '</span><span>' + fmtHM(toMin(s.abre)) + '–' + fmtHM(toMin(s.cierra)) + '</span></li>').join('');
+  }
+
+  /* ================================================================
+     NAVBAR, MENÚ MÓVIL, PROGRESO
+     ================================================================ */
+  function initNav() {
+    const nav = $('#nav'), bar = $('#progressBar'), burger = $('#burger'), menu = $('#mobileMenu');
+    const onScroll = () => {
+      nav.classList.toggle('is-scrolled', window.scrollY > 30);
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      bar.style.transform = 'scaleX(' + (h > 0 ? Math.min(1, window.scrollY / h) : 0) + ')';
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    const setMenu = open => {
+      menu.classList.toggle('is-open', open);
+      nav.classList.toggle('menu-open', open);
+      burger.setAttribute('aria-expanded', String(open));
+      burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+      menu.setAttribute('aria-hidden', String(!open));
+      document.documentElement.style.overflow = open ? 'hidden' : '';
+      document.documentElement.classList.toggle('menu-lock', open);
+    };
+    burger.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
+    $$('a, button', menu).forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('is-open')) { setMenu(false); burger.focus(); } });
+    window.addEventListener('resize', () => { if (window.innerWidth > 1060 && menu.classList.contains('is-open')) setMenu(false); });
+
+    // Link activo según la sección visible
+    const links = $$('.nav-links a');
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (en.isIntersecting) links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === '#' + en.target.id));
+        });
+      }, { rootMargin: '-45% 0px -50% 0px' });
+      links.forEach(l => { const s = $(l.getAttribute('href')); if (s) io.observe(s); });
+    }
+  }
+
+  /* ================================================================
+     PORTADA: SLIDESHOW + ESTADO + CIFRAS + CINTAS
+     ================================================================ */
+  function initHero() {
+    const wrap = $('#heroSlides'), ind = $('#heroInd'), lbl = $('#heroIndLabel');
+    const fotos = CONFIG.fotos.hero;
+    wrap.innerHTML = fotos.map((f, i) => '<div class="hero-slide' + (i === 0 ? ' is-active' : '') + '" style="background-image:url(\'' + f.src + '\')"></div>').join('');
+    ind.innerHTML = fotos.map((f, i) => '<button type="button" class="' + (i === 0 ? 'is-active' : '') + '" aria-label="Foto ' + (i + 1) + ': ' + esc(f.label) + '" aria-current="' + (i === 0) + '"><span></span></button>').join('');
+    const slides = $$('.hero-slide', wrap), btns = $$('button', ind);
+    let cur = 0, timer;
+    const setLabel = () => { lbl.textContent = pad(cur + 1) + ' / ' + pad(fotos.length) + ' · ' + fotos[cur].label; };
+    const go = i => {
+      slides[cur].classList.remove('is-active'); btns[cur].classList.remove('is-active'); btns[cur].setAttribute('aria-current', 'false');
+      cur = (i + slides.length) % slides.length;
+      slides[cur].classList.add('is-active'); btns[cur].classList.add('is-active'); btns[cur].setAttribute('aria-current', 'true');
+      setLabel(); restart();
+    };
+    const restart = () => { clearInterval(timer); timer = setInterval(() => go(cur + 1), 6000); };
+    btns.forEach((b, i) => b.addEventListener('click', () => { if (i !== cur) go(i); }));
+    setLabel(); restart();
+  }
+
+  function updateStatusPills() {
+    const st = salaStatus();
+    $('#heroStatus').innerHTML = '<span class="pl-city">Talagante · </span>' + esc(st.text);
+    $('#heroDot').classList.toggle('off', !st.open);
+    $('#nowStatus').textContent = 'Sala de máquinas: ' + st.text.toLowerCase();
+    $('#nowDot').classList.toggle('off', !st.open);
+  }
+
+  function initCounters() {
+    const els = $$('[data-count]');
+    const run = el => {
+      const target = CONFIG.stats[el.dataset.count] || 0;
+      if (reduceMotion) { el.textContent = fmtNum(target); return; }
+      const t0 = performance.now(), dur = 1900;
+      const tick = t => {
+        const p = Math.min(1, (t - t0) / dur);
+        const e = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
+        el.textContent = fmtNum(target * e);
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    if (!('IntersectionObserver' in window)) { els.forEach(run); return; }
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) { run(en.target); io.unobserve(en.target); } });
+    }, { threshold: .4 });
+    els.forEach(el => io.observe(el));
+  }
+
+  function initTapes() {
+    const a = CONFIG.disciplinas.map(d => d.nombre).concat(['HIIT', 'Cross']);
+    const b = ['Sin excusas', 'Sin matrícula', 'Sin permanencia', 'Talagante se mueve', 'Tu mejor versión'];
+    const bolt = icon('bolt', 'i-fill');
+    const itemsA = a.map(t => '<span>' + esc(t) + ' ' + bolt + '</span>').join('');
+    const itemsB = b.map((t, i) => '<span>' + (i % 2 ? '<em>' + esc(t) + '</em>' : esc(t)) + ' ' + bolt + '</span>').join('');
+    $('#tapeA').innerHTML = itemsA + itemsA + itemsA + itemsA;
+    $('#tapeB').innerHTML = itemsB + itemsB + itemsB + itemsB;
+  }
+
+  /* ================================================================
+     PLANES + PROMO MATRÍCULA
+     ================================================================ */
+  function renderPlans() {
+    const base = (CONFIG.planes.find(p => p.id === 'mensual') || CONFIG.planes[0]).precio;
+    const mat = CONFIG.matricula;
+    $('#matNormal').textContent = fmtCLP(mat.normal);
+    $('#plansGrid').innerHTML = CONFIG.planes.map((p, i) => {
+      const porMes = Math.round(p.precio / p.meses);
+      const ahorro = base * p.meses - p.precio;
+      const msg = 'Hola ' + CONFIG.nombre + '! Quiero el plan ' + p.nombre + ' (' + fmtCLP(p.precio) + p.periodo + ') con matrícula $0. ¿Cómo me inscribo?';
+      return '<article class="plan' + (p.destacado ? ' featured' : '') + '" data-reveal style="--d:' + (i * 90) + 'ms">' +
+        (p.etiqueta ? '<span class="plan-flag">' + icon('flame') + esc(p.etiqueta) + '</span>' : '') +
+        '<h3 class="plan-name">' + esc(p.nombre) + '</h3>' +
+        '<p class="plan-desc">' + esc(p.desc) + '</p>' +
+        '<div class="plan-price"><span class="cur">$</span>' + fmtNum(p.precio) + '<span class="per">' + esc(p.periodo) + '</span></div>' +
+        (p.meses > 1 && ahorro > 0 ? '<p class="plan-eq">Equivale a <b>' + fmtCLP(porMes) + '/mes</b></p><span class="plan-save">Ahorras ' + fmtCLP(ahorro) + '</span>' : '') +
+        (p.requisito ? '<p class="plan-req">' + icon('id') + '<span>' + esc(p.requisito) + '</span></p>' : '') +
+        '<ul class="plan-list">' + p.beneficios.map(b => '<li>' + icon('check') + '<span>' + esc(b) + '</span></li>').join('') + '</ul>' +
+        '<a class="btn ' + (p.destacado ? 'btn-primary' : 'btn-ghost') + ' btn-block" href="' + waLink(msg) + '" target="_blank" rel="noopener">Lo quiero ' + icon('arrow') + '</a>' +
+        '<p class="plan-mat">Matrícula <s>' + fmtCLP(mat.normal) + '</s> <b>' + fmtCLP(mat.promo) + '</b></p>' +
+        '</article>';
+    }).join('');
+    const duo = CONFIG.planDuo;
+    $('#duoName').textContent = duo.nombre;
+    $('#duoDetail').textContent = duo.detalle;
+    $('#duoPrice').innerHTML = fmtCLP(duo.precio) + ' <small>' + esc(duo.periodo) + '</small>';
+    $('#duoBtn').href = waLink('Hola ' + CONFIG.nombre + '! Queremos el ' + duo.nombre + ' (' + fmtCLP(duo.precio) + duo.periodo + ' por 2 personas). ¿Cómo nos inscribimos?');
+  }
+
+  function initCountdown() {
+    const n0 = santiagoNow();
+    const lastDay = new Date(Date.UTC(n0.y, n0.mo, 0)).getUTCDate();
+    $('#promoEnd').textContent = lastDay + ' de ' + MONTHS[n0.mo - 1];
+    const els = { d: $('[data-cd="d"]'), h: $('[data-cd="h"]'), m: $('[data-cd="m"]'), s: $('[data-cd="s"]') };
+    const tick = () => {
+      const n = santiagoNow();
+      const ld = new Date(Date.UTC(n.y, n.mo, 0)).getUTCDate();
+      let rest = (ld - n.d) * 86400 + (86399 - (n.h * 3600 + n.mi * 60 + n.s));
+      if (rest < 0) rest = 0;
+      els.d.textContent = Math.floor(rest / 86400);
+      els.h.textContent = pad(Math.floor(rest % 86400 / 3600));
+      els.m.textContent = pad(Math.floor(rest % 3600 / 60));
+      els.s.textContent = pad(rest % 60);
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  /* ================================================================
+     DISCIPLINAS
+     ================================================================ */
+  function renderDisciplines() {
+    $('#discGrid').innerHTML = CONFIG.disciplinas.map((d, i) =>
+      '<article class="disc" style="--c:var(--c-' + d.id + ');--d:' + (i % 3 * 90) + 'ms" data-reveal>' +
+      '<img src="' + d.img + '" alt="' + esc(d.alt) + '" loading="lazy">' +
+      '<span class="disc-num" aria-hidden="true">' + pad(i + 1) + '</span>' +
+      '<div class="disc-icon">' + icon(d.icono) + '</div>' +
+      '<h3>' + esc(d.nombre) + '</h3>' +
+      '<p>' + esc(d.desc) + '</p>' +
+      '<div class="disc-meta"><span>' + icon('clock') + esc(d.duracion) + '</span><span class="intensity" role="img" aria-label="Intensidad ' + d.intensidad + ' de 5">' +
+      [1, 2, 3, 4, 5].map(k => '<i class="' + (k <= d.intensidad ? 'on' : '') + '"></i>').join('') + '</span></div>' +
+      '<button class="disc-link" type="button" data-see="' + d.id + '">Ver horarios ' + icon('arrow') + '</button>' +
+      '</article>').join('');
+    $('#discGrid').addEventListener('click', e => {
+      const b = e.target.closest('[data-see]');
+      if (!b) return;
+      sched.filter = b.dataset.see;
+      renderFilters(); renderClasses();
+      $('#horarios').scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  }
+
+  /* ================================================================
+     HORARIO SEMANAL INTERACTIVO
+     ================================================================ */
+  const sched = { day: 1, filter: 'todas', sig: '' };
+
+  function renderDayTabs() {
+    const n = santiagoNow();
+    $('#dayTabs').innerHTML = [1, 2, 3, 4, 5, 6].map(dow => {
+      const off = (dow - n.dow + 7) % 7, di = dayInfo(off), sel = dow === sched.day;
+      return '<button class="day-tab" role="tab" type="button" id="dt-' + dow + '" aria-controls="classList" aria-selected="' + sel + '" tabindex="' + (sel ? 0 : -1) + '" data-dow="' + dow + '" aria-label="' + cap(DAY_LONG[dow]) + ' ' + di.dd + (off === 0 ? ' (hoy)' : '') + '">' +
+        (off === 0 ? '<span class="today">HOY</span>' : '') + '<b>' + DAY_SHORT[dow] + '</b><small>' + di.short + '</small></button>';
+    }).join('');
+    $('#classList').setAttribute('aria-labelledby', 'dt-' + sched.day);
+  }
+
+  function renderFilters() {
+    const items = [{ id: 'todas', nombre: 'Todas' }].concat(CONFIG.disciplinas);
+    $('#filters').innerHTML = items.map(d =>
+      '<button class="chip" type="button" data-filter="' + d.id + '" aria-pressed="' + (sched.filter === d.id) + '"' + (d.id !== 'todas' ? ' style="--c:var(--c-' + d.id + ')"' : '') + '>' +
+      (d.id !== 'todas' ? '<span class="sw"></span>' : '') + esc(d.nombre) + '</button>').join('');
+  }
+
+  function scheduleState() {
+    const n = santiagoNow(), isToday = sched.day === n.dow;
+    const list = classesFor(sched.day).filter(c => sched.filter === 'todas' || c.disc === sched.filter);
+    let nextFound = false;
+    list.forEach(c => {
+      c.status = '';
+      if (!isToday) return;
+      if (n.mins >= c.start && n.mins < c.end) c.status = 'live';
+      else if (n.mins >= c.end) c.status = 'past';
+      else if (!nextFound) { c.status = 'next'; nextFound = true; }
+    });
+    return { list: list, sig: sched.day + '|' + sched.filter + '|' + list.map(c => c.status).join(',') };
+  }
+
+  function renderClasses() {
+    const n = santiagoNow();
+    const st = scheduleState();
+    sched.sig = st.sig;
+    const note = $('#schedNote');
+    if (n.dow === 0) {
+      const sun = salaFor(0);
+      note.innerHTML = icon('info') + '<span>Hoy domingo no hay clases grupales: la sala de máquinas abre de <b>' + fmtHM(toMin(sun.abre)) + ' a ' + fmtHM(toMin(sun.cierra)) + '</b>. Te mostramos el horario de la semana.</span>';
+      note.hidden = false;
+    } else note.hidden = true;
+
+    if (!st.list.length) {
+      const d = discById(sched.filter);
+      const days = d ? daysWith(d.id) : [];
+      $('#classList').innerHTML = '<div class="empty">No hay clases de <b>' + esc(d ? d.nombre : '') + '</b> el ' + DAY_LONG[sched.day] + '.' +
+        (days.length ? '<br>Se dicta: <b>' + days.join(', ') + '</b>.' : '') + '</div>';
+      return;
+    }
+    $('#classList').innerHTML = st.list.map((c, i) => {
+      const d = discById(c.disc);
+      const badge = c.status === 'live' ? '<span class="badge badge-live">En curso ahora</span>' :
+        c.status === 'next' ? '<span class="badge badge-next">' + icon('bolt', 'i-fill') + 'Próxima clase</span>' :
+        c.status === 'past' ? '<span class="badge badge-past">Finalizada</span>' : '';
+      const dur = c.end - c.start;
+      return '<article class="class-row' + (c.status ? ' is-' + c.status : '') + '" style="--c:var(--c-' + c.disc + ');animation-delay:' + (i * 40) + 'ms">' +
+        '<div class="cr-time"><strong>' + c.inicio + '</strong><span>a ' + c.fin + '</span></div>' +
+        '<div class="cr-info"><div class="cr-top"><span class="tag">' + esc(d.nombre) + '</span>' + badge + '</div>' +
+        '<h4>' + esc(d.clase) + '</h4><p>Con ' + esc(c.coach) + ' · ' + esc(d.sala) + ' · ' + dur + ' min</p></div>' +
+        '<div class="cr-cta">' + (c.status === 'past' ? '' : '<button class="cr-btn" type="button" data-try="' + c.disc + '|' + c.dow + '|' + c.inicio + '">Probar gratis</button>') + '</div>' +
+        '</article>';
+    }).join('');
+  }
+
+  function renderSalaHours() {
+    const n = santiagoNow();
+    $('#salaHours').innerHTML = CONFIG.salaMaquinas.map(s =>
+      '<li class="' + (s.dows.indexOf(n.dow) > -1 ? 'is-today' : '') + '"><span>' + esc(s.dias) + '</span><span>' + fmtHM(toMin(s.abre)) + '–' + fmtHM(toMin(s.cierra)) + '</span></li>').join('');
+  }
+
+  function updateNowCard() {
+    const ln = liveAndNext(), n = ln.n;
+    $('#nowClock').textContent = pad(n.h) + ':' + pad(n.mi);
+    $('#nowDate').textContent = cap(DAY_LONG[n.dow]) + ' ' + n.d + ' de ' + MONTHS[n.mo - 1] + ' · Talagante';
+    let html = '';
+    if (ln.live.length) {
+      html += '<span class="k live">● En curso ahora</span>' + ln.live.map(c => '<b>' + esc(discById(c.disc).clase) + '</b> con ' + esc(c.coach) + ' · hasta las ' + c.fin).join('<br>');
+    }
+    if (ln.next) {
+      const c = ln.next, d = discById(c.disc);
+      let extra = '';
+      if (c.off === 0) {
+        const diff = c.start - n.mins;
+        extra = diff < 60 ? ' (en ' + diff + ' min)' : '';
+      }
+      html += (html ? '<hr style="border:0;border-top:1px solid var(--line);margin:10px 0">' : '') +
+        '<span class="k next">Próxima clase</span><b>' + esc(d.clase) + '</b> ' + whenLabel(c.off, c.dow) + ' a las ' + c.inicio + extra + '<br><span style="color:var(--muted)">Con ' + esc(c.coach) + ' · ' + esc(d.sala) + '</span>';
+    }
+    $('#nowNext').innerHTML = html;
+  }
+
+  function initSchedule() {
+    const n = santiagoNow();
+    sched.day = n.dow === 0 ? 1 : n.dow;
+    renderDayTabs(); renderFilters(); renderClasses(); renderSalaHours(); updateNowCard();
+
+    const tabs = $('#dayTabs');
+    tabs.addEventListener('click', e => {
+      const b = e.target.closest('.day-tab'); if (!b) return;
+      sched.day = +b.dataset.dow; renderDayTabs(); renderClasses();
+      $('#dt-' + sched.day).focus();
+    });
+    tabs.addEventListener('keydown', e => {
+      if (['ArrowRight', 'ArrowLeft', 'Home', 'End'].indexOf(e.key) < 0) return;
+      e.preventDefault();
+      let d = sched.day;
+      if (e.key === 'ArrowRight') d = d === 6 ? 1 : d + 1;
+      if (e.key === 'ArrowLeft') d = d === 1 ? 6 : d - 1;
+      if (e.key === 'Home') d = 1;
+      if (e.key === 'End') d = 6;
+      sched.day = d; renderDayTabs(); renderClasses(); $('#dt-' + d).focus();
+    });
+    $('#filters').addEventListener('click', e => {
+      const b = e.target.closest('[data-filter]'); if (!b) return;
+      sched.filter = b.dataset.filter; renderFilters(); renderClasses();
+    });
+    $('#classList').addEventListener('click', e => {
+      const b = e.target.closest('[data-try]'); if (!b) return;
+      const p = b.dataset.try.split('|');
+      openTrial({ disc: p[0], dow: +p[1], time: p[2] }, b);
+    });
+  }
+
+  // Actualización en vivo (cada 30 s)
+  function tickLive() {
+    updateStatusPills();
+    updateNowCard();
+    const st = scheduleState();
+    if (st.sig !== sched.sig && !$('#classList').contains(document.activeElement)) renderClasses();
+    const n = santiagoNow();
+    $('#phoneTime').textContent = n.h + ':' + pad(n.mi);
+  }
+
+  /* ================================================================
+     MODAL: CLASE DE PRUEBA GRATIS → WhatsApp
+     ================================================================ */
+  const trial = { lastFocus: null, dayOpts: [] };
+
+  function slotsFor(discId, off) {
+    const di = dayInfo(off), n = santiagoNow(), d = discById(discId), out = [];
+    classesFor(di.dow).filter(c => c.disc === discId && !(off === 0 && c.start <= n.mins)).forEach(c => {
+      out.push({ value: c.inicio + ' · ' + d.clase + ' con ' + c.coach, main: c.inicio, sub: 'Clase con ' + c.coach, time: c.inicio });
+    });
+    if (discId === 'musculacion') {
+      const s = salaFor(di.dow), a = toMin(s.abre), z = toMin(s.cierra);
+      [['Mañana', a, Math.min(z, 720)], ['Tarde', Math.max(a, 720), Math.min(z, 1080)], ['Noche', Math.max(a, 1080), z]].forEach(f => {
+        if (f[2] - f[1] >= 60 && !(off === 0 && n.mins >= f[2] - 45)) {
+          out.push({ value: 'Sala libre · ' + f[0] + ' (' + fmtHM(f[1]) + '–' + fmtHM(f[2]) + ')', main: f[0], sub: 'Sala ' + fmtHM(f[1]) + '–' + fmtHM(f[2]), time: '' });
+        }
+      });
+    }
+    return out;
+  }
+
+  function buildDayOptions() {
+    const sel = $('#tDay');
+    trial.dayOpts = [];
+    for (let off = 0; off < 7; off++) {
+      const di = dayInfo(off);
+      const label = (off === 0 ? 'Hoy · ' : off === 1 ? 'Mañana · ' : '') + cap(di.long);
+      trial.dayOpts.push({ off: off, dow: di.dow, label: label, long: cap(di.long) });
+    }
+    sel.innerHTML = trial.dayOpts.map(o => '<option value="' + o.off + '">' + esc(o.label) + '</option>').join('');
+  }
+
+  function renderSlots(preTime) {
+    const discId = $('#tDisc').value, off = +$('#tDay').value, slots = slotsFor(discId, off);
+    const box = $('#tSlots');
+    $('#tSlotErr').textContent = '';
+    if (!slots.length) {
+      const d = discById(discId), days = daysWith(discId);
+      box.innerHTML = '<p class="slot-empty">No quedan horarios de <b>' + esc(d.nombre) + '</b> ese día.' + (days.length ? ' Se dicta: <b>' + days.join(', ') + '</b>.' : '') + ' Elige otro día 👆</p>';
+      return;
+    }
+    box.innerHTML = slots.map((s, i) =>
+      '<label class="slot"><input type="radio" name="slot" value="' + esc(s.value) + '"' + ((preTime && s.time === preTime) ? ' checked' : '') + '><span><b>' + esc(s.main) + '</b><small>' + esc(s.sub) + '</small></span></label>').join('');
+  }
+
+  function openTrial(pre, opener) {
+    pre = pre || {};
+    trial.lastFocus = opener || document.activeElement;
+    const m = $('#trialModal');
+    $('#trialStepForm').hidden = false;
+    $('#trialStepOk').hidden = true;
+    $('#tDisc').innerHTML = CONFIG.disciplinas.map(d => '<option value="' + d.id + '">' + esc(d.nombre) + '</option>').join('');
+    buildDayOptions();
+    if (pre.disc) $('#tDisc').value = pre.disc;
+    if (pre.dow !== undefined) {
+      // Busca el próximo día que coincida (hoy solo si la clase aún no empieza)
+      const n = santiagoNow();
+      const found = trial.dayOpts.find(o => o.dow === pre.dow && !(o.off === 0 && pre.time && toMin(pre.time) <= n.mins));
+      if (found) $('#tDay').value = String(found.off);
+    } else {
+      // Sin preselección: primer día con horarios para la disciplina
+      const disc = $('#tDisc').value;
+      const first = trial.dayOpts.find(o => slotsFor(disc, o.off).length);
+      if (first) $('#tDay').value = String(first.off);
+    }
+    renderSlots(pre.time);
+    ['tName', 'tPhone'].forEach(id => { $('#' + id).removeAttribute('aria-invalid'); $('#' + id + 'Err').textContent = ''; });
+    m.hidden = false;
+    document.documentElement.style.overflow = 'hidden';
+    requestAnimationFrame(() => { m.classList.add('is-open'); setTimeout(() => $('#tName').focus(), 60); });
+  }
+  window.openTrial = openTrial;
+
+  function closeTrial() {
+    const m = $('#trialModal');
+    if (m.hidden) return;
+    m.classList.remove('is-open');
+    setTimeout(() => {
+      m.hidden = true;
+      document.documentElement.style.overflow = '';
+      if (trial.lastFocus && trial.lastFocus.focus) trial.lastFocus.focus();
+    }, reduceMotion ? 0 : 280);
+  }
+
+  function trapFocus(container, e) {
+    const f = $$('a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])', container).filter(el => el.offsetParent !== null);
+    if (!f.length) return;
+    const first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+
+  function initTrial() {
+    document.addEventListener('click', e => {
+      const b = e.target.closest('[data-open-trial]');
+      if (b) { e.preventDefault(); openTrial({}, b); }
+    });
+    const m = $('#trialModal');
+    m.addEventListener('click', e => { if (e.target.closest('[data-close]')) closeTrial(); });
+    m.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeTrial();
+      if (e.key === 'Tab') trapFocus($('.modal-card', m), e);
+    });
+    $('#tDisc').addEventListener('change', () => {
+      const disc = $('#tDisc').value;
+      if (!slotsFor(disc, +$('#tDay').value).length) {
+        const first = trial.dayOpts.find(o => slotsFor(disc, o.off).length);
+        if (first) $('#tDay').value = String(first.off);
+      }
+      renderSlots();
+    });
+    $('#tDay').addEventListener('change', () => renderSlots());
+    $('#tPhone').addEventListener('input', e => { e.target.value = e.target.value.replace(/[^\d\s+]/g, ''); });
+
+    $('#trialForm').addEventListener('submit', e => {
+      e.preventDefault();
+      let ok = true, firstBad = null;
+      const name = $('#tName').value.trim();
+      const setErr = (id, msg) => {
+        const el = $('#' + id);
+        $('#' + id + 'Err').textContent = msg;
+        if (msg) { el.setAttribute('aria-invalid', 'true'); ok = false; firstBad = firstBad || el; }
+        else el.removeAttribute('aria-invalid');
+      };
+      setErr('tName', name.length < 2 ? 'Cuéntanos tu nombre.' : '');
+      let digits = $('#tPhone').value.replace(/\D/g, '');
+      if (digits.indexOf('56') === 0 && digits.length === 11) digits = digits.slice(2);
+      setErr('tPhone', /^9\d{8}$/.test(digits) ? '' : 'Ingresa un celular válido de 9 dígitos, ej: 9 1234 5678.');
+      const slot = $('input[name="slot"]:checked');
+      if (!slot) { $('#tSlotErr').textContent = 'Elige un horario (o cambia el día).'; ok = false; firstBad = firstBad || $('#tSlots input') || $('#tDay'); }
+      else $('#tSlotErr').textContent = '';
+      if (!ok) { if (firstBad) firstBad.focus(); return; }
+
+      const d = discById($('#tDisc').value);
+      const day = trial.dayOpts[+$('#tDay').value];
+      const phoneFmt = digits.replace(/^(\d)(\d{4})(\d{4})$/, '$1 $2 $3');
+      const msg = '¡Hola ' + CONFIG.nombre + '! ⚡ Quiero agendar mi *clase de prueba gratis*.\n\n' +
+        '• Nombre: ' + name + '\n' +
+        '• Teléfono: +56 ' + phoneFmt + '\n' +
+        '• Disciplina: ' + d.nombre + '\n' +
+        '• Día: ' + day.long + '\n' +
+        '• Horario: ' + slot.value + '\n\n¿Me confirman? ¡Gracias!';
+      const url = waLink(msg);
+      $('#okTitle').textContent = '¡Listo, ' + name.split(' ')[0] + '!';
+      $('#okSummary').innerHTML = [['Disciplina', d.nombre], ['Día', day.long], ['Horario', slot.value.split(' · ')[0] === 'Sala libre' ? slot.value.replace('Sala libre · ', '') : slot.value.split(' · ')[0]], ['WhatsApp', '+56 ' + phoneFmt]]
+        .map(r => '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>').join('');
+      $('#okWa').href = url;
+      $('#trialStepForm').hidden = true;
+      $('#trialStepOk').hidden = false;
+      $('#okTitle').focus();
+      window.open(url, '_blank', 'noopener');
+      $('#trialForm').reset();
+    });
+  }
+
+  /* ================================================================
+     APP DE SOCIOS (maqueta interactiva)
+     ================================================================ */
+  const app = { classes: [], reserved: {}, waiting: {}, done: {}, paid: false, timer: null, due: null };
+
+  function hashStr(s) { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
+
+  function appToast(msg) {
+    const t = $('#appToast');
+    t.innerHTML = icon('check') + '<span>' + esc(msg) + '</span>';
+    t.classList.add('show');
+    clearTimeout(appToast._t);
+    appToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  function initApp() {
+    const A = CONFIG.appDemo;
+    $('#appGreet').textContent = 'Hola, ' + A.socio;
+    $('#appAva').textContent = (A.socio[0] + A.apellido[0]).toUpperCase();
+
+    // (a) Reservar: próximas 6 clases desde ahora
+    const n = santiagoNow();
+    for (let off = 0; off < 8 && app.classes.length < 6; off++) {
+      const di = dayInfo(off);
+      classesFor(di.dow).forEach(c => {
+        if (app.classes.length >= 6 || (off === 0 && c.start <= n.mins)) return;
+        const d = discById(c.disc), key = off + '-' + c.inicio + '-' + c.disc;
+        const idx = app.classes.length;
+        const libres = idx === 1 ? 0 : 2 + hashStr(key) % Math.max(1, d.cupos - 3);
+        app.classes.push(Object.assign({}, c, { off: off, key: key, cap: d.cupos, libres: libres }));
+      });
+    }
+    renderAppClasses();
+    $('#appClasses').addEventListener('click', e => {
+      const b = e.target.closest('[data-res]'); if (!b) return;
+      const c = app.classes.find(x => x.key === b.dataset.res), d = discById(c.disc);
+      const when = (c.off === 0 ? 'hoy' : c.off === 1 ? 'mañana' : DAY_LONG[c.dow]) + ' ' + c.inicio;
+      if (c.libres === 0 && !app.reserved[c.key]) {
+        app.waiting[c.key] = !app.waiting[c.key];
+        appToast(app.waiting[c.key] ? 'Te avisamos si se libera un cupo' : 'Saliste de la lista de espera');
+      } else if (app.reserved[c.key]) {
+        delete app.reserved[c.key]; c.libres++;
+        appToast('Reserva cancelada: ' + d.clase);
+      } else {
+        app.reserved[c.key] = true; c.libres--;
+        appToast('¡Reservada! ' + d.clase + ' ' + when);
+      }
+      renderAppClasses();
+      const again = $('[data-res="' + c.key + '"]'); if (again) again.focus();
+    });
+
+    // (b) Rutina
+    const R = A.rutina;
+    $('#rTitle').textContent = R.titulo;
+    $('#rDay').textContent = 'Hoy · ' + DAY_LONG[n.dow];
+    $('#rMeta').textContent = 'Asignada por Coach ' + R.coach + ' · ' + R.duracion;
+    $('#rList').innerHTML = R.ejercicios.map((ex, i) =>
+      '<label class="a-card r-ex" for="ex' + i + '"><input type="checkbox" id="ex' + i + '" data-ex="' + i + '"><span class="r-check">' + icon('check') + '</span>' +
+      '<span class="r-txt"><b>' + esc(ex.nombre) + '</b><span>' + esc(ex.series) + ' · ' + esc(ex.carga) + '</span></span></label>').join('');
+    $('#rList').addEventListener('change', e => {
+      const cb = e.target.closest('[data-ex]'); if (!cb) return;
+      cb.closest('.r-ex').classList.toggle('done', cb.checked);
+      updateRoutine(true);
+    });
+    updateRoutine(false);
+    $('#rTimer').addEventListener('click', toggleRest);
+
+    // (c) Pagar
+    const today = dayInfo(0).date;
+    app.due = new Date(today.getTime() + 3 * 86400000);
+    renderPay();
+    $('#payBtn').addEventListener('click', startPay);
+    $('#payDone').addEventListener('click', () => { $('#payOverlay').hidden = true; $('#payBtn').focus(); });
+    $('#payReset').addEventListener('click', () => {
+      app.paid = false; app.due = new Date(today.getTime() + 3 * 86400000); renderPay(); appToast('Demo reiniciada');
+    });
+
+    // Navegación inferior
+    const tabs = $$('.app-nav [role="tab"]');
+    const show = btn => {
+      tabs.forEach(t => { const on = t === btn; t.setAttribute('aria-selected', String(on)); t.tabIndex = on ? 0 : -1; });
+      $$('.app-screen').forEach(s => s.classList.toggle('is-active', s.id === 'scr-' + btn.dataset.screen));
+      $('#appTitleTxt').textContent = btn.dataset.title;
+      $('#appBody').scrollTop = 0;
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => show(t));
+      t.addEventListener('keydown', e => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+        const nx = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+        show(nx); nx.focus();
+      });
+    });
+  }
+
+  function renderAppClasses() {
+    const count = Object.keys(app.reserved).length;
+    $('#resCount').textContent = count + (count === 1 ? ' reserva' : ' reservas');
+    $('#appClasses').innerHTML = app.classes.map(c => {
+      const d = discById(c.disc), on = !!app.reserved[c.key], full = c.libres === 0 && !on;
+      const pct = Math.round((c.cap - c.libres) / c.cap * 100);
+      const dayLbl = c.off === 0 ? 'Hoy' : c.off === 1 ? 'Mañana' : DAY_SHORT[c.dow];
+      const btn = full
+        ? '<button class="a-btn wait' + (app.waiting[c.key] ? ' is-on' : '') + '" data-res="' + c.key + '" aria-label="Lista de espera ' + esc(d.clase) + '">' + (app.waiting[c.key] ? 'En lista ✓' : 'Avisarme') + '</button>'
+        : '<button class="a-btn' + (on ? ' is-on' : '') + '" data-res="' + c.key + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Cancelar reserva ' : 'Reservar ') + esc(d.clase) + ' ' + dayLbl + ' ' + c.inicio + '">' + (on ? 'Reservada ✓' : 'Reservar') + '</button>';
+      return '<div class="a-card a-class" style="--c:var(--c-' + c.disc + ')">' +
+        '<div class="a-time">' + c.inicio + '<small>' + dayLbl + '</small></div>' +
+        '<div style="min-width:0"><div class="a-name">' + esc(d.clase) + '</div><div class="a-sub">' + esc(c.coach) + ' · ' + esc(d.sala) + '</div>' +
+        '<div class="a-bar"><i style="width:' + pct + '%"></i></div>' +
+        '<div class="a-cupos' + (c.libres <= 3 ? ' low' : '') + '">' + (c.libres === 0 ? 'Llena · lista de espera' : (c.libres <= 3 ? '¡Quedan ' + c.libres + '!' : c.libres + ' de ' + c.cap + ' cupos libres')) + '</div></div>' +
+        btn + '</div>';
+    }).join('');
+  }
+
+  function updateRoutine(celebrate) {
+    const total = CONFIG.appDemo.rutina.ejercicios.length;
+    const done = $$('#rList input:checked').length;
+    const pct = Math.round(done / total * 100);
+    $('#rBar').style.width = pct + '%';
+    $('#rBarWrap').setAttribute('aria-valuenow', String(pct));
+    $('#rPct').textContent = pct + '%';
+    $('#rCount').textContent = done + ' de ' + total + ' ejercicios';
+    const box = $('#rDone');
+    if (done === total) {
+      box.innerHTML = '<div class="r-done">' + icon('trophy') + ' ¡Rutina completada!<small>Registramos tu entrenamiento #37 · ¡bien ahí!</small></div>';
+      box.hidden = false;
+      if (celebrate) appToast('¡Pierna destruida! Rutina 100%');
+    } else box.hidden = true;
+  }
+
+  function toggleRest() {
+    const btn = $('#rTimer'), lbl = $('span', btn);
+    if (app.timer) {
+      clearInterval(app.timer); app.timer = null; btn.classList.remove('run'); lbl.textContent = 'Iniciar descanso 1:30'; return;
+    }
+    let left = 90;
+    btn.classList.add('run');
+    const paint = () => { lbl.textContent = 'Descanso ' + Math.floor(left / 60) + ':' + pad(left % 60) + ' · tocar para parar'; };
+    paint();
+    app.timer = setInterval(() => {
+      left--;
+      if (left <= 0) {
+        clearInterval(app.timer); app.timer = null; btn.classList.remove('run'); lbl.textContent = 'Iniciar descanso 1:30';
+        appToast('¡A la siguiente serie!');
+        if (navigator.vibrate) { try { navigator.vibrate(200); } catch (e) { /* sin vibración */ } }
+        return;
+      }
+      paint();
+    }, 1000);
+  }
+
+  function renderPay() {
+    const A = CONFIG.appDemo;
+    $('#pPlan').textContent = 'Plan ' + A.plan;
+    $('#pSocio').textContent = A.socio + ' ' + A.apellido + ' · N° ' + A.nSocio;
+    $('#pDue').textContent = fmtDate(app.due);
+    $('#pAmount').textContent = app.paid ? '$0' : fmtCLP(A.monto);
+    const st = $('#pStatus');
+    st.textContent = app.paid ? '● Al día' : '● Vence en 3 días';
+    st.classList.toggle('ok', app.paid);
+    const btn = $('#payBtn');
+    btn.disabled = app.paid;
+    $('span', btn).textContent = app.paid ? 'Mensualidad pagada ✓' : 'Pagar con Webpay';
+    $('#payReset').hidden = !app.paid;
+    const hist = [];
+    if (app.paid) hist.push({ d: dayInfo(0).date, m: A.monto, nuevo: true });
+    const prevDue = addMonths(app.paid ? addMonths(app.due, -1) : app.due, -1);
+    for (let k = 0; k < 3; k++) hist.push({ d: addMonths(prevDue, -k), m: A.monto });
+    $('#pHist').innerHTML = hist.map(h => '<li><span>' + fmtDateShort(h.d) + (h.nuevo ? ' · <b style="color:var(--volt)">nuevo</b>' : '') + '</span><span>' + fmtCLP(h.m) + '</span><span class="ok">Pagado ✓</span></li>').join('');
+  }
+
+  async function startPay() {
+    const A = CONFIG.appDemo, ov = $('#payOverlay');
+    $('#payLoading').hidden = false; $('#payOk').hidden = true; ov.hidden = false;
+    $('#payMsg').textContent = 'Conectando con Webpay…'; $('#paySub').textContent = 'No cierres la app';
+    await wait(1200);
+    $('#payMsg').textContent = 'Procesando pago…'; $('#paySub').textContent = A.tarjeta + ' · ' + fmtCLP(A.monto);
+    await wait(1400);
+    const n = santiagoNow();
+    const newDue = addMonths(app.due, 1);
+    const op = String(10000000 + Math.floor(Math.random() * 89999999));
+    const auth = String(100000 + Math.floor(Math.random() * 899999));
+    $('#receipt').innerHTML = '<h6>Comprobante de pago</h6>' +
+      [['Comercio', CONFIG.nombreCompleto], ['N° operación', op], ['Cód. autorización', auth], ['Fecha', pad(n.d) + '-' + pad(n.mo) + '-' + n.y + ' ' + pad(n.h) + ':' + pad(n.mi)], ['Medio', 'Webpay · ' + A.tarjeta], ['Concepto', 'Mensualidad ' + A.plan], ['Monto', fmtCLP(A.monto)], ['Próx. vencimiento', fmtDateShort(newDue)]]
+        .map(r => '<div><span>' + r[0] + '</span><b>' + esc(r[1]) + '</b></div>').join('');
+    app.paid = true; app.due = newDue;
+    renderPay();
+    $('#payLoading').hidden = true; $('#payOk').hidden = false;
+    $('#payDone').focus();
+  }
+
+  /* ================================================================
+     GALERÍA (lightbox)
+     ================================================================ */
+  function initGallery() {
+    const items = $$('#gallery .g-item'), lb = $('#lightbox');
+    let cur = 0, last = null;
+    const show = i => {
+      cur = (i + items.length) % items.length;
+      const it = items[cur], img = $('img', it);
+      $('#lbImg').src = it.dataset.full; $('#lbImg').alt = img.alt;
+      $('#lbCap').innerHTML = $('.g-cap', it).innerHTML;
+    };
+    const close = () => { lb.hidden = true; document.documentElement.style.overflow = ''; if (last) last.focus(); };
+    items.forEach((it, i) => it.addEventListener('click', () => { last = it; show(i); lb.hidden = false; document.documentElement.style.overflow = 'hidden'; $('#lbClose').focus(); }));
+    $('#lbClose').addEventListener('click', close);
+    $('#lbPrev').addEventListener('click', () => show(cur - 1));
+    $('#lbNext').addEventListener('click', () => show(cur + 1));
+    lb.addEventListener('click', e => { if (e.target === lb) close(); });
+    lb.addEventListener('keydown', e => {
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowLeft') show(cur - 1);
+      if (e.key === 'ArrowRight') show(cur + 1);
+      if (e.key === 'Tab') trapFocus(lb, e);
+    });
+  }
+
+  /* ================================================================
+     FAQ + IMC
+     ================================================================ */
+  function initFaq() {
+    $$('.faq-q').forEach((q, i) => {
+      const a = q.nextElementSibling;
+      q.id = 'faq-q' + i; a.id = 'faq-a' + i;
+      q.setAttribute('aria-controls', a.id);
+      a.setAttribute('role', 'region'); a.setAttribute('aria-labelledby', q.id);
+      q.addEventListener('click', () => q.setAttribute('aria-expanded', String(q.getAttribute('aria-expanded') !== 'true')));
+    });
+  }
+
+  function initImc() {
+    const calc = () => {
+      const p = parseFloat(String($('#imcPeso').value).replace(',', '.'));
+      const h = parseFloat(String($('#imcAlt').value).replace(',', '.'));
+      if (!(p >= 30 && p <= 250) || !(h >= 120 && h <= 230)) {
+        $('#imcCat').textContent = 'Revisa tus datos';
+        $('#imcReco').textContent = 'Ingresa un peso entre 30 y 250 kg y una estatura entre 120 y 230 cm.';
+        return;
+      }
+      const imc = p / Math.pow(h / 100, 2);
+      let cat, color, reco;
+      if (imc < 18.5) { cat = 'Bajo peso'; color = '#3ddcff'; reco = 'Te recomendamos musculación con foco en fuerza e hipertrofia, más una rutina de alimentación para ganar masa muscular.'; }
+      else if (imc < 25) { cat = 'Peso normal'; color = '#43e08a'; reco = '¡Bien ahí! Es el momento perfecto para subir de nivel: funcional, boxeo o un programa de fuerza con Matías.'; }
+      else if (imc < 30) { cat = 'Sobrepeso'; color = '#ffd23f'; reco = 'Combina spinning o funcional 3 veces por semana con musculación. Con constancia, los cambios se notan en 8 a 12 semanas.'; }
+      else { cat = 'Obesidad'; color = '#ff5a1f'; reco = 'Parte con una evaluación con coach: armamos un plan progresivo y de bajo impacto, seguro para tus articulaciones.'; }
+      $('#imcVal').textContent = imc.toFixed(1).replace('.', ',');
+      const c = $('#imcCat'); c.textContent = cat; c.style.background = color; c.style.color = '#0a0a0b';
+      $('#imcMarker').style.left = Math.max(0, Math.min(100, (imc - 15) / 25 * 100)) + '%';
+      $('#imcReco').textContent = reco;
+      $('#imcCta').hidden = false;
+    };
+    $('#imcForm').addEventListener('submit', e => { e.preventDefault(); calc(); });
+  }
+
+  /* ================================================================
+     ASISTENTE VIRTUAL "VOLTI" (bot por reglas, sin backend)
+     ================================================================ */
+  const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[¿?¡!.,;:()"']/g, ' ').replace(/\s+/g, ' ').trim();
+  const DISC_KW = {
+    musculacion: ['musculacion', 'pesas', 'maquinas', 'fuerza', 'hipertrofia'],
+    funcional: ['funcional', 'cross', 'crossfit', 'circuito'],
+    spinning: ['spinning', 'spin', 'ciclo', 'cycling', 'bicicleta estatica'],
+    yoga: ['yoga', 'elongacion', 'estiramiento', 'movilidad', 'pilates'],
+    zumba: ['zumba', 'baile', 'bailar', 'dance', 'ritmos'],
+    boxeo: ['boxeo', 'box ', 'hiit', 'guantes', 'kickboxing', 'saco']
+  };
+  const hit = (t, kw) => kw.indexOf(' ') > -1 ? t.indexOf(kw.trim()) > -1 : new RegExp('(^|\\s)' + kw).test(t);
+  function detectDisc(t) {
+    for (const id in DISC_KW) if (DISC_KW[id].some(k => hit(t, k))) return id;
+    return null;
+  }
+  const A_TRIAL = { label: 'Agendar clase gratis', act: 'trial', primary: true };
+  const A_WA = { label: 'Escribir por WhatsApp', act: 'wa' };
+  const plansTxt = () => CONFIG.planes.map(p => '• ' + p.nombre + ': <b>' + fmtCLP(p.precio) + '</b>' + esc(p.periodo) + (p.meses > 1 ? ' (≈ ' + fmtCLP(Math.round(p.precio / p.meses)) + '/mes)' : '')).join('<br>') +
+    '<br>• ' + CONFIG.planDuo.nombre + ': <b>' + fmtCLP(CONFIG.planDuo.precio) + '</b>' + CONFIG.planDuo.periodo + ' por 2 personas';
+  const salaTxt = () => CONFIG.salaMaquinas.map(s => '• ' + s.dias + ': <b>' + fmtHM(toMin(s.abre)) + ' a ' + fmtHM(toMin(s.cierra)) + '</b>').join('<br>');
+  function nextTxt() {
+    const ln = liveAndNext();
+    let t = '';
+    if (ln.live.length) t += 'Ahora mismo hay <b>' + esc(discById(ln.live[0].disc).clase) + '</b> con ' + esc(ln.live[0].coach) + '. ';
+    if (ln.next) t += 'La próxima clase es <b>' + esc(discById(ln.next.disc).clase) + '</b> ' + whenLabel(ln.next.off, ln.next.dow) + ' a las ' + ln.next.inicio + '.';
+    return t;
+  }
+
+  const INTENTS = [
+    { id: 'gratis', w: 3, kw: ['gratis', 'prueba', 'probar', 'free', 'primera clase', 'conocer', 'invitacion'],
+      reply: () => ({ text: '¡Obvio! Tu <b>clase de prueba es 100% gratis</b> y sin compromiso. Puedes elegir cualquier disciplina o un día de sala de máquinas. Incluye evaluación física 💪<br><br>La agendas aquí mismo en 30 segundos:', actions: [A_TRIAL] }) },
+    { id: 'estudiante', w: 3, kw: ['estudiante', 'universitari', 'universidad', 'instituto', 'tne', 'credencial', 'alumno', 'cft', 'liceo', 'colegio'],
+      reply: () => { const p = CONFIG.planes.find(x => x.id === 'estudiante'); return { text: 'El <b>Plan Estudiante</b> cuesta <b>' + fmtCLP(p.precio) + '</b>' + p.periodo + ' e incluye sala de máquinas ilimitada, 8 clases grupales al mes y evaluación física.<br><br>📌 Requisito: ' + esc(p.requisito) + '<br><br>Y este mes la matrícula es <b>$0</b>.', actions: [{ label: 'Lo quiero', act: 'wa', msg: 'Hola ' + CONFIG.nombre + '! Quiero el Plan Estudiante. ¿Qué necesito llevar?' }, A_TRIAL] }; } },
+    { id: 'estacionamiento', w: 3, kw: ['estacionamiento', 'estacionar', 'parking', 'auto', 'autos', 'bicicletero', 'bici', 'moto'],
+      reply: () => ({ text: '¡Sí! Tenemos <b>20 estacionamientos gratis</b> para socios, justo en la entrada, y un <b>bicicletero techado</b> con cámaras 🚲<br><br>Estamos en ' + esc(CONFIG.direccion) + ' (' + esc(CONFIG.referencia.split('·')[0].trim().toLowerCase()) + ').', actions: [{ label: 'Ver mapa', act: 'scroll', target: '#contacto' }, A_TRIAL] }) },
+    { id: 'matricula', w: 3, kw: ['matricula', 'inscrip', 'inscribir'],
+      reply: () => ({ text: 'Este mes la <b>matrícula es $0</b> (normalmente ' + fmtCLP(CONFIG.matricula.normal) + ') en todos los planes. Te puedes inscribir en recepción o por WhatsApp: solo necesitas tu carnet.', actions: [{ label: 'Ver planes', act: 'scroll', target: '#planes' }, A_WA] }) },
+    { id: 'precios', w: 2, kw: ['precio', 'valor', 'cuanto', 'cuesta', 'plan', 'planes', 'mensualidad', 'tarifa', 'costo', 'cobran', 'promo', 'oferta', 'descuento', 'sale '],
+      reply: () => ({ text: 'Estos son nuestros planes (matrícula <b>$0</b> este mes):<br>' + plansTxt() + '<br><br>El más elegido es el <b>Trimestral</b>: ahorras y tienes clases ilimitadas 🔥', actions: [{ label: 'Ver planes', act: 'scroll', target: '#planes' }, A_TRIAL] }) },
+    { id: 'disciplina', w: 2, kw: [].concat(DISC_KW.musculacion, DISC_KW.funcional, DISC_KW.spinning, DISC_KW.yoga, DISC_KW.zumba, DISC_KW.boxeo),
+      reply: t => {
+        const id = detectDisc(t), d = discById(id);
+        const byDay = [1, 2, 3, 4, 5, 6].map(dow => { const cs = classesFor(dow).filter(c => c.disc === id); return cs.length ? '• ' + cap(DAY_LONG[dow]) + ': <b>' + cs.map(c => c.inicio).join(' · ') + '</b>' : ''; }).filter(Boolean).join('<br>');
+        const extra = id === 'musculacion' ? '<br><br>Y la sala de máquinas está abierta todo el día:<br>' + salaTxt() : '';
+        return { text: '<b>' + esc(d.nombre) + '</b>: ' + esc(d.desc) + '<br><br>Horarios de ' + esc(d.clase) + ':<br>' + byDay + extra, actions: [{ label: 'Ver horario', act: 'filter', target: id }, A_TRIAL] };
+      } },
+    { id: 'horarios', w: 2, kw: ['horario', 'hora', 'abren', 'abre', 'cierran', 'cierra', 'abierto', 'atienden', 'domingo', 'sabado', 'festivo', 'feriado', 'cerrado'],
+      reply: () => ({ text: 'Horario de la <b>sala de máquinas</b>:<br>' + salaTxt() + '<br><br>Ahora: ' + esc(salaStatus().text) + '.<br>' + nextTxt(), actions: [{ label: 'Ver horario de clases', act: 'scroll', target: '#horarios' }] }) },
+    { id: 'clases', w: 1, kw: ['clase', 'clases', 'disciplina', 'actividades', 'que hacen'],
+      reply: () => ({ text: 'Tenemos 6 disciplinas: ' + CONFIG.disciplinas.map(d => '<b>' + esc(d.nombre) + '</b>').join(', ') + '. Todas se adaptan a tu nivel.<br><br>' + nextTxt(), actions: [{ label: 'Ver horario', act: 'scroll', target: '#horarios' }, A_TRIAL] }) },
+    { id: 'ubicacion', w: 2, kw: ['donde', 'direccion', 'ubica', 'llegar', 'mapa', 'queda', 'calle', 'talagante', 'penaflor', 'el monte', 'isla de maipo'],
+      reply: () => ({ text: '📍 Estamos en <b>' + esc(CONFIG.direccion) + '</b>, ' + esc(CONFIG.referencia.split('·')[0].trim().toLowerCase()) + '. Llegas fácil desde Peñaflor, El Monte e Isla de Maipo, y tenemos estacionamiento gratis.', actions: [{ label: 'Cómo llegar', act: 'link', href: CONFIG.mapaLink }, { label: 'Ver mapa', act: 'scroll', target: '#contacto' }] }) },
+    { id: 'pago', w: 2, kw: ['pago', 'pagar', 'webpay', 'tarjeta', 'transferencia', 'efectivo', 'debito', 'credito', 'cuota'],
+      reply: () => ({ text: 'Puedes pagar con <b>Webpay</b> (débito o crédito), <b>transferencia</b> o <b>efectivo</b> en recepción. El plan Anual se puede pagar hasta en <b>3 cuotas precio contado</b>.<br><br>Y los socios pagan su mensualidad directo desde la app 📱', actions: [{ label: 'Ver la app', act: 'scroll', target: '#app' }] }) },
+    { id: 'congelar', w: 3, kw: ['congel', 'pausa', 'pausar', 'vacaciones', 'viaje', 'lesion', 'licencia'],
+      reply: () => ({ text: 'Sí se puede: el plan <b>Trimestral</b> se congela hasta <b>15 días</b> y el <b>Anual</b> hasta <b>30 días</b> (viaje, lesión o licencia médica). Lo pides en recepción o desde la app.', actions: [A_WA] }) },
+    { id: 'camarines', w: 3, kw: ['ducha', 'camarin', 'locker', 'casillero', 'toalla', 'bano', 'agua caliente'],
+      reply: () => ({ text: 'Tenemos <b>camarines con duchas de agua caliente</b>, <b>lockers</b> (trae tu candado), agua purificada gratis y wifi para socios 🚿', actions: [{ label: 'Ver instalaciones', act: 'scroll', target: '#instalaciones' }] }) },
+    { id: 'edad', w: 2, kw: ['edad', 'menor', 'anos', 'hijo', 'hija', 'adolescente', 'adulto mayor', 'tercera edad', 'nino', 'embaraz'],
+      reply: () => ({ text: 'Se puede entrenar desde los <b>14 años</b> con autorización de un adulto. Los <b>adultos mayores</b> son muy bienvenidos: yoga y musculación guiada son ideales. Si tienes alguna condición de salud o estás embarazada, te recomendamos venir con el visto bueno de tu médico y avisarle al coach.', actions: [A_TRIAL] }) },
+    { id: 'coach', w: 2, kw: ['personal', 'trainer', 'entrenador', 'coach', 'profe', 'rutina', 'evaluacion', 'nutri'],
+      reply: () => ({ text: 'Tenemos <b>' + CONFIG.stats.coaches + ' coaches certificados</b>. Todos los planes incluyen evaluación física y rutina de inicio; con el Trimestral y el Anual tu coach te actualiza la rutina en la app cada mes. El Anual trae además 2 sesiones de personal trainer.', actions: [{ label: 'Conocer coaches', act: 'scroll', target: '#coaches' }, A_TRIAL] }) },
+    { id: 'app', w: 2, kw: ['app', 'aplicacion', 'reservar', 'reserva', 'celular'],
+      reply: () => ({ text: 'Con la <b>app de socios</b> reservas tu cupo en las clases, ves tu rutina del día y pagas la mensualidad con Webpay. Puedes probar la demo más arriba 👆', actions: [{ label: 'Ver la app', act: 'scroll', target: '#app' }] }) },
+    { id: 'humano', w: 2, kw: ['whatsapp', 'humano', 'persona', 'llamar', 'telefono', 'contacto', 'hablar', 'ejecutivo', 'numero', 'correo', 'mail'],
+      reply: () => ({ text: '¡Claro! El equipo de recepción te responde por WhatsApp al <b>' + esc(CONFIG.whatsappVisible) + '</b> o por correo a <b>' + esc(CONFIG.email) + '</b>.', actions: [A_WA] }) },
+    { id: 'saludo', w: 1, kw: ['hola', 'buenas', 'buen dia', 'buenos dias', 'hey', 'alo', 'que tal', 'wena'],
+      reply: () => ({ text: '¡Hola! 👋 ¿En qué te ayudo? Puedo contarte de planes, horarios, disciplinas o agendarte una clase de prueba gratis.' }) },
+    { id: 'gracias', w: 1, kw: ['gracias', 'genial', 'bacan', 'perfecto', 'buenisimo', 'excelente', 'dale', 'ok'],
+      reply: () => ({ text: '¡De nada! 💚 Cuando quieras, te esperamos para tu clase de prueba. ¡Tu mejor versión empieza hoy!', actions: [A_TRIAL] }) },
+    { id: 'chao', w: 1, kw: ['chao', 'adios', 'nos vemos', 'hasta luego'],
+      reply: () => ({ text: '¡Nos vemos en la sala! ⚡' }) }
+  ];
+
+  /* ==================================================================
+     CONECTAR IA REAL AQUÍ
+     ------------------------------------------------------------------
+     Este asistente funciona por reglas/palabras clave, sin backend.
+     Para usar un modelo de IA real (OpenAI, Anthropic u otro):
+       1. Crea un endpoint en TU servidor (ej: POST /api/chat) que llame
+          a la API del modelo. La API key va SOLO en el servidor, nunca
+          en este archivo.
+       2. En el "system prompt" del servidor incluye los datos de CONFIG
+          (planes, horarios, dirección, reglas) para que responda con
+          información real del gimnasio.
+       3. Reemplaza el cuerpo de getBotReply() por algo como:
+            const r = await fetch('/api/chat', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ message: text, history: chatHistory })
+            });
+            const data = await r.json();
+            return { text: esc(data.reply), actions: [] };
+       4. Mantén las reglas actuales como respaldo si la API falla.
+     ================================================================== */
+  const chatHistory = [];
+  async function getBotReply(text) {
+    const t = ' ' + norm(text) + ' ';
+    let best = null, bestScore = 0;
+    INTENTS.forEach(intent => {
+      const score = intent.kw.filter(k => hit(t, k)).length * intent.w;
+      if (score > bestScore) { best = intent; bestScore = score; }
+    });
+    if (best) return best.reply(t);
+    return {
+      text: 'Mmm, esa todavía no me la sé 😅 Pero el equipo de recepción te responde al tiro por WhatsApp. También te puedo ayudar con <b>precios</b>, <b>horarios</b> o tu <b>clase gratis</b>.',
+      actions: [A_WA, A_TRIAL]
+    };
+  }
+
+  const chat = { open: false, greeted: false, busy: false };
+
+  function addMsg(role, html, actions) {
+    const log = $('#chatLog');
+    const el = document.createElement('div');
+    el.className = 'msg ' + role;
+    if (role === 'user') el.textContent = html;
+    else {
+      el.innerHTML = html;
+      if (actions && actions.length) {
+        const box = document.createElement('div');
+        box.className = 'msg-acts';
+        actions.forEach(a => {
+          let b;
+          if (a.act === 'wa' || a.act === 'link') {
+            b = document.createElement('a');
+            b.href = a.act === 'wa' ? waLink(a.msg || 'Hola ' + CONFIG.nombre + '! Vengo del asistente de la web y tengo una consulta.') : a.href;
+            b.target = '_blank'; b.rel = 'noopener';
+            b.innerHTML = (a.act === 'wa' ? icon('wa') : icon('pin')) + esc(a.label);
+          } else {
+            b = document.createElement('button');
+            b.type = 'button';
+            b.textContent = a.label;
+            b.addEventListener('click', () => runAction(a, b));
+          }
+          b.className = 'chat-act' + (a.primary ? ' primary' : '');
+          box.appendChild(b);
+        });
+        el.appendChild(box);
+      }
+    }
+    log.appendChild(el);
+    log.scrollTop = log.scrollHeight;
+    chatHistory.push({ role: role, text: role === 'user' ? html : el.textContent });
+  }
+
+  function runAction(a, btn) {
+    if (a.act === 'trial') openTrial({}, btn);
+    if (a.act === 'scroll' || a.act === 'filter') {
+      if (a.act === 'filter') { sched.filter = a.target; renderFilters(); renderClasses(); }
+      if (window.innerWidth < 700) setChat(false);
+      const target = $(a.act === 'filter' ? '#horarios' : a.target);
+      if (target) target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+  }
+
+  async function botRespond(text) {
+    chat.busy = true;
+    const log = $('#chatLog');
+    const typing = document.createElement('div');
+    typing.className = 'msg bot';
+    typing.innerHTML = '<span class="typing"><i></i><i></i><i></i> Volti está escribiendo…</span>';
+    log.appendChild(typing);
+    log.scrollTop = log.scrollHeight;
+    let reply;
+    try { reply = await getBotReply(text); }
+    catch (e) { reply = { text: 'Ups, tuve un problema. Escríbenos por WhatsApp y te ayudamos altiro.', actions: [A_WA] }; }
+    await wait(reduceMotion ? 200 : Math.min(1700, 650 + reply.text.length * 3));
+    typing.remove();
+    addMsg('bot', reply.text, reply.actions);
+    chat.busy = false;
+  }
+
+  function sendUser(text) {
+    text = String(text).trim();
+    if (!text || chat.busy) return;
+    addMsg('user', text);
+    botRespond(text);
+  }
+
+  function setChat(open) {
+    const panel = $('#chatPanel'), fab = $('#chatFab');
+    chat.open = open;
+    fab.setAttribute('aria-expanded', String(open));
+    fab.setAttribute('aria-label', open ? 'Cerrar asistente virtual' : 'Abrir asistente virtual');
+    $('#chatTeaser').hidden = true;
+    if (open) {
+      panel.hidden = false;
+      requestAnimationFrame(() => panel.classList.add('is-open'));
+      $('#fabBadge').hidden = true;
+      if (!chat.greeted) {
+        chat.greeted = true;
+        chat.busy = true;
+        const log = $('#chatLog');
+        const typing = document.createElement('div');
+        typing.className = 'msg bot';
+        typing.innerHTML = '<span class="typing"><i></i><i></i><i></i> Volti está escribiendo…</span>';
+        log.appendChild(typing);
+        setTimeout(() => {
+          typing.remove();
+          addMsg('bot', '¡Hola! Soy <b>Volti</b> ⚡, el asistente de ' + esc(CONFIG.nombreCompleto) + '. Te ayudo con planes, horarios o a agendar tu <b>clase de prueba gratis</b>. ¿Qué necesitas?');
+          chat.busy = false;
+        }, reduceMotion ? 100 : 900);
+      }
+      setTimeout(() => $('#chatInput').focus(), 80);
+    } else {
+      panel.classList.remove('is-open');
+      setTimeout(() => { if (!chat.open) panel.hidden = true; }, 260);
+    }
+  }
+
+  function initChat() {
+    const chips = ['Precios', 'Horarios', 'Clase gratis', 'Plan estudiante', '¿Tienen estacionamiento?', '¿Dónde están?', 'Spinning'];
+    $('#chatChips').innerHTML = chips.map(c => '<button type="button">' + esc(c) + '</button>').join('');
+    $('#chatChips').addEventListener('click', e => { const b = e.target.closest('button'); if (b) sendUser(b.textContent); });
+    $('#chatFab').addEventListener('click', () => setChat(!chat.open));
+    $('#chatClose').addEventListener('click', () => { setChat(false); $('#chatFab').focus(); });
+    $('#chatForm').addEventListener('submit', e => { e.preventDefault(); const i = $('#chatInput'); sendUser(i.value); i.value = ''; });
+    $('#chatPanel').addEventListener('keydown', e => { if (e.key === 'Escape') { setChat(false); $('#chatFab').focus(); } });
+    // Mensaje flotante de invitación
+    let dismissed = false;
+    try { dismissed = sessionStorage.getItem('voltioTeaser') === '1'; } catch (e) { /* sin storage */ }
+    if (!dismissed) setTimeout(() => {
+      if (chat.open) return;
+      $('#chatTeaser').hidden = false;
+      setTimeout(() => { $('#chatTeaser').hidden = true; }, 12000);
+    }, 7000);
+    $('#teaserClose').addEventListener('click', e => {
+      e.stopPropagation(); $('#chatTeaser').hidden = true;
+      try { sessionStorage.setItem('voltioTeaser', '1'); } catch (err) { /* sin storage */ }
+    });
+    $('#chatTeaser').addEventListener('click', () => setChat(true));
+  }
+
+  /* ================================================================
+     ANIMACIONES AL SCROLL
+     ================================================================ */
+  function initReveal() {
+    const els = $$('[data-reveal]');
+    if (reduceMotion || !('IntersectionObserver' in window)) { els.forEach(el => el.classList.add('in')); return; }
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+    }, { threshold: .12, rootMargin: '0px 0px -6% 0px' });
+    els.forEach(el => io.observe(el));
+  }
+
+  /* ================================================================
+     ARRANQUE
+     ================================================================ */
+  fillConfig();
+  initNav();
+  initHero();
+  updateStatusPills();
+  initTapes();
+  renderPlans();
+  initCountdown();
+  renderDisciplines();
+  initSchedule();
+  initTrial();
+  initApp();
+  initGallery();
+  initFaq();
+  initImc();
+  initChat();
+  initCounters();
+  initReveal();
+  tickLive();
+  setInterval(tickLive, 30000);
+})();
+</script>
+</body>
+</html>
